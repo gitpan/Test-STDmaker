@@ -12,10 +12,12 @@ use warnings;
 use warnings::register;
 
 use DataPort::FileType::FormDB;
+use File::FileUtil;
+use Test::STD::STDutil;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.03';
-$DATE = '2003/06/14';
+$VERSION = '1.04';
+$DATE = '2003/06/21';
 
 ########
 # Inherit Test::STD::FileGen
@@ -53,7 +55,7 @@ sub start
              next;
         }
         elsif( $item eq 'Temp') {
-            $file_out = Test::TestUtil->fspec2os($fspec_out, $self->{Temp});
+            $file_out = File::FileUtil->fspec2os($fspec_out, $self->{Temp});
             $dbh->encode_field( ['Temp', $file_out], \$fields);
             next;
         }
@@ -67,7 +69,7 @@ sub start
     foreach my $generator (@{$self->{generators}}) {
         $package = "Test::STDtype::" . $generator;        
         next if $package->can( 'file_out' );
-        $file_out = Test::TestUtil->fspec2os($fspec_out, $self->{$generator});
+        $file_out = File::FileUtil->fspec2os($fspec_out, $self->{$generator});
         $dbh->encode_field( [$generator, $file_out], \$fields);
     }
 
@@ -140,13 +142,13 @@ EOF
     #
     $self->{Trace_Requirement_Table} = "No requirements specified.\n";
     if( $module_db->{trace_req} ) {
-       $self->{Trace_Requirement_Table} = Test::TestUtil->format_hash_table( $module_db->{trace_req}, [64,64], ["Requirement", "Test"] );
+       $self->{Trace_Requirement_Table} = Test::STD::STDutil->format_hash_table( $module_db->{trace_req}, [64,64], ["Requirement", "Test"] );
        $module_db->{trace_req} = {};
     }
 
     $self->{Trace_Test_Table} = '';
     if( $module_db->{trace_test} ) {
-       $self->{Trace_Test_Table} = Test::TestUtil->format_hash_table( $module_db->{trace_test}, [64,64], ["Test", "Requirement"] );
+       $self->{Trace_Test_Table} = Test::STD::STDutil->format_hash_table( $module_db->{trace_test}, [64,64], ["Test", "Requirement"] );
        $module_db->{trace_test} = {};
     }
 
@@ -157,8 +159,8 @@ EOF
     #  
     my ($error, $template_contents);
     if( $self->{Detail_Template} ) {
-        $error = Test::TestUtil->load_package( $self->{Detail_Template} );
-        $template_contents = Test::TestUtil->pm2data( $self->{Detail_Template} );
+        $error = File::FileUtil->load_package( $self->{Detail_Template} );
+        $template_contents = File::FileUtil->pm2data( $self->{Detail_Template} );
     }
     $template_contents = default_template() unless $template_contents;
 
@@ -166,7 +168,7 @@ EOF
       Copyright See_Also Test_Descriptions Version
       Trace_Requirement_Table Trace_Test_Table HTML);
 
-    Test::TestUtil->replace_variables(\$template_contents, $self, \@vars);
+    Test::STD::STDutil->replace_variables(\$template_contents, $self, \@vars);
 
     $template_contents =~ s/\n\\=/\n=/g; # unescape POD directives
     $template_contents =~ s/\n \n/\n\n/g; # no white space lines
@@ -326,12 +328,13 @@ sub default_template
 =head1 SCOPE
 
 This detail STD and the 
-L<General Perl Program Module (PM) STD|Test::STD>
+L<General Perl Program Module (PM) STD|Test::STD::PerlSTD>
 establishes the tests to verify the
 requirements of Perl Program Module (PM) L<${UUT}|${UUT}>
 
-The format of this STD is a tailored L<2167A STD DID|US_DOD::STD>.
-in accordance with L<Tailor02|Test::Template::Tailor02>.
+The format of this STD is a tailored L<2167A STD DID|Docs::US_DOD::STD>.
+in accordance with 
+L<Detail STD Format|Test::STDmaker/Detail STD Format>.
 
 #######
 #  
@@ -346,6 +349,11 @@ in accordance with L<Tailor02|Test::Template::Tailor02>.
 #
 
 =head1 TEST DESCRIPTIONS
+
+The test descriptions uses a legend to
+identify different aspects of a test description
+in accordance with
+L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description Fields>.
 
 ${Test_Descriptions}
 

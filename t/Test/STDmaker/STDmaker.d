@@ -7,8 +7,8 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE);
-$VERSION = '0.03';   # automatically generated file
-$DATE = '2003/06/14';
+$VERSION = '0.04';   # automatically generated file
+$DATE = '2003/06/21';
 
 
 ##### Demonstration Script ####
@@ -19,11 +19,11 @@ $DATE = '2003/06/14';
 #
 # The module Test::STDmaker generated this demo script from the contents of
 #
-# Test::STDmaker::STDmaker 
+# t::Test::STDmaker::STDmaker 
 #
 # Don't edit this test script file, edit instead
 #
-# Test::STDmaker::STDmaker
+# t::Test::STDmaker::STDmaker
 #
 #	ANY CHANGES MADE HERE TO THIS SCRIPT FILE WILL BE LOST
 #
@@ -35,25 +35,12 @@ $DATE = '2003/06/14';
 #
 # The working directory is the directory of the generated file
 #
-use vars qw($__restore_dir__ $T);
+use vars qw($__restore_dir__);
 
 BEGIN {
     use Cwd;
     use File::Spec;
-    use Test::Tech;
-    use Getopt::Long;
-
-    ##########
-    # Pick up a output redirection file and tests to skip
-    # from the command line.
-    #
-    my $test_log = '';
-    GetOptions('log=s' => \$test_log);
- 
-    ########
-    # Start a demo with a new tech
-    #
-    $T = new Test::Tech( $test_log );
+    use Test::Tech qw(tech_config plan demo);
 
     ########
     # Working directory is that of the script file
@@ -90,123 +77,145 @@ follow on the next lines. For example,
 
 MSG
 
-$T->demo(   
-"\ \ \ \ use\ vars\ qw\(\$loaded\)\;\
+demo( "\ \ \ \ use\ vars\ qw\(\$loaded\)\;\
 \ \ \ \ use\ File\:\:Glob\ \'\:glob\'\;\
 \ \ \ \ use\ File\:\:Copy\;\
+\ \ \ \ use\ File\:\:FileUtil\;\
+\ \ \ \ use\ Test\:\:STD\:\:Scrub\;\
+\ \
+\ \ \ \ \#\#\#\#\#\#\#\#\#\
+\ \ \ \ \#\ For\ \"TEST\"\ 1\.24\ or\ greater\ that\ have\ separate\ std\ err\ output\,\
+\ \ \ \ \#\ redirect\ the\ TESTERR\ to\ STDOUT\
+\ \ \ \ \#\
+\ \ \ \ my\ \$restore_testerr\ \=\ tech_config\(\ \'Test\.TESTERR\'\,\ \\\*STDOUT\ \)\;\ \ \ \
+\
+\ \ \ \ my\ \$internal_number\ \=\ tech_config\(\'Internal_Number\'\)\;\
+\ \ \ \ my\ \$fu\ \=\ \'File\:\:FileUtil\'\;\
+\ \ \ \ my\ \$s\ \=\ \'Test\:\:STD\:\:Scrub\'\;\
+\ \ \ \ my\ \$tgB0_pm\ \=\ \(\$internal_number\ eq\ \'string\'\)\ \?\ \'tgB0s\.pm\'\ \:\ \'tgB0n\.pm\'\;\
+\ \ \ \ my\ \$tgB2_pm\ \=\ \(\$internal_number\ eq\ \'string\'\)\ \?\ \'tgB2s\.pm\'\ \:\ \'tgB2n\.pm\'\;\
+\ \ \ \ my\ \$tgB2_txt\ \=\ \(\$internal_number\ eq\ \'string\'\)\ \?\ \'tgB2s\.txt\'\ \:\ \'tgB2n\.txt\'\;\
 \
 \ \ \ \ my\ \$test_results\;\
 \ \ \ \ my\ \$loaded\ \=\ 0\;\
 \ \ \ \ my\ \@outputs\;"); # typed in command           
-    use vars qw($loaded);
+          use vars qw($loaded);
     use File::Glob ':glob';
     use File::Copy;
+    use File::FileUtil;
+    use Test::STD::Scrub;
+ 
+    #########
+    # For "TEST" 1.24 or greater that have separate std err output,
+    # redirect the TESTERR to STDOUT
+    #
+    my $restore_testerr = tech_config( 'Test.TESTERR', \*STDOUT );   
+
+    my $internal_number = tech_config('Internal_Number');
+    my $fu = 'File::FileUtil';
+    my $s = 'Test::STD::Scrub';
+    my $tgB0_pm = ($internal_number eq 'string') ? 'tgB0s.pm' : 'tgB0n.pm';
+    my $tgB2_pm = ($internal_number eq 'string') ? 'tgB2s.pm' : 'tgB2n.pm';
+    my $tgB2_txt = ($internal_number eq 'string') ? 'tgB2s.txt' : 'tgB2n.txt';
 
     my $test_results;
     my $loaded = 0;
     my @outputs;; # execution
 
-$T->demo(   
-"my\ \$errors\ \=\ \$T\-\>load_package\(\ \'Test\:\:STDmaker\'\ \)"); # typed in command           
-my $errors = $T->load_package( 'Test::STDmaker' ); # execution
+demo( "my\ \$errors\ \=\ \$fu\-\>load_package\(\ \'Test\:\:STDmaker\'\ \)"); # typed in command           
+      my $errors = $fu->load_package( 'Test::STDmaker' ); # execution
 
-$T->demo(   
-"\$errors", # typed in command           
-$errors # execution
+demo( "\$errors", # typed in command           
+      $errors # execution
 ) unless     $loaded; # condition for execution                            
 
-$T->demo(   
-"\$T\-\>fin\(\'tgA0\.pm\'\)", # typed in command           
-$T->fin('tgA0.pm')); # execution
+demo( "\$fu\-\>fin\(\'tgA0\.pm\'\)", # typed in command           
+      $fu->fin('tgA0.pm')); # execution
 
 
-$T->demo(   
-"\ \ \ \ copy\ \'tgA0\.pm\'\,\ \'tgA1\.pm\'\;\
-\ \ \ \ Test\:\:STDmaker\-\>fgenerate\(\'Test\:\:STDmaker\:\:tgA1\'\,\ \{output\=\>\'STD\'\}\)\;"); # typed in command           
+demo( "\ \ \ \ copy\ \'tgA0\.pm\'\,\ \'tgA1\.pm\'\;\
+\ \ \ \ Test\:\:STDmaker\-\>fgenerate\(\'t\:\:Test\:\:STDmaker\:\:tgA1\'\,\ \{output\=\>\'STD\'\}\)\;"); # typed in command           
+          copy 'tgA0.pm', 'tgA1.pm';
+    Test::STDmaker->fgenerate('t::Test::STDmaker::tgA1', {output=>'STD'});; # execution
+
+demo( "\$s\-\>scrub_date_version\(\$fu\-\>fin\(\'tgA1\.pm\'\)\)", # typed in command           
+      $s->scrub_date_version($fu->fin('tgA1.pm'))); # execution
+
+
+demo( "\$fu\-\>fin\(\'tgB0n\.pm\'\)", # typed in command           
+      $fu->fin('tgB0n.pm')); # execution
+
+
+demo( "\ \ \ \ copy\ \$tgB0_pm\,\ \'tgB1\.pm\'\;\
+\ \ \ \ Test\:\:STDmaker\-\>fgenerate\(\'t\:\:Test\:\:STDmaker\:\:tgB1\'\,\ \{output\=\>\'STD\ verify\'\}\)\;"); # typed in command           
+          copy $tgB0_pm, 'tgB1.pm';
+    Test::STDmaker->fgenerate('t::Test::STDmaker::tgB1', {output=>'STD verify'});; # execution
+
+demo( "\$s\-\>scrub_date_version\(\$fu\-\>fin\(\'tgB1\.pm\'\)\)", # typed in command           
+      $s->scrub_date_version($fu->fin('tgB1.pm'))); # execution
+
+
+demo( "\ \ \ \ \$test_results\ \=\ \`perl\ tgB1\.t\`\;\
+\ \ \ \ \$fu\-\>fout\(\'tgB1\.txt\'\,\ \$test_results\)\;"); # typed in command           
+          $test_results = `perl tgB1.t`;
+    $fu->fout('tgB1.txt', $test_results);; # execution
+
+demo( "\$s\-\>scrub_probe\(\$s\-\>scrub_file_line\(\$test_results\)\)", # typed in command           
+      $s->scrub_probe($s->scrub_file_line($test_results))); # execution
+
+
+demo( "\$fu\-\>fin\(\ \'tg0\.pm\'\ \ \)", # typed in command           
+      $fu->fin( 'tg0.pm'  )); # execution
+
+
+demo( "\ \ \ \ \#\#\#\#\#\#\#\#\#\
+\ \ \ \ \#\
+\ \ \ \ \#\ Individual\ generate\ outputs\ using\ options\
+\ \ \ \ \#\
+\ \ \ \ \#\#\#\#\#\#\#\#\
+\ \ \ \ \#\#\#\#\#\
+\ \ \ \ \#\ Make\ sure\ there\ is\ no\ residue\ outputs\ hanging\
+\ \ \ \ \#\ around\ from\ the\ last\ test\ series\.\
+\ \ \ \ \#\
+\ \ \ \ \@outputs\ \=\ bsd_glob\(\ \'tg\*1\.\*\'\ \)\;\
+\ \ \ \ unlink\ \@outputs\;\
+\ \ \ \ copy\ \'tg0\.pm\'\,\ \'tg1\.pm\'\;\
+\ \ \ \ copy\ \'tgA0\.pm\'\,\ \'tgA1\.pm\'\;\
+\ \ \ \ my\ \@cwd\ \=\ File\:\:Spec\-\>splitdir\(\ cwd\(\)\ \)\;\
+\ \ \ \ pop\ \@cwd\;\
+\ \ \ \ pop\ \@cwd\;\
+\ \ \ \ unshift\ \@INC\,\ File\:\:Spec\-\>catdir\(\ \@cwd\ \)\;\ \ \#\ put\ UUT\ in\ lib\ path\
+\ \ \ \ Test\:\:STDmaker\-\>fgenerate\(\'t\:\:Test\:\:STDmaker\:\:tgA1\'\,\ \{\ output\=\>\'demo\'\,\ replace\ \=\>\ 1\}\)\;\
+\ \ \ \ shift\ \@INC\;"); # typed in command           
+          #########
+    #
+    # Individual generate outputs using options
+    #
+    ########
+    #####
+    # Make sure there is no residue outputs hanging
+    # around from the last test series.
+    #
+    @outputs = bsd_glob( 'tg*1.*' );
+    unlink @outputs;
+    copy 'tg0.pm', 'tg1.pm';
     copy 'tgA0.pm', 'tgA1.pm';
-    Test::STDmaker->fgenerate('Test::STDmaker::tgA1', {output=>'STD'});; # execution
+    my @cwd = File::Spec->splitdir( cwd() );
+    pop @cwd;
+    pop @cwd;
+    unshift @INC, File::Spec->catdir( @cwd );  # put UUT in lib path
+    Test::STDmaker->fgenerate('t::Test::STDmaker::tgA1', { output=>'demo', replace => 1});
+    shift @INC;; # execution
 
-$T->demo(   
-"\$T\-\>scrub_date_version\(\$T\-\>fin\(\'tgA1\.pm\'\)\)", # typed in command           
-$T->scrub_date_version($T->fin('tgA1.pm'))); # execution
-
-
-$T->demo(   
-"\$T\-\>fin\(\'tgB0\.pm\'\)", # typed in command           
-$T->fin('tgB0.pm')); # execution
-
-
-$T->demo(   
-"\ \ \ \ copy\ \'tgB0\.pm\'\,\ \'tgB1\.pm\'\;\
-\ \ \ \ Test\:\:STDmaker\-\>fgenerate\(\'Test\:\:STDmaker\:\:tgB1\'\,\ \{output\=\>\'STD\'\}\)\;"); # typed in command           
-    copy 'tgB0.pm', 'tgB1.pm';
-    Test::STDmaker->fgenerate('Test::STDmaker::tgB1', {output=>'STD'});; # execution
-
-$T->demo(   
-"\$T\-\>scrub_date_version\(\$T\-\>fin\(\'tgB1\.pm\'\)\)", # typed in command           
-$T->scrub_date_version($T->fin('tgB1.pm'))); # execution
+demo( "\$s\-\>scrub_date_version\(\$fu\-\>fin\(\'tg1\.pm\'\)\)", # typed in command           
+      $s->scrub_date_version($fu->fin('tg1.pm'))); # execution
 
 
-$T->demo(   
-"\$T\-\>fin\(\ \'tg0\.pm\'\ \ \)", # typed in command           
-$T->fin( 'tg0.pm'  )); # execution
-
-
-$T->demo(   
-"\ \ \ \ \ \#\#\#\#\#\#\#\#\#\
-\ \ \ \ \ \#\
-\ \ \ \ \ \#\ Individual\ generate\ outputs\ using\ options\
-\ \ \ \ \ \#\
-\ \ \ \ \ \#\#\#\#\#\#\#\#\
-\ \ \ \ \ \#\#\#\#\#\
-\ \ \ \ \ \#\ Make\ sure\ there\ is\ no\ residue\ outputs\ hanging\
-\ \ \ \ \ \#\ around\ from\ the\ last\ test\ series\.\
-\ \ \ \ \ \#\
-\ \ \ \ \ \@outputs\ \=\ bsd_glob\(\ \'tg\*1\.\*\'\ \)\;\
-\ \ \ \ \ unlink\ \@outputs\;\
-\ \ \ \ \ \@outputs\ \=\ bsd_glob\(\ \'tg\*1\-STD\.pm\'\)\;\
-\ \ \ \ \ unlink\ \@outputs\;\
-\ \ \ \ \ copy\ \'tg0\.pm\'\,\ \'tg1\.pm\'\;\
-\ \ \ \ \ copy\ \'tgA0\.pm\'\,\ \'tgA1\.pm\'\;\
-\ \ \ \ \ my\ \@cwd\ \=\ File\:\:Spec\-\>splitdir\(\ cwd\(\)\ \)\;\
-\ \ \ \ \ pop\ \@cwd\;\
-\ \ \ \ \ pop\ \@cwd\;\
-\ \ \ \ \ unshift\ \@INC\,\ File\:\:Spec\-\>catdir\(\ \@cwd\ \)\;\ \ \#\ put\ UUT\ in\ lib\ path\
-\ \ \ \ \ Test\:\:STDmaker\-\>fgenerate\(\'Test\:\:STDmaker\:\:tgA1\'\,\ \{\ output\=\>\'demo\'\,\ replace\ \=\>\ 1\}\)\;\
-\ \ \ \ \ shift\ \@INC\;"); # typed in command           
-     #########
-     #
-     # Individual generate outputs using options
-     #
-     ########
-     #####
-     # Make sure there is no residue outputs hanging
-     # around from the last test series.
-     #
-     @outputs = bsd_glob( 'tg*1.*' );
-     unlink @outputs;
-     @outputs = bsd_glob( 'tg*1-STD.pm');
-     unlink @outputs;
-     copy 'tg0.pm', 'tg1.pm';
-     copy 'tgA0.pm', 'tgA1.pm';
-     my @cwd = File::Spec->splitdir( cwd() );
-     pop @cwd;
-     pop @cwd;
-     unshift @INC, File::Spec->catdir( @cwd );  # put UUT in lib path
-     Test::STDmaker->fgenerate('Test::STDmaker::tgA1', { output=>'demo', replace => 1});
-     shift @INC;; # execution
-
-$T->demo(   
-"\$T\-\>scrub_date_version\(\$T\-\>fin\(\'tg1\.pm\'\)\)", # typed in command           
-$T->scrub_date_version($T->fin('tg1.pm'))); # execution
-
-
-$T->demo(   
-"\ \ \ \ no\ warnings\;\
+demo( "\ \ \ \ no\ warnings\;\
 \ \ \ \ open\ SAVEOUT\,\ \"\>\&STDOUT\"\;\
 \ \ \ \ use\ warnings\;\
 \ \ \ \ open\ STDOUT\,\ \"\>tgA1\.txt\"\;\
-\ \ \ \ Test\:\:STDmaker\-\>fgenerate\(\'Test\:\:STDmaker\:\:tgA1\'\,\ \{\ output\=\>\'verify\'\,\ run\=\>1\,\ verbose\=\>1\}\)\;\
+\ \ \ \ Test\:\:STDmaker\-\>fgenerate\(\'t\:\:Test\:\:STDmaker\:\:tgA1\'\,\ \{\ output\=\>\'verify\'\,\ run\=\>1\,\ verbose\=\>1\}\)\;\
 \ \ \ \ close\ STDOUT\;\
 \ \ \ \ open\ STDOUT\,\ \"\>\&SAVEOUT\"\;\
 \ \ \ \ \
@@ -216,15 +225,15 @@ $T->demo(
 \ \ \ \ \#\ Also\ the\ script\ name\ is\ absolute\ which\ is\ site\ dependent\.\
 \ \ \ \ \#\ Take\ it\ out\ of\ the\ comparision\.\
 \ \ \ \ \#\
-\ \ \ \ \$test_results\ \=\ \$T\-\>fin\(\'tgA1\.txt\'\)\;\
+\ \ \ \ \$test_results\ \=\ \$fu\-\>fin\(\'tgA1\.txt\'\)\;\
 \ \ \ \ \$test_results\ \=\~\ s\/\.\*\?1\.\.9\/1\.\.9\/\;\ \
 \ \ \ \ \$test_results\ \=\~\ s\/\-\-\-\-\-\-\.\*\?\\n\(\\s\*\\\(\)\/\\n\ \$1\/s\;\
-\ \ \ \ \$T\-\>fout\(\'tgA1\.txt\'\,\$test_results\)\;"); # typed in command           
-    no warnings;
+\ \ \ \ \$fu\-\>fout\(\'tgA1\.txt\'\,\$test_results\)\;"); # typed in command           
+          no warnings;
     open SAVEOUT, ">&STDOUT";
     use warnings;
     open STDOUT, ">tgA1.txt";
-    Test::STDmaker->fgenerate('Test::STDmaker::tgA1', { output=>'verify', run=>1, verbose=>1});
+    Test::STDmaker->fgenerate('t::Test::STDmaker::tgA1', { output=>'verify', run=>1, verbose=>1});
     close STDOUT;
     open STDOUT, ">&SAVEOUT";
     
@@ -234,66 +243,58 @@ $T->demo(
     # Also the script name is absolute which is site dependent.
     # Take it out of the comparision.
     #
-    $test_results = $T->fin('tgA1.txt');
+    $test_results = $fu->fin('tgA1.txt');
     $test_results =~ s/.*?1..9/1..9/; 
     $test_results =~ s/------.*?\n(\s*\()/\n $1/s;
-    $T->fout('tgA1.txt',$test_results);; # execution
+    $fu->fout('tgA1.txt',$test_results);; # execution
 
-$T->demo(   
-"\$T\-\>scrub_test_file\(\$T\-\>scrub_file_line\(\$test_results\)\)", # typed in command           
-$T->scrub_test_file($T->scrub_file_line($test_results))); # execution
-
-
-$T->demo(   
-"\$T\-\>fin\(\'tgC0\.pm\'\)", # typed in command           
-$T->fin('tgC0.pm')); # execution
+demo( "\$s\-\>scrub_probe\(\$s\-\>scrub_test_file\(\$s\-\>scrub_file_line\(\$test_results\)\)\)", # typed in command           
+      $s->scrub_probe($s->scrub_test_file($s->scrub_file_line($test_results)))); # execution
 
 
-$T->demo(   
-"\ \ \ \ copy\ \'tgC0\.pm\'\,\ \'tgC1\.pm\'\;\
-\ \ \ \ Test\:\:STDmaker\-\>fgenerate\(\'Test\:\:STDmaker\:\:tgC1\'\,\ \{fspec_out\=\>\'os2\'\,\ \ output\=\>\'STD\'\}\)\;"); # typed in command           
-    copy 'tgC0.pm', 'tgC1.pm';
-    Test::STDmaker->fgenerate('Test::STDmaker::tgC1', {fspec_out=>'os2',  output=>'STD'});; # execution
-
-$T->demo(   
-"\$T\-\>scrub_date_version\(\$T\-\>fin\(\'tgC1\.pm\'\)\)", # typed in command           
-$T->scrub_date_version($T->fin('tgC1.pm'))); # execution
+demo( "\$fu\-\>fin\(\'tgC0\.pm\'\)", # typed in command           
+      $fu->fin('tgC0.pm')); # execution
 
 
-$T->demo(   
-"\ \ \ \ sub\ __warn__\ \
-\ \ \ \ \{\ \
-\ \ \ \ \ \ \ my\ \(\$text\)\ \=\ \@_\;\
-\ \ \ \ \ \ \ return\ \$text\ \=\~\ \/STDOUT\/\;\
-\ \ \ \ \ \ \ CORE\:\:warn\(\ \$text\ \)\;\
-\ \ \ \ \}\;\
-\
-\ \ \ \ \#\#\#\#\#\
+demo( "\ \ \ \ copy\ \'tgC0\.pm\'\,\ \'tgC1\.pm\'\;\
+\ \ \ \ Test\:\:STDmaker\-\>fgenerate\(\'t\:\:Test\:\:STDmaker\:\:tgC1\'\,\ \{fspec_out\=\>\'os2\'\,\ \ output\=\>\'STD\'\}\)\;"); # typed in command           
+          copy 'tgC0.pm', 'tgC1.pm';
+    Test::STDmaker->fgenerate('t::Test::STDmaker::tgC1', {fspec_out=>'os2',  output=>'STD'});; # execution
+
+demo( "\$s\-\>scrub_date_version\(\$fu\-\>fin\(\'tgC1\.pm\'\)\)", # typed in command           
+      $s->scrub_date_version($fu->fin('tgC1.pm'))); # execution
+
+
+demo( "\ \ \ \ \#\#\#\#\#\
 \ \ \ \ \#\ Make\ sure\ there\ is\ no\ residue\ outputs\ hanging\
 \ \ \ \ \#\ around\ from\ the\ last\ test\ series\.\
 \ \ \ \ \#\
 \ \ \ \ \@outputs\ \=\ bsd_glob\(\ \'tg\*1\.\*\'\ \)\;\
 \ \ \ \ unlink\ \@outputs\;\
-\ \ \ \ \@outputs\ \=\ bsd_glob\(\ \'tg\*1\-STD\.pm\'\)\;\
-\ \ \ \ unlink\ \@outputs\;"); # typed in command           
-    sub __warn__ 
-    { 
-       my ($text) = @_;
-       return $text =~ /STDOUT/;
-       CORE::warn( $text );
-    };
-
-    #####
+\ \ \ \ tech_config\(\ \'Test\.TESTERR\'\,\ \$restore_testerr\)\;\ \ \ \
+\
+\
+\ \ \ \ sub\ __warn__\ \
+\ \ \ \ \{\ \
+\ \ \ \ \ \ \ my\ \(\$text\)\ \=\ \@_\;\
+\ \ \ \ \ \ \ return\ \$text\ \=\~\ \/STDOUT\/\;\
+\ \ \ \ \ \ \ CORE\:\:warn\(\ \$text\ \)\;\
+\ \ \ \ \}\;"); # typed in command           
+          #####
     # Make sure there is no residue outputs hanging
     # around from the last test series.
     #
     @outputs = bsd_glob( 'tg*1.*' );
     unlink @outputs;
-    @outputs = bsd_glob( 'tg*1-STD.pm');
-    unlink @outputs;; # execution
+    tech_config( 'Test.TESTERR', $restore_testerr);   
 
 
-$T->finish();
+    sub __warn__ 
+    { 
+       my ($text) = @_;
+       return $text =~ /STDOUT/;
+       CORE::warn( $text );
+    };; # execution
 
 
 =head1 NAME

@@ -6,26 +6,29 @@ Processing Test::STDmaker::tgA1
 Running Tests
 
 E:\User\SoftwareDiamonds\installation\t\Test\STDmaker\tgA1.1..16 todo 2 5;
+# Running under perl version 5.006001 for MSWin32
+# Win32::BuildNumber 631
+# Current time local: Fri Jun 20 22:49:19 2003
+# Current time GMT:   Sat Jun 21 02:49:19 2003
+# Using Test.pm version 1.24
+# Number Storage: string
+# Test::Tech    : 1.07
+# Data::Dumper  : 2.102
+# =cut 
 # Pass test
 ok 1
 # Todo test that passes
 ok 2 # (E:\User\SoftwareDiamonds\installation\t\Test\STDmaker\tgA1.t at line 123 TODO?!)
 # Test that fails
 not ok 3
-# Test 3 got: '$VAR1 = '6';
-$VAR2 = '6';
-' (E:\User\SoftwareDiamonds\installation\t\Test\STDmaker\tgA1.t at line 137)
-#   Expected: '$VAR1 = '6';
-$VAR2 = '5';
-'
+# Test 3 got: '6' (E:\User\SoftwareDiamonds\installation\t\Test\STDmaker\tgA1.t at line 138)
+#   Expected: '7'
 # Skipped tests
 ok 4 # skip
 # Todo Test that Fails
 not ok 5
-# Test 5 got: '$VAR1 = '12';
-' (E:\User\SoftwareDiamonds\installation\t\Test\STDmaker\tgA1.t at line 153 *TODO*)
-#   Expected: '$VAR1 = '6';
-'
+# Test 5 got: '12' (E:\User\SoftwareDiamonds\installation\t\Test\STDmaker\tgA1.t at line 156 *TODO*)
+#   Expected: '6'
 # verify only
 ok 6
 # Test loop
@@ -42,10 +45,8 @@ ok 11
 ok 12
 # Failed test that skips the rest
 not ok 13
-# Test 13 got: '$VAR1 = '5';
-' (E:\User\SoftwareDiamonds\installation\t\Test\STDmaker\tgA1.t at line 206)
-#    Expected: '$VAR1 = '6';
-'
+# Test 13 got: '5' (E:\User\SoftwareDiamonds\installation\t\Test\STDmaker\tgA1.t at line 213)
+#    Expected: '6'
 # A test to skip
 # Test invalid because of previous failure.
 ok 14 # skip

@@ -3,15 +3,15 @@
 # The copyright notice and plain old documentation (POD)
 # are at the end of this file.
 #
-package  Test::STDmaker::tgA1;
+package  t::Test::STDmaker::tgA1;
 
 use strict;
 use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE );
-$VERSION = '0.01';
-$DATE = '2003/06/14';
+$VERSION = '0.02';
+$DATE = '2003/06/21';
 $FILE = __FILE__;
 
 __DATA__
@@ -30,36 +30,44 @@ Verify: tgA1.t^
 
  T: 0^
 
+ C: 
+    #########
+    # For "TEST" 1.24 or greater that have separate std err output,
+    # redirect the TESTERR to STDOUT
+    #
+    tech_config( 'Test.TESTERR', \*STDOUT );   
+^  
+
  N: Pass test^
  R: L<Test::STDmaker::tg1/capability-A [1]>^
  C: my $x = 2^
  C: my $y = 3^
  A: $x + $y^
-SE: '5'^
+SE: 5^
 
  N: Todo test that passes^
  U: xy feature^
- A: ($x+$y,$y-$x)^
- E: '5','1'^
+ A: $y-$x^
+ E: 1^
 
  R: 
     L<Test::STDmaker::tg1/capability-A [2]>
     L<Test::STDmaker::tg1/capability-B [1]>
  ^
  N: Test that fails^
- A: ($x+4,$x*$y)^
- E: '6','5'^
+ A: $x+4^
+ E: 7^
 
  N: Skipped tests^
  S: 1^
  A: $x*$y*2^
- E: '6'^
+ E: 6^
 
  N: Todo Test that Fails^
  U: zyw feature^
  S: 0^
  A: $x*$y*2^
- E: '6'^
+ E: 6^
 
  N: demo only^
 DO: ^
@@ -93,23 +101,23 @@ C:
  N: Failed test that skips the rest^
  R: L<Test::STDmaker::tg1/capability-B [2]>^
  A: $x + $y^
-SE: '6'^
+SE: 6^
 
  N: A test to skip^
  A: $x + $y + $x^
- E: '9'^
+ E: 9^
 
  N: A not skip to skip^
  S: 0^
  R: L<Test::STDmaker::tg1/capability-B [3]>^
  A: $x + $y + $x + $y^
- E: '10'^
+ E: 10^
 
  N: A skip to skip^
  S: 1^
  R: L<Test::STDmaker::tg1/capability-B [3]>^
  A: $x + $y + $x + $y + $x^
- E: '10'^
+ E: 10^
 
 See_Also: 
  L<Test::STDmaker::tg1>

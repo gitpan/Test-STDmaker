@@ -3,13 +3,13 @@ Title Page
 
      for
 
-     Software Test Scripts, Demo Scripts and Software Test Description (STD) Automation
+     Test::STDmaker - Test Scripts, Demo Scripts and Software Test Description (STD) Automation
 
-     Revision: C
+     Revision: A
 
-     Version: 0.01
+     Version: 0.02
 
-     Date: 2003/06/14
+     Date: 2003/06/21
 
      Prepared for: General Public 
 
@@ -40,20 +40,55 @@ Title Page
 
     These features are established by the referenced documents.
 
-    The "fgenerate" method provides the following capabilities:
+    The system is the Perl programming language software. As established by
+    the Perl referenced documents, program modules, such the
+    "Test::STDmaker" module, extend the Perl language.
+
+    The input to "Test::STDmaker" is the __DATA__ section of Software Test
+    Description (STD) program module. The __DATA__ section must contain STD
+    forms text database in the DataPort::FileType::DataDB format. The STD
+    program modules should reside in a 't' subtree whose root is the same as
+    the 'lib' subtree.
+
+    For example,
+
+     root_dir   
+       lib
+         MyTopLevel
+           MyUnitUnderTest.pm  # code module
+       t
+         MyTopLevel
+           MyUnitUnderTest.pm  # std module
+
+    When "Test::STDmaker" searches for a STD program module, it looks for it
+    first under all the subtrees in @INC with the last directory removed.
+    This means the package name must start with "t::". Thus the program
+    module name for the Unit Under Test (UUT) and the UUT STD program module
+    are always different.
+
+    Use the "tg.pl" (test generate) cover script for Test::STDmaker to
+    process a STD database module as follows:
+
+      tg t::MyTopLevel::MyUnitUnderTest
+      perl -d root_dir/t/MyTopLevel/MyUnitUnderTest.t
+      perl -d root_dir/t/MyTopLevel/MyUnitUnderTest.d
+
+    Using the data in the database, the "Test::STDmaker" module provides the
+    following:
 
     1   Automate Perl related programming needed to create a test script
         resulting in reduction of time and cost.
 
     2   Translate a short hand Software Test Description (STD) file into a
-        Perl test script that eventually makes use of the Test module.
+        Perl test script that eventually makes use of the "Test" module via
+        added capabilities of the "Test::Tech module.
 
-    3   Translate the sort hand STD data file into a Perl test script that
+    3   Translate the sort hand STD data file into a Perl demo script that
         demonstrates the features of the the module under test.
 
-    4   Provide in a the POD of a STD file information required by a
-        Military/Federal Government Software Test Description (STD) document
-        that may easily be index and accessed by automated Test software.
+    4   Replace the POD of a the STD file with the __DATA__ formDB text
+        database, information required by a US Department of Defense (DOD)
+        Software Test Description (STD) Data Item Description (DID).
 
     5   Automate generation of test information required by (STD2167A) from
         the STD file making it economical to provide this information for
@@ -61,9 +96,27 @@ Title Page
         pushing commercial projects more and more toward using 2167
         nomenclature and providing STD2167A information.
 
+    See the Test::STDmaker POD for further detail on the text database
+    fields and the processing.
+
+    The "Test::STDmaker" program module is a high level use infterface
+    (functional interface) program module in the US DOD STD2167A bundle. The
+    dependency of the program modules in the US DOD STD2167A bundle is as
+    follows:
+
+     File::FileUtil 
+       Test::STD::Scrub
+         Test::Tech
+            DataPort::FileType::FormDB DataPort::DataFile Test::STD::STDutil
+                Test::STDmaker ExtUtils::SVDmaker
+
+    Note the File::FileUtil, Test::STD::STDutil Test::STD::Scrub program
+    modules breaks up the Test::TestUtil program module and Test::TestUtil
+    has disappeared.
+
   1.3 Document overview.
 
-    This document releases Test::STDmaker version 0.01 providing description
+    This document releases Test::STDmaker version 0.02 providing description
     of the inventory, installation instructions and other information
     necessary to utilize and track this release.
 
@@ -77,8 +130,8 @@ Title Page
 
     This document releases the file found at the following repository:
 
-       http://www.softwarediamonds/packages/Test-STDmaker-0.01
-       http://www.perl.com/CPAN-local/authors/id/S/SO/SOFTDIA/Test-STDmaker-0.01
+       http://www.softwarediamonds/packages/Test-STDmaker-0.02
+       http://www.perl.com/CPAN-local/authors/id/S/SO/SOFTDIA/Test-STDmaker-0.02
 
   3.1.2 Copyright.
 
@@ -131,58 +184,94 @@ Title Page
 
      file                                                         version date       comment
      ------------------------------------------------------------ ------- ---------- ------------------------
-     lib/Docs/Site_SVD/Test_STDmaker.pm                           0.01    2003/06/14 revised 0.02
-     MANIFEST                                                     0.01    2003/06/14 generated, replaces 0.02
-     Makefile.PL                                                  0.01    2003/06/14 generated, replaces 0.02
-     README                                                       0.01    2003/06/14 generated, replaces 0.02
-     lib/Test/STDmaker.pm                                         1.04    2003/06/14 revised 1.03
-     lib/Test/STDType/Demo.pm                                     1.03    2003/06/14 revised 1.02
-     lib/Test/STDType/STD.pm                                      1.03    2003/06/14 revised 1.02
-     lib/Test/STDType/Verify.pm                                   1.04    2003/06/14 revised 1.03
-     lib/Test/STD/Check.pm                                        1.04    2003/06/14 revised 1.03
-     lib/Test/STD/FileGen.pm                                      1.03    2003/06/14 revised 1.02
-     lib/Test/STD/STD2167.pm                                      1.03    2003/06/14 revised 1.02
-     lib/Test/STD/STDgen.pm                                       1.02    2003/06/14 new
-     t/Test/STDmaker/FileGenI.pm                                  1.02    2003/06/14 new
-     t/Test/STDmaker/STDmaker.d                                   0.03    2003/06/14 revised 0.02
-     t/Test/STDmaker/STDmaker.pm                                  0.01    2003/06/14 new
-     t/Test/STDmaker/STDmaker.t                                   0.03    2003/06/14 revised 0.02
-     t/Test/STDmaker/tg0.pm                                       0.02    2003/06/14 revised 0.01
-     t/Test/STDmaker/tg2.pm                                       0.01    2003/06/14 new
-     t/Test/STDmaker/tgA0.pm                                      0.01    2003/06/14 new
-     t/Test/STDmaker/tgA1.pm                                      0.01    2003/06/14 new
-     t/Test/STDmaker/tgA2.d                                       0.01    2003/06/03 unchanged
-     t/Test/STDmaker/tgA2.pm                                      0.01    2003/06/14 new
-     t/Test/STDmaker/tgA2A.txt                                    0.02    2003/06/05 unchanged
-     t/Test/STDmaker/tgA2B.txt                                    0.02    2003/06/05 unchanged
-     t/Test/STDmaker/tgA2C.txt                                    0.03    2003/06/14 revised 0.02
+     lib/Docs/Site_SVD/Test_STDmaker.pm                           0.02    2003/06/21 revised 0.01
+     MANIFEST                                                     0.02    2003/06/21 generated, replaces 0.01
+     Makefile.PL                                                  0.02    2003/06/21 generated, replaces 0.01
+     README                                                       0.02    2003/06/21 generated, replaces 0.01
+     lib/Test/STDmaker.pm                                         1.05    2003/06/21 revised 1.04
+     lib/Test/STDType/Demo.pm                                     1.04    2003/06/21 revised 1.03
+     lib/Test/STDType/STD.pm                                      1.04    2003/06/21 revised 1.03
+     lib/Test/STDType/Verify.pm                                   1.05    2003/06/21 revised 1.04
+     lib/Test/STD/Check.pm                                        1.05    2003/06/21 revised 1.04
+     lib/Test/STD/FileGen.pm                                      1.04    2003/06/21 revised 1.03
+     lib/Test/STD/PerlSTD.pm                                      1.07    2003/06/21 new
+     lib/Test/STD/Scrub.pm                                        1.07    2003/06/21 new
+     lib/Test/STD/STD2167.pm                                      1.03    2003/06/14 unchanged
+     lib/Test/STD/STDgen.pm                                       1.02    2003/06/14 unchanged
+     lib/Test/STD/STDutil.pm                                      1.07    2003/06/21 new
+     t/Test/STDmaker/FileGenI.pm                                  1.02    2003/06/14 unchanged
+     t/Test/STDmaker/STDmaker.d                                   0.04    2003/06/21 revised 0.03
+     t/Test/STDmaker/STDmaker.pm                                  0.02    2003/06/21 revised 0.01
+     t/Test/STDmaker/STDmaker.t                                   0.04    2003/06/21 revised 0.03
+     t/Test/STDmaker/tg0.pm                                       0.02    2003/06/14 unchanged
+     t/Test/STDmaker/tg2.pm                                       0.02    2003/06/21 revised 0.01
+     t/Test/STDmaker/tgA0.pm                                      0.02    2003/06/21 revised 0.01
+     t/Test/STDmaker/tgA1.pm                                      0.02    2003/06/21 revised 0.01
+     t/Test/STDmaker/tgA2.pm                                      0.02    2003/06/21 revised 0.01
+     t/Test/STDmaker/tgA2A.txt                                    0.03    2003/06/21 revised 0.02
+     t/Test/STDmaker/tgA2B.txt                                    0.03    2003/06/21 revised 0.02
+     t/Test/STDmaker/tgA2C.txt                                    0.04    2003/06/21 revised 0.03
      t/Test/STDmaker/tgA2D.txt                                    0.02    2003/06/05 unchanged
-     t/Test/STDmaker/tgB0.pm                                      0.01    2003/06/14 new
-     t/Test/STDmaker/tgB1.pm                                      0.01    2003/06/14 new
-     t/Test/STDmaker/tgB2.pm                                      0.01    2003/06/14 new
-     t/Test/STDmaker/tgC0.pm                                      0.01    2003/06/14 new
-     t/Test/STDmaker/tgC1.pm                                      0.01    2003/06/14 new
-     t/Test/STDmaker/tgC2.pm                                      0.01    2003/06/14 new
-     bin/tg.pl                                                    1.03    2003/06/14 revised 1.02
+     t/Test/STDmaker/tgB0n.pm                                     0.01    2003/06/21 new
+     t/Test/STDmaker/tgB0s.pm                                     0.01    2003/06/21 new
+     t/Test/STDmaker/tgB1.pm                                      0.02    2003/06/21 revised 0.01
+     t/Test/STDmaker/tgB2n.pm                                     0.01    2003/06/21 new
+     t/Test/STDmaker/tgB2n.txt                                    0.02    2003/06/21 new
+     t/Test/STDmaker/tgB2s.pm                                     0.01    2003/06/21 new
+     t/Test/STDmaker/tgB2s.txt                                    0.02    2003/06/21 new
+     t/Test/STDmaker/tgC0.pm                                      0.02    2003/06/21 revised 0.01
+     t/Test/STDmaker/tgC1.pm                                      0.02    2003/06/21 revised 0.01
+     t/Test/STDmaker/tgC2.pm                                      0.02    2003/06/21 revised 0.01
+     t/Test/STDmaker/lib/Test.pm                                  1.24    2003/06/21 new
+     t/Test/STDmaker/lib/Data/Dumper.pm                           0.02    2003/06/21 new
+     bin/tg.pl                                                    1.03    2003/06/14 unchanged
 
   3.3 Changes
 
     Changes are as follows:
 
-    *   Low level subroutines are broken out as separate distribution
-        modules: Test::TestUtil Test::Tech DataPort::FileType::FormDB
-        DataPort::DataFile
+    Replaced using Test::TestUtil with File::FileUtil, Test::STD::Scrub,
+    Test::STD::STDutil
 
-    *   The STD::STDgen was renamed Test::STDmaker to comply with CPAN
-        directives to use existing top levels
+    Added tests to deal with the fact that Data::Dumper produces different
+    results on different Perls
 
-    The file structure from release 0.02 was restructured as follows:
+    Added "Test" and "Data::Dumper" modules to the t directory so there are
+    no surprises because of Test versions.
 
-     rmtree 'lib\\Datacop';
-      rmtree 'lib\\SVD';
-     rmtree 'lib\\STD';
-     rmtree 't\\DataCop';
-     unlink 'lib\\Test\\STDtype\\Clean.pm';
+    Changed the generated test script to use subroutine interface of
+    "Test::Tech" The object interface was removed.
+
+    Previous changes are as follows:
+
+    STD::STDgen 0.01
+        This is the original release. There are no previous releases to
+        change.
+
+    STD::STDgen 0.02
+        t/STD/tgA0.std changes
+            Added test for DO: field
+
+            Added test for VO: field
+
+            Added a loop around two A: and E: fields.
+
+        STD/TestGen.pm changes
+            Added requirements for DO: VO: and looping a test
+
+        STD/Check.pm changes
+            Added and revise code to make DO: VO: and looping work
+
+        STD/Verify.pm changes
+            Added and revise code to make DO: VO: and looping work
+
+    Test::STDmaker 0.01
+        *   Low level subroutines are broken out as separate distribution
+            modules: Test::TestUtil Test::Tech DataPort::FileType::FormDB
+            DataPort::DataFile
+
+        *   The STD::STDgen was renamed Test::STDmaker to comply with CPAN
+            directives to use existing top levels whenever possible.
 
   3.4 Adaptation data.
 
@@ -216,8 +305,8 @@ Title Page
 
     The distribution file is at the following respositories:
 
-       http://www.softwarediamonds/packages/Test-STDmaker-0.01
-       http://www.perl.com/CPAN-local/authors/id/S/SO/SOFTDIA/Test-STDmaker-0.01
+       http://www.softwarediamonds/packages/Test-STDmaker-0.02
+       http://www.perl.com/CPAN-local/authors/id/S/SO/SOFTDIA/Test-STDmaker-0.02
 
   3.6.1 Installation support.
 
@@ -237,7 +326,8 @@ Title Page
 
     The open issues are as follows:
 
-    *   The STD2167 option is commented out.
+    *   The STD2167 option, for a full singe STD, instead of a detailed STD
+        with a general STD, is commented out.
 
     *   There is no requirement tracebility to a particular line in a file
         containing the expected results
@@ -250,7 +340,8 @@ Title Page
         end-user and stated for the point of view of the end-user. Test
         coverage is not an issue. However, when design requirements are
         added to the mix, test coverage of the design requirements becomes
-        important.
+        important. Test coverage means as a minimum, the tests causes the
+        execution of all paths in the software under test.
 
 4.0 NOTES
     The following are useful acronyms:
@@ -261,9 +352,6 @@ Title Page
 
     .t  extension for a Perl test script file
 
-    .svd
-        extension for a Software Vesion Description database file
-
     DID Data Item Description
 
     POD Plain Old Documentation
@@ -273,6 +361,59 @@ Title Page
     SVD Software Version Description
 
 2.0 SEE ALSO
-    Test Test::Harness Test::STDmaker DataPort::FileType::FormDB
-    Docs::US_DOD::STD2167A Docs::US_DOD::STD490A Docs::US_DOD::STD
+    Modules with end-user functional interfaces relating to US DOD 2167A
+    automation are as follows:
 
+    Test::STDmaker
+    ExtUtils::SVDmaker
+    DataPort::FileType::FormDB
+    DataPort::DataFile
+    Test::Tech
+    Test
+    Data::Dumper
+    Test::STD::Scrub
+    Test::STD::STDutil
+    File::FileUtil
+    The design modules for Test::STDmaker have no other conceivable use then
+    to support the Test::STDmaker functional interface. The Test::STDmaker
+    design module are as follows:
+
+    Test::STD::Check
+    Test::STD::FileGen
+    Test::STD::STD2167
+    Test::STD::STDgen
+    Test::STDtype::Demo
+    Test::STDtype::STD
+    Test::STDtype::Verify
+    Some US DOD 2167A Software Development Standard, DIDs and other related
+    documents that complement the US DOD 2167A automation are as follows:
+
+    US DOD Software Development Standard
+    US DOD Specification Practices
+    Computer Operation Manual (COM) DID
+    Computer Programming Manual (CPM) DID)
+    Computer Resources Integrated Support Document (CRISD) DID
+    Computer System Operator's Manual (CSOM) DID
+    Database Design Description (DBDD) DID
+    Engineering Change Proposal (ECP) DID
+    Firmware support Manual (FSM) DID
+    Interface Design Document (IDD) DID
+    Interface Requirements Specification (IRS) DID
+    Operation Concept Description (OCD) DID
+    Specification Change Notice (SCN) DID
+    Software Design Specification (SDD) DID
+    Software Development Plan (SDP) DID
+    Software Input and Output Manual (SIOM) DID
+    Software Installation Plan (SIP) DID
+    Software Programmer's Manual (SPM) DID
+    Software Product Specification (SPS) DID
+    Software Requirements Specification (SRS) DID
+    System or Segment Design Document (SSDD) DID
+    System or Subsystem Specification (SSS) DID
+    Software Test Description (STD) DID
+    Software Test Plan (STP) DID
+    Software Test Report (STR) DID
+    Software Transition Plan (STrP) DID
+    Software User Manual (SUM) DID
+    Software Version Description (SVD) DID
+    Version Description Document (VDD) DID

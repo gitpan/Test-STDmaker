@@ -1,17 +1,17 @@
 
 ####
 # 
-# The module Build::SVDgen generated this file from the contents of
+# The module ExtUtils::STDmaker generated this file from the contents of
 #
-# E:\User\SoftwareDiamonds\installation\lib/Docs/Site_SVD/Test_STDmaker.pm 
+# Docs::Site_SVD::Test_STDmaker 
 #
 # Don't edit this file, edit instead
 #
-# E:\User\SoftwareDiamonds\installation\lib/Docs/Site_SVD/Test_STDmaker.pm
+# Docs::Site_SVD::Test_STDmaker
 #
 #	ANY CHANGES MADE HERE WILL BE LOST
 #
-#       the next time Build::SVDgen generates it.
+#       the next time ExtUtils::STDmaker generates it.
 #
 #
 
@@ -29,19 +29,22 @@ else {
 WriteMakefile(
     NAME => 'Test::STDmaker',
     DISTNAME => 'Test-STDmaker',
-    VERSION  => '0.01',
+    VERSION  => '0.02',
     dist     => {COMPRESS => 'gzip',
                 'gz' => 'gz'},
     test     => {TESTS => $tests},
     PREREQ_PM => {'DataPort::DataFile' => 0,
 'DataPort::FileType::FormDB' => 0,
-'Test::TestUtil' => 0,
+'File::FileUtil' => 1.09,
+'Test::STD::Scrub' => 0,
+'Test::STD::STDutil' => 0,
 'Test::Tech' => 0,},
     EXE_FILES => $exe,
 
     ($] >= 5.005 ?     
         (AUTHOR    => 'SoftwareDiamonds.com E<lt>support@SoftwareDiamonds.comE<gt>',
-        ABSTRACT  => 'Generates Software Test Description (STD) documents, test scripts and demo sripts from a test database file.', ) : ()),
+        ABSTRACT  => 'Generates Software Test Description (STD) documents, test scripts and 
+demo scripts from a text FormDB database file.', ) : ()),
 );
 
 

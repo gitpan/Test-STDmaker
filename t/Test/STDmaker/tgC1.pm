@@ -3,7 +3,7 @@
 # The copyright notice and plain old documentation (POD)
 # are at the end of this file.
 #
-package  Test::STDmaker::tgC1;
+package  t::Test::STDmaker::tgC1;
 
 use strict;
 use warnings;
@@ -40,7 +40,7 @@ $FILE = __FILE__;
 
  Version: 0.01
 
- Date: 2003/06/14
+ Date: 2003/06/21
 
  Prepared for: General Public 
 
@@ -51,12 +51,13 @@ $FILE = __FILE__;
 =head1 SCOPE
 
 This detail STD and the 
-L<General Perl Program Module (PM) STD|Test::STD>
+L<General Perl Program Module (PM) STD|Test::STD::PerlSTD>
 establishes the tests to verify the
 requirements of Perl Program Module (PM) L<Test::STDmaker::tg1|Test::STDmaker::tg1>
 
-The format of this STD is a tailored L<2167A STD DID|US_DOD::STD>.
-in accordance with L<Tailor02|Test::Template::Tailor02>.
+The format of this STD is a tailored L<2167A STD DID|Docs::US_DOD::STD>.
+in accordance with 
+L<Detail STD Format|Test::STDmaker/Detail STD Format>.
 
 #######
 #  
@@ -72,6 +73,11 @@ in accordance with L<Tailor02|Test::Template::Tailor02>.
 
 =head1 TEST DESCRIPTIONS
 
+The test descriptions uses a legend to
+identify different aspects of a test description
+in accordance with
+L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description Fields>.
+
 =head2 Test Plan
 
  T: 2^
@@ -82,13 +88,13 @@ in accordance with L<Tailor02|Test::Template::Tailor02>.
   C: my $x = 2^
   C: my $y = 3^
   A: $x + $y^
- SE: '5'^
+ SE: 5^
  ok: 1^
 
 =head2 ok: 2
 
-  A: ($x+$y,$y-$x)^
-  E: '5','1'^
+  A: $y-$x^
+  E: 1^
  ok: 2^
 
 
@@ -103,12 +109,12 @@ in accordance with L<Tailor02|Test::Template::Tailor02>.
 
   Requirement                                                      Test
  ---------------------------------------------------------------- ----------------------------------------------------------------
- L<Test::STDmaker::tg1/capability-A [1]>                          L<Test::STDmaker::tgC1/ok: 1>
+ L<Test::STDmaker::tg1/capability-A [1]>                          L<t::Test::STDmaker::tgC1/ok: 1>
 
 
   Test                                                             Requirement
  ---------------------------------------------------------------- ----------------------------------------------------------------
- L<Test::STDmaker::tgC1/ok: 1>                                    L<Test::STDmaker::tg1/capability-A [1]>
+ L<t::Test::STDmaker::tgC1/ok: 1>                                 L<Test::STDmaker::tg1/capability-A [1]>
 
 
 =cut
@@ -174,11 +180,11 @@ Verify: ccc\tg1B.t^
  C: my $x = 2^
  C: my $y = 3^
  A: $x + $y^
-SE: '5'^
+SE: 5^
 ok: 1^
 
- A: ($x+$y,$y-$x)^
- E: '5','1'^
+ A: $y-$x^
+ E: 1^
 ok: 2^
 
 

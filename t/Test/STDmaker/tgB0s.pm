@@ -3,14 +3,14 @@
 # The copyright notice and plain old documentation (POD)
 # are at the end of this file.
 #
-package  t::Test::STDmaker::tgC1;
+package  t::Test::STDmaker::tgB1;
 
 use strict;
 use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE );
-$VERSION = '0.02';
+$VERSION = '0.01';
 $DATE = '2003/06/21';
 $FILE = __FILE__;
 
@@ -38,12 +38,21 @@ Detail_Template: ^
 STD2167_Template: ^
 Version: 0.01^
 Classification: None^
-Temp: xx/temp.pl^
-Demo: yy/zz/tg1B.d^
-Verify: ccc/tg1B.t^
+Temp: temp.pl^
+Demo: tgB1.d^
+Verify: tgB1.t^
 
 
  T: 2^
+
+ C: 
+    #########
+    # For "TEST" 1.24 or greater that have separate std err output,
+    # redirect the TESTERR to STDOUT
+    #
+    tech_config( 'Test.TESTERR', \*STDOUT );   
+^  
+
 
  R: L<Test::STDmaker::tg1/capability-A [1]>^
  C: my $x = 2^
@@ -52,8 +61,8 @@ Verify: ccc/tg1B.t^
 SE: 5^
 ok: 1^
 
- A: $y-$x^
- E: 1^
+ A: [($x+$y,$y-$x)]^
+ E: ['\'5\',\'2\'']^
 ok: 2^
 
 

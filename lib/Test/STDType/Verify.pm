@@ -11,12 +11,11 @@ use warnings;
 use warnings::register;
 
 use File::Spec;
-use Test::TestUtil;
 use Test::Harness;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.04';
-$DATE = '2003/06/14';
+$VERSION = '1.05';
+$DATE = '2003/06/21';
 
 ########
 # Inherit Test::STD::FileGen
@@ -34,57 +33,10 @@ sub start
     my $module = ref($self);
     my $module_db = $self->{$module};
 
-    my ($VERSION, $DATE) = ('$VERSION', '$DATE');
-
     $module_db->{'requirement'} = '';
     $module_db->{test_name} = '';
 
-    ######
-    # Build reference files
-    #
-    my (undef,undef,$test_script) = File::Spec->splitpath( $self->{Verify} );
-    my $uut = Test::TestUtil->fspec2pm($self->{File_Spec},  $self->{UUT}  );
 
-
-    << "EOF";
-#!perl
-#
-#
-use 5.001;
-use strict;
-use warnings;
-use warnings::register;
-
-use vars qw($VERSION $DATE);
-$VERSION = '0.01';   # automatically generated file
-$DATE = '$self->{'Date'}';
-
-use Test::Tech;
-use Getopt::Long;
-use Cwd;
-use File::Spec;
-
-##### Test Script ####
-#
-# Name: $test_script
-#
-# UUT: $uut
-#
-# The module Test::STDmaker generated this test script from the contents of
-#
-# $self->{std_pm};
-#
-# Don't edit this test script file, edit instead
-#
-# $self->{std_pm};
-#
-#	ANY CHANGES MADE HERE TO THIS SCRIPT FILE WILL BE LOST
-#
-#       the next time Test::STDmaker generates this script file.
-#
-#
-
-EOF
 
 }
 
@@ -96,9 +48,7 @@ sub finish
     ########
     #  End the test
     #
-    my $data =  "\n\$T->finish();\n\n";
-    $data .= $self->podgen( ); 
-    $data;
+    $self->podgen( ); 
 }
 
 
@@ -150,7 +100,7 @@ sub T
     # use in variables without have to backslash escape the dollar sign
     # every which way in the below << here statement
     #   
-    my ($test_log,$T,$work_dir,$lib_dir) = ('$test_log','$T','$work_dir','$lib_dir');
+    my ($test_log,$work_dir,$lib_dir) = ('$test_log','$work_dir','$lib_dir');
     my ($vol, $dirs, $__restore_dir__) = ('$vol', '$dirs', '$__restore_dir__');
     $@='$@';  # cannot put globals under a my
 
@@ -159,8 +109,55 @@ sub T
     my $plan = "tests => $tests";
     $plan .= ", todo => [$todo]" if $todo;
     
+    my ($VERSION, $DATE, $FILE) = ('$VERSION', '$DATE', '$FILE');
+
+    ######
+    # Build reference files
+    #
+    my (undef,undef,$test_script) = File::Spec->splitpath( $self->{Verify} );
+    my $uut = File::FileUtil->fspec2pm($self->{File_Spec},  $self->{UUT}  );
+
 
     << "EOF";
+#!perl
+#
+#
+use 5.001;
+use strict;
+use warnings;
+use warnings::register;
+
+use vars qw($VERSION $DATE $FILE);
+$VERSION = '0.01';   # automatically generated file
+$DATE = '$self->{'Date'}';
+$FILE = __FILE__;
+
+use Test::Tech;
+use Getopt::Long;
+use Cwd;
+use File::Spec;
+use File::FileUtil;
+
+##### Test Script ####
+#
+# Name: $test_script
+#
+# UUT: $uut
+#
+# The module Test::STDmaker generated this test script from the contents of
+#
+# $self->{std_pm};
+#
+# Don't edit this test script file, edit instead
+#
+# $self->{std_pm};
+#
+#	ANY CHANGES MADE HERE TO THIS SCRIPT FILE WILL BE LOST
+#
+#       the next time Test::STDmaker generates this script file.
+#
+#
+
 ######
 #
 # ${command}:
@@ -168,7 +165,22 @@ sub T
 # use a BEGIN block so we print our plan before Module Under Test is loaded
 #
 BEGIN { 
-   use vars qw( $T $__restore_dir__ \@__restore_inc__);
+   use vars qw( $__restore_dir__ \@__restore_inc__);
+
+   ########
+   # Working directory is that of the script file
+   #
+   $__restore_dir__ = cwd();
+   my ($vol, $dirs, undef) = File::Spec->splitpath( __FILE__ );
+   chdir $vol if $vol;
+   chdir $dirs if $dirs;
+
+   #######
+   # Add the library of the unit under test (UUT) to \@INC
+   #
+   \@__restore_inc__ = File::FileUtil->test_lib2inc();
+
+   unshift \@INC, File::Spec->catdir( cwd(), 'lib' ); 
 
    ##########
    # Pick up a output redirection file and tests to skip
@@ -178,30 +190,16 @@ BEGIN {
    GetOptions('log=s' => \\$test_log);
 
    ########
-   # Start a test with a new tech
-   #
-   $T = new Test::Tech( $test_log );
-
-   ########
    # Create the test plan by supplying the number of tests
    # and the todo tests
    #
-   $T->work_breakdown($plan);
-
-   ########
-   # Working directory is that of the script file
-   #
-   $__restore_dir__ = cwd();
-   my ($vol, $dirs, undef) = File::Spec->splitpath( \$0 );
-   chdir $vol if $vol;
-   chdir $dirs if $dirs;
-
-   #######
-   # Add the library of the unit under test (UUT) to @INC
-   #
-   \@__restore_inc__ = $T->test_lib2inc();
+   require Test::Tech;
+   Test::Tech->import( qw(plan ok skip skip_tests tech_config) );
+   plan($plan);
 
 }
+
+
 
 END {
 
@@ -332,7 +330,6 @@ sub E
        return '';
    }
 
-   my $T = '$T';
    my $msg = '';
 
    my $skip = $module_db->{skip};
@@ -352,11 +349,12 @@ sub E
        #
        if( $skip ) {
            $msg .=  << "EOF";
-$T->skip_rest() unless $T->verify(
-    $skip, # condition to skip test   
-    [$module_db->{actual}], # actual results
-    [$data],  # expected results
-    '$module_db->{test_name}');
+skip_tests( 1 ) unless skip(
+      $skip, # condition to skip test   
+      $module_db->{actual}, # actual results
+      $data,  # expected results
+      '',
+      '$module_db->{test_name}');
  
 EOF
        }
@@ -367,10 +365,11 @@ EOF
        else {
 
            $msg .=  << "EOF";
-$T->skip_rest() unless $T->test(
-    [$module_db->{actual}], # actual results
-    [$data], # expected results
-    '$module_db->{test_name}'); 
+skip_tests( 1 ) unless ok(
+      $module_db->{actual}, # actual results
+      $data, # expected results
+      '',
+      '$module_db->{test_name}'); 
 
 EOF
 
@@ -385,10 +384,11 @@ EOF
        #
        if( $skip ) {
            $msg .=  << "EOF";
-$T->verify( $skip, # condition to skip test   
-            [$module_db->{actual}], # actual results
-            [$data], # expected results
-            '$module_db->{test_name}');
+skip( $skip, # condition to skip test   
+      $module_db->{actual}, # actual results
+      $data, # expected results
+      '',
+      '$module_db->{test_name}');
 
 EOF
        }
@@ -399,9 +399,10 @@ EOF
        else {
 
            $msg .=  << "EOF";
-$T->test( [$module_db->{actual}], # actual results
-          [$data], # expected results
-          '$module_db->{test_name}');
+ok(  $module_db->{actual}, # actual results
+     $data, # expected results
+     '',
+     '$module_db->{test_name}');
 
 EOF
        }

@@ -10,14 +10,15 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.03';
-$DATE = '2003/06/14';
+$VERSION = '1.04';
+$DATE = '2003/06/21';
 
 use File::Spec;
 use Cwd;
 use DataPort::FileType::FormDB;
 use Test::STD::Check;
-
+use File::FileUtil;
+use Test::STD::STDutil;
 
 #####
 # New class that formats the input data and stores it as object data
@@ -57,12 +58,16 @@ sub load_std
     # Find the test include path
     #
     my @INC_restore = @INC;
-    @INC = Test::TestUtil->find_t_paths( );
+    unshift @INC, File::FileUtil->find_t_roots( );
  
     #####
     # load the STD program module
     #
-    return undef if Test::TestUtil->load_package( $std_pm );
+    my $error = File::FileUtil->load_package( $std_pm );
+    if( $error ) {
+        warn($error);
+        return undef;
+    }
 
     ######
     # Bring the FormDB into memory as @std_db
@@ -72,7 +77,7 @@ sub load_std
     $std_file = ${"${std_pm}::FILE"};
     use strict;
 
-    my $fh = Test::TestUtil->pm2datah( $std_pm  );
+    my $fh = File::FileUtil->pm2datah( $std_pm  );
     my $dbh = new DataPort::FileType::FormDB( file => $fh );
     return undef unless( $dbh );
     my @std_db;
@@ -87,7 +92,7 @@ sub load_std
     # Record file load stats in the object database
     #
     $self->{std_db} = \@std_db;
-    $self->{Date} = Test::TestUtil->get_date( );
+    $self->{Date} = Test::STD::STDutil->get_date( );
     $self->{Record} = $record;
     $self->{std_file} = $std_file;
     ($self->{vol}, $self->{dir}, $self->{file}) = File::Spec->splitpath( $std_file );
@@ -217,7 +222,7 @@ sub print
         #####
         # Does not work without parens around $file_out
         #
-        ($file_out) = Test::TestUtil->fspec2os( $self->{File_Spec}, $file_out );
+        ($file_out) = File::FileUtil->fspec2os( $self->{File_Spec}, $file_out );
     }
 
     ######
@@ -227,7 +232,7 @@ sub print
     my $restore_dir = cwd();
     chdir $self->{vol} if $self->{vol};
     chdir $self->{dir} if $self->{dir};
-    Test::TestUtil->fout( $file_out, $$data_out_p ) if $file_out && $data_out_p && $$data_out_p;
+    File::FileUtil->fout( $file_out, $$data_out_p ) if $file_out && $data_out_p && $$data_out_p;
     $self->{$type}->{generated_files} = [] unless $self->{$type}->{generated_files};
     push  @{$self->{$type}->{generated_files}},File::Spec->rel2abs($file_out);
     $self->{$type}->{data_out} = undef;  # do not want to send 2nd time

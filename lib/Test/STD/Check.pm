@@ -14,10 +14,10 @@ use warnings::register;
 use File::Spec;
 use vars qw($VERSION $DATE);
 use Cwd;
-use Test::TestUtil;
+use File::FileUtil;
 
-$VERSION = '1.04';
-$DATE = '2003/06/14';
+$VERSION = '1.05';
+$DATE = '2003/06/21';
 
 ########
 # Inherit STD::FileGen
@@ -61,7 +61,7 @@ sub start
 #
 use Cwd;
 use File::Spec;
-use Test::Tech;
+use Test::Tech qw(plan ok skip skip_tests tech_config);
 
 BEGIN { 
 
@@ -69,11 +69,6 @@ BEGIN {
 
    $__test__ = 0;
    %__tests__ = ();
-
-   ########
-   # Start a test with a new tech
-   #
-   $T = new Test::Tech( );
 
    ########
    # Working directory is that of the script file
@@ -159,7 +154,7 @@ sub finish
        # Change generator spec to current operating system spec
        #
        elsif( $self->{options}->{fspec_out} ) {
-           $self->{$generator} = Test::TestUtil->fspec2os( 
+           $self->{$generator} = File::FileUtil->fspec2os( 
                    $self->{File_Spec}, $self->{$generator} );
        }
        $self->{$package}->{file_out} = $self->{$generator};

@@ -12,11 +12,11 @@ use warnings::register;
 use File::Spec;
 use File::Glob ':glob';
 use File::Spec;
-use Test::TestUtil;
+use File::FileUtil;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.03';
-$DATE = '2003/06/14';
+$VERSION = '1.04';
+$DATE = '2003/06/21';
 
 
 ########
@@ -48,7 +48,7 @@ sub start
 
 
     my (undef,undef,$demo_script) = File::Spec->splitpath( $self->{Demo} );
-    my $uut = Test::TestUtil->fspec2pm($self->{File_Spec}, $self->{UUT}  );
+    my $uut = File::FileUtil->fspec2pm($self->{File_Spec}, $self->{UUT}  );
 
     << "EOF";
 #!perl
@@ -88,25 +88,12 @@ $DATE = '$self->{Date}';
 #
 # The working directory is the directory of the generated file
 #
-use vars qw($__restore_dir__ $T);
+use vars qw($__restore_dir__);
 
 BEGIN {
     use Cwd;
     use File::Spec;
-    use Test::Tech;
-    use Getopt::Long;
-
-    ##########
-    # Pick up a output redirection file and tests to skip
-    # from the command line.
-    #
-    my $test_log = '';
-    GetOptions('log=s' => \\$test_log);
- 
-    ########
-    # Start a demo with a new tech
-    #
-    $T = new Test::Tech( $test_log );
+    use Test::Tech qw(tech_config plan demo);
 
     ########
     # Working directory is that of the script file
@@ -154,9 +141,8 @@ sub finish
     ########
     #  End the test
     #
-    my $data =  "\n\$T->finish();\n\n";
-    $data .= $self->perl_podgen( ); 
-    $data;
+    my $data = $self->perl_podgen( );
+    $data
 }
 
 
@@ -196,11 +182,11 @@ sub post_print
          return undef;
      }
      
-     my ($uut_file) = Test::TestUtil->find_in_path($^O, Test::TestUtil->pm2require($uut));
+     my ($uut_file) = File::FileUtil->find_in_path($^O, File::FileUtil->pm2require($uut));
      return undef unless $uut_file && -e $uut_file;
-     my $uut_contents = Test::TestUtil->fin( $uut_file );
+     my $uut_contents = File::FileUtil->fin( $uut_file );
      $uut_contents =~ s/(\n=head\d\s+Demonstration).*?\n=/$1\n$demo\n=/si;
-     Test::TestUtil->fout( $uut_file, $uut_contents);
+     File::FileUtil->fout( $uut_file, $uut_contents);
  
      1   
 
@@ -256,9 +242,8 @@ sub C
     return '' if  $self->{$module}->{'verify_only'};
     my $datameta = quotemeta($data);
     my $msg = << "EOF";
-\$T->demo(   
-\"$datameta\"); # typed in command           
-$data; # execution
+demo( \"$datameta\"); # typed in command           
+      $data; # execution
 
 EOF
 
@@ -285,9 +270,8 @@ sub A
    if( $self->{$module}->{'skip'} ) {
 
        $msg = << "EOF";
-\$T->demo(   
-\"$datameta\", # typed in command           
-$data # execution
+demo( \"$datameta\", # typed in command           
+      $data # execution
 ) unless $self->{$module}->{'skip'}; # condition for execution                            
 
 EOF
@@ -297,9 +281,8 @@ EOF
    else {
 
        $msg = << "EOF";
-\$T->demo(   
-\"$datameta\", # typed in command           
-$data); # execution
+demo( \"$datameta\", # typed in command           
+      $data); # execution
 
 
 EOF
@@ -318,7 +301,7 @@ sub perl_podgen
     my $module = ref($self);
 
     my (undef,undef,$demo_script) = File::Spec->splitpath( $self->{'Demo'} );
-    my $uut = Test::TestUtil->fspec2pm($self->{File_Spec}, $self->{UUT});
+    my $uut = File::FileUtil->fspec2pm($self->{File_Spec}, $self->{UUT});
 
     << "EOF";
 

@@ -11,7 +11,7 @@ use warnings::register;
 
 use vars qw($VERSION);
 
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 1
 
@@ -69,17 +69,20 @@ follow on the next lines. For example,
 
  ~~~~~~ The demonstration follows ~~~~~
 
+ =>     #########
+ =>     # For "TEST" 1.24 or greater that have separate std err output,
+ =>     # redirect the TESTERR to STDOUT
+ =>     #
+ =>     tech_config( 'Test.TESTERR', \*STDOUT );
  => my $x = 2
  => my $y = 3
  => $x + $y
  '5'
 
- => ($x+$y,$y-$x)
- '5'
+ => $y-$x
  '1'
 
- => ($x+4,$x*$y)
- '6'
+ => $x+4
  '6'
 
  => $x*$y*2

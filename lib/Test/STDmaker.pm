@@ -11,11 +11,11 @@ use warnings::register;
 
 use File::Spec;
 use Cwd;
-use Test::TestUtil;
+use File::FileUtil;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.04';
-$DATE = '2003/06/14';
+$VERSION = '1.05';
+$DATE = '2003/06/21';
 
 #####
 # Gen data and write data to an output file
@@ -54,10 +54,10 @@ sub fgenerate
      ########
      # Load output generators
      #
-     my @generators = Test::TestUtil->drivers( __FILE__, 'STDtype');
+     my @generators = File::FileUtil->sub_modules( __FILE__, 'STDtype');
      my $error;
      foreach my $generator (@generators) {
-          $error = Test::TestUtil->load_package( "Test::STDtype::$generator" );
+          $error = File::FileUtil->load_package( "Test::STDtype::$generator" );
           if( $error ) {
              warn "\t$error\n";
              next;
@@ -99,7 +99,7 @@ sub fgenerate
          $self->{options}=$options;
          foreach $output_type (@output_type) {
 
-             $output_type = Test::TestUtil->is_driver( $output_type, @generators );
+             $output_type = File::FileUtil->is_module( $output_type, @generators );
              $generator = "Test::STDtype::$output_type";
 
              ######
@@ -116,7 +116,7 @@ sub fgenerate
      }
 
      foreach $output_type (@output_type) {
-         $output_type = Test::TestUtil->is_driver( $output_type, @generators );
+         $output_type = File::FileUtil->is_module( $output_type, @generators );
          $self = bless $self, "Test::STDtype::$output_type";
          $self->post_generate( ) if $self->can( 'post_generate');
      }
@@ -152,6 +152,41 @@ generated test scripts and demonstration scripts.
 It will automatically insert the output from the
 demonstration script into the POD I<-headx Demonstration>
 section of the file being tested.
+
+The input to "L<Test::STDmaker|Test::STDmaker>" is the __DATA__
+section of Software Test Description (STD)
+program module.
+The __DATA__ section must contain STD
+forms text database in the
+L<DataPort::FileType::DataDB|DataPort::FileType::DataDB> format.
+The STD program modules should reside in a 't' subtree whose root
+is the same as the 'lib' subtree.
+
+For example,
+ 
+ root_dir   
+   lib
+     MyTopLevel
+       MyUnitUnderTest.pm  # code module
+   t
+     MyTopLevel
+       MyUnitUnderTest.pm  # std module
+
+When "Test::STDmaker" searches for a STD program module,
+it looks for it first under all the subtrees in @INC
+with the last directory removed.
+This means the package name must start with "t::".
+Thus the program module name for the Unit Under
+Test (UUT) and the UUT STD program module
+are always different.
+
+Use the "tg.pl" (test generate) cover script for 
+L<Test::STDmaker|Test::STDmaker> to process a STD database
+module as follows:
+
+  tg t::MyTopLevel::MyUnitUnderTest
+  perl -d root_dir/t/MyTopLevel/MyUnitUnderTest.t
+  perl -d root_dir/t/MyTopLevel/MyUnitUnderTest.d
 
 =head2 Capabilities
 
@@ -314,8 +349,13 @@ Do not unlink temporary files.
 
 Generate a STD2167 STD POD instead of
 a Detail STD POD. 
-A STD2167 STD POD and a Detail STD POD
-are described below.
+A STD2167 STD POD is described in the
+L<STD2167 STD Format|Test::STDmaker/STD2167 STD Format>
+paragraph.
+A Detail STD POD
+is described in the
+L<Detail STD Format|Test::STDmaker/Detail STD Format>
+paragraph.
 
 =back
 
@@ -371,6 +411,7 @@ sentences and paragraphs.
 Following this tradition, the c<fgenerate> method
 detail STD is basically the FormDB described below with some
 POD =headx inserted to provide links to sections of interest.
+
 
 =head2 STD2167 STD Format
 
@@ -620,6 +661,8 @@ test code is Perl snippets that will
 be passed to the appropriate build-in,
 behind the scenes Perl subroutines.
 
+=head2 STD FormDB Documentation Fields
+
 The following database file fields are information
 needed to generate the documentation files
 and not information about the tests themselves:
@@ -711,6 +754,8 @@ The file for the L<C<Verify output>|Test::STDmaker/Verify output>
 relative to the STD PM directory.
 
 =back
+
+=head2 STD FormDB Test Description Fields
 
 The C<fgenerate> method strips
 these fields out and stores them in
@@ -1168,221 +1213,915 @@ follow on the next lines. For example,
  =>     use vars qw($loaded);
  =>     use File::Glob ':glob';
  =>     use File::Copy;
+ =>     use File::FileUtil;
+ =>     use Test::STD::Scrub;
+ =>  
+ =>     #########
+ =>     # For "TEST" 1.24 or greater that have separate std err output,
+ =>     # redirect the TESTERR to STDOUT
+ =>     #
+ =>     my $restore_testerr = tech_config( 'Test.TESTERR', \*STDOUT );   
+
+ =>     my $internal_number = tech_config('Internal_Number');
+ =>     my $fu = 'File::FileUtil';
+ =>     my $s = 'Test::STD::Scrub';
+ =>     my $tgB0_pm = ($internal_number eq 'string') ? 'tgB0s.pm' : 'tgB0n.pm';
+ =>     my $tgB2_pm = ($internal_number eq 'string') ? 'tgB2s.pm' : 'tgB2n.pm';
+ =>     my $tgB2_txt = ($internal_number eq 'string') ? 'tgB2s.txt' : 'tgB2n.txt';
 
  =>     my $test_results;
  =>     my $loaded = 0;
  =>     my @outputs;
- => my $errors = $T->load_package( 'Test::STDmaker' )
+ => my $errors = $fu->load_package( 'Test::STDmaker' )
  => $errors
  ''
 
- => $T->fin('tgA0.std')
- '
+ => $fu->fin('tgA0.pm')
+ '#!perl
+ #
+ # The copyright notice and plain old documentation (POD)
+ # are at the end of this file.
+ #
+ package  t::Test::STDmaker::tgA1;
 
- UUT: STD/tg1.pm^
+ use strict;
+ use warnings;
+ use warnings::register;
+
+ use vars qw($VERSION $DATE $FILE );
+ $VERSION = '0.01';
+ $DATE = '2003/06/14';
+ $FILE = __FILE__;
+
+ __DATA__
+
+ File_Spec: Unix^
+ UUT: Test::STDmaker::tg1^
  Revision: -^
+ Version: 0.01^
  End_User: General Public^
  Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
- SVD: None^
- Template: STD/STD001.frm^
+ STD2167_Template: ^
+ Detail_Template: ^
  Classification: None^
- Clean: tgA1.std^
  Demo: tgA1.d^
- STD: tgA1-STD.pm^
  Verify: tgA1.t^
 
   T: 0^
 
+  C: 
+     #########
+     # For "TEST" 1.24 or greater that have separate std err output,
+     # redirect the TESTERR to STDOUT
+     #
+     tech_config( 'Test.TESTERR', \*STDOUT );   
+ ^  
+
   N: Pass test^
-  R: L<STD::t::tg1/capability-A [1]>^
+  R: L<Test::STDmaker::tg1/capability-A [1]>^
   C: my $x = 2^
   C: my $y = 3^
   A: $x + $y^
- SE: '5'^
+ SE: 5^
 
   N: Todo test that passes^
   U: xy feature^
-  A: ($x+$y,$y-$x)^
-  E: '5','1'^
+  A: $y-$x^
+  E: 1^
 
   R: 
-     L<STD::t::tg1/capability-A [2]>
-     L<STD::t::tg1/Capability-B [1]>
+     L<Test::STDmaker::tg1/capability-A [2]>
+     L<Test::STDmaker::tg1/capability-B [1]>
   ^
   N: Test that fails^
-  A: ($x+4,$x*$y)^
-  E: '6','5'^
+  A: $x+4^
+  E: 7^
 
   N: Skipped tests^
   S: 1^
   A: $x*$y*2^
-  E: '6'^
+  E: 6^
 
   N: Todo Test that Fails^
   U: zyw feature^
   S: 0^
   A: $x*$y*2^
-  E: '6'^
+  E: 6^
+
+  N: demo only^
+ DO: ^
+  A: $x^
+  E: $y^
+
+  N: verify only^
+ VO: ^
+  A: $x^
+  E: $x^
+
+  N: Test loop^
+  C:
+     my @expected = ('200','201','202');
+     my $i;
+     for( $i=0; $i < 3; $i++) {
+  ^
+
+  A: $i+200^
+  R: L<Test::STDmaker::tg1/capability-C [1]>^
+  E: $expected[$i]^
+
+  A: $i + ($x * 100)^
+  R: L<Test::STDmaker::tg1/capability-B [4]>^
+  E: $expected[$i]^
+
+ C:
+     }; 
+ ^
 
   N: Failed test that skips the rest^
-  R: L<STD::t::tg1/Capability-B [2]>^
+  R: L<Test::STDmaker::tg1/capability-B [2]>^
   A: $x + $y^
- SE: '6'^
+ SE: 6^
 
   N: A test to skip^
   A: $x + $y + $x^
-  E: '9'^
+  E: 9^
 
   N: A not skip to skip^
   S: 0^
-  R: L<STD::t::tg1/Capability-B [3]>^
+  R: L<Test::STDmaker::tg1/capability-B [3]>^
   A: $x + $y + $x + $y^
-  E: '10'^
+  E: 10^
 
   N: A skip to skip^
   S: 1^
-  R: L<STD::t::tg1/Capability-B [3]>^
+  R: L<Test::STDmaker::tg1/capability-B [3]>^
   A: $x + $y + $x + $y + $x^
-  E: '10'^
+  E: 10^
 
  See_Also: 
- http://perl.softwarediamonds.com
- L<STD::t::tg1>
+  L<Test::STDmaker::tg1>
  ^
 
- Copyright: Public Domain^
+ Copyright: This STD is public domain.^
 
- '
+ HTML:
+ <hr>
+ <!-- /BLK -->
+ <p><br>
+ <!-- BLK ID="NOTICE" -->
+ <!-- /BLK -->
+ <p><br>
+ <!-- BLK ID="OPT-IN" -->
+ <!-- /BLK -->
+ <p><br>
+ <!-- BLK ID="LOG_CGI" -->
+ <!-- /BLK -->
+ <p><br>
+ ^
 
- => $T->fin('tgB0.std')
- '
+ ~-~'
 
- UUT: STD/tg1.pm^
+ =>     copy 'tgA0.pm', 'tgA1.pm';
+ =>     Test::STDmaker->fgenerate('t::Test::STDmaker::tgA1', {output=>'STD'});
+ => $s->scrub_date_version($fu->fin('tgA1.pm'))
+ '#!perl
+ #
+ # The copyright notice and plain old documentation (POD)
+ # are at the end of this file.
+ #
+ package  t::Test::STDmaker::tgA1;
+
+ use strict;
+ use warnings;
+ use warnings::register;
+
+ use vars qw($VERSION $DATE $FILE );
+ $VERSION = '0.00';
+ $DATE = 'Feb 6, 1969';
+ $FILE = __FILE__;
+
+ ########
+ # The Test::STDmaker module uses the data after the __DATA__ 
+ # token to automatically generate the this file.
+ #
+ # Don't edit anything before __DATA_. Edit instead
+ # the data after the __DATA__ token.
+ #
+ # ANY CHANGES MADE BEFORE the  __DATA__ token WILL BE LOST
+ #
+ # the next time Test::STDmaker generates this file.
+ #
+ #
+
+ =head1 TITLE PAGE
+
+  Detailed Software Test Description (STD)
+
+  for
+
+  Perl Test::STDmaker::tg1 Program Module
+
+  Revision: -
+
+  Version: 0.01
+
+  $DATE: Feb 6, 1969
+
+  Prepared for: General Public 
+
+  Prepared by:  http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com
+
+  Classification: None
+
+ =head1 SCOPE
+
+ This detail STD and the 
+ L<General Perl Program Module (PM) STD|Test::STD::PerlSTD>
+ establishes the tests to verify the
+ requirements of Perl Program Module (PM) L<Test::STDmaker::tg1|Test::STDmaker::tg1>
+
+ The format of this STD is a tailored L<2167A STD DID|Docs::US_DOD::STD>.
+ in accordance with 
+ L<Detail STD Format|Test::STDmaker/Detail STD Format>.
+
+ #######
+ #  
+ #  4. TEST DESCRIPTIONS
+ #
+ #  4.1 Test 001
+ #
+ #  ..
+ #
+ #  4.x Test x
+ #
+ #
+
+ =head1 TEST DESCRIPTIONS
+
+ The test descriptions uses a legend to
+ identify different aspects of a test description
+ in accordance with
+ L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description Fields>.
+
+ =head2 Test Plan
+
+  T: 16 - 2,5^
+
+ =head2 ok: 1
+
+   C:
+      #########
+      # For "TEST" 1.24 or greater that have separate std err output,
+      # redirect the TESTERR to STDOUT
+      #
+      tech_config( 'Test.TESTERR', \*STDOUT );
+  ^
+   N: Pass test^
+   R: L<Test::STDmaker::tg1/capability-A [1]>^
+   C: my $x = 2^
+   C: my $y = 3^
+   A: $x + $y^
+  SE: 5^
+  ok: 1^
+
+ =head2 ok: 2
+
+   N: Todo test that passes^
+   U: xy feature^
+   A: $y-$x^
+   E: 1^
+  ok: 2^
+
+ =head2 ok: 3
+
+   R:
+      L<Test::STDmaker::tg1/capability-A [2]>
+      L<Test::STDmaker::tg1/capability-B [1]>
+  ^
+   N: Test that fails^
+   A: $x+4^
+   E: 7^
+  ok: 3^
+
+ =head2 ok: 4
+
+   N: Skipped tests^
+   S: 1^
+   A: $x*$y*2^
+   E: 6^
+  ok: 4^
+
+ =head2 ok: 5
+
+   N: Todo Test that Fails^
+   U: zyw feature^
+   S: 0^
+   A: $x*$y*2^
+   E: 6^
+  ok: 5^
+
+ =head2 ok: 6
+
+   N: demo only^
+  DO: ^
+   A: $x^
+   E: $y^
+   N: verify only^
+  VO: ^
+   A: $x^
+   E: $x^
+  ok: 6^
+
+ =head2 ok: 7,9,11
+
+   N: Test loop^
+
+   C:
+      my @expected = ('200','201','202');
+      my $i;
+      for( $i=0; $i < 3; $i++) {
+  ^
+   A: $i+200^
+   R: L<Test::STDmaker::tg1/capability-C [1]>^
+   E: $expected[$i]^
+  ok: 7,9,11^
+
+ =head2 ok: 8,10,12
+
+   A: $i + ($x * 100)^
+   R: L<Test::STDmaker::tg1/capability-B [4]>^
+   E: $expected[$i]^
+  ok: 8,10,12^
+
+ =head2 ok: 13
+
+   C:     };^
+   N: Failed test that skips the rest^
+   R: L<Test::STDmaker::tg1/capability-B [2]>^
+   A: $x + $y^
+  SE: 6^
+  ok: 13^
+
+ =head2 ok: 14
+
+   N: A test to skip^
+   A: $x + $y + $x^
+   E: 9^
+  ok: 14^
+
+ =head2 ok: 15
+
+   N: A not skip to skip^
+   S: 0^
+   R: L<Test::STDmaker::tg1/capability-B [3]>^
+   A: $x + $y + $x + $y^
+   E: 10^
+  ok: 15^
+
+ =head2 ok: 16
+
+   N: A skip to skip^
+   S: 1^
+   R: L<Test::STDmaker::tg1/capability-B [3]>^
+   A: $x + $y + $x + $y + $x^
+   E: 10^
+  ok: 16^
+
+ #######
+ #  
+ #  5. REQUIREMENTS TRACEABILITY
+ #
+ #
+
+ =head1 REQUIREMENTS TRACEABILITY
+
+   Requirement                                                      Test
+  ---------------------------------------------------------------- ----------------------------------------------------------------
+  L<Test::STDmaker::tg1/capability-A [1]>                          L<t::Test::STDmaker::tgA1/ok: 1>
+  L<Test::STDmaker::tg1/capability-A [2]>                          L<t::Test::STDmaker::tgA1/ok: 3>
+  L<Test::STDmaker::tg1/capability-B [1]>                          L<t::Test::STDmaker::tgA1/ok: 3>
+  L<Test::STDmaker::tg1/capability-B [2]>                          L<t::Test::STDmaker::tgA1/ok: 13>
+  L<Test::STDmaker::tg1/capability-B [3]>                          L<t::Test::STDmaker::tgA1/ok: 15>
+  L<Test::STDmaker::tg1/capability-B [3]>                          L<t::Test::STDmaker::tgA1/ok: 16>
+  L<Test::STDmaker::tg1/capability-B [4]>                          L<t::Test::STDmaker::tgA1/ok: 8,10,12>
+  L<Test::STDmaker::tg1/capability-C [1]>                          L<t::Test::STDmaker::tgA1/ok: 7,9,11>
+
+   Test                                                             Requirement
+  ---------------------------------------------------------------- ----------------------------------------------------------------
+  L<t::Test::STDmaker::tgA1/ok: 13>                                L<Test::STDmaker::tg1/capability-B [2]>
+  L<t::Test::STDmaker::tgA1/ok: 15>                                L<Test::STDmaker::tg1/capability-B [3]>
+  L<t::Test::STDmaker::tgA1/ok: 16>                                L<Test::STDmaker::tg1/capability-B [3]>
+  L<t::Test::STDmaker::tgA1/ok: 1>                                 L<Test::STDmaker::tg1/capability-A [1]>
+  L<t::Test::STDmaker::tgA1/ok: 3>                                 L<Test::STDmaker::tg1/capability-A [2]>
+  L<t::Test::STDmaker::tgA1/ok: 3>                                 L<Test::STDmaker::tg1/capability-B [1]>
+  L<t::Test::STDmaker::tgA1/ok: 7,9,11>                            L<Test::STDmaker::tg1/capability-C [1]>
+  L<t::Test::STDmaker::tgA1/ok: 8,10,12>                           L<Test::STDmaker::tg1/capability-B [4]>
+
+ =cut
+
+ #######
+ #  
+ #  6. NOTES
+ #
+ #
+
+ =head1 NOTES
+
+ This STD is public domain.
+
+ #######
+ #
+ #  2. REFERENCED DOCUMENTS
+ #
+ #
+ #
+
+ =head1 SEE ALSO
+
+  L<Test::STDmaker::tg1>
+
+ =back
+
+ =for html
+ <hr>
+ <!-- /BLK -->
+ <p><br>
+ <!-- BLK ID="NOTICE" -->
+ <!-- /BLK -->
+ <p><br>
+ <!-- BLK ID="OPT-IN" -->
+ <!-- /BLK -->
+ <p><br>
+ <!-- BLK ID="LOG_CGI" -->
+ <!-- /BLK -->
+ <p><br>
+
+ =cut
+
+ __DATA__
+
+ File_Spec: Unix^
+ UUT: Test::STDmaker::tg1^
  Revision: -^
  End_User: General Public^
  Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
- SVD: None^
- Template: STD/STD001.frm^
+ Detail_Template: ^
+ STD2167_Template: ^
+ Version: 0.01^
  Classification: None^
- Clean: tg1B.std^
- Demo: tg1B.d^
- STD: tg1B-STD.pm^
- Verify: tg1B.t^
-
-  T: 0^
-
-  R: L<STD::t::tg1/capability-A [1]>^
-  C: my $x = 2^
-  C: my $y = 3^
-  A: $x + $y^
- SE: '5'^
-
-  A: ($x+$y,$y-$x)^
-  E: '5','1'^
-
- See_Also: 
- http://perl.softwarediamonds.com
- L<STD::t::tg1>
- ^
-
- Copyright: Public Domain^
-
- '
-
- =>     #####
- =>     # Make sure there is no residue outputs hanging
- =>     # around from the last test series.
- =>     #
- =>     @outputs = bsd_glob( 'tg*1.*' );
- =>     unlink @outputs;
- =>     @outputs = bsd_glob( 'tg*1-STD.pm');
- =>     unlink @outputs;
- => copy 'tgA0.std', 'tgA1.std'
- => $T->fin('tgA1.std')
- '
-
- UUT: STD/tg1.pm^
- Revision: -^
- End_User: General Public^
- Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
- SVD: None^
- Template: STD/STD001.frm^
- Classification: None^
- Clean: tgA1.std^
+ Temp: temp.pl^
  Demo: tgA1.d^
- STD: tgA1-STD.pm^
  Verify: tgA1.t^
 
-  T: 0^
+  T: 16 - 2,5^
+
+  C:
+     #########
+     # For "TEST" 1.24 or greater that have separate std err output,
+     # redirect the TESTERR to STDOUT
+     #
+     tech_config( 'Test.TESTERR', \*STDOUT );
+ ^
 
   N: Pass test^
-  R: L<STD::t::tg1/capability-A [1]>^
+  R: L<Test::STDmaker::tg1/capability-A [1]>^
   C: my $x = 2^
   C: my $y = 3^
   A: $x + $y^
- SE: '5'^
+ SE: 5^
+ ok: 1^
 
   N: Todo test that passes^
   U: xy feature^
-  A: ($x+$y,$y-$x)^
-  E: '5','1'^
+  A: $y-$x^
+  E: 1^
+ ok: 2^
 
-  R: 
-     L<STD::t::tg1/capability-A [2]>
-     L<STD::t::tg1/Capability-B [1]>
-  ^
+  R:
+     L<Test::STDmaker::tg1/capability-A [2]>
+     L<Test::STDmaker::tg1/capability-B [1]>
+ ^
+
   N: Test that fails^
-  A: ($x+4,$x*$y)^
-  E: '6','5'^
+  A: $x+4^
+  E: 7^
+ ok: 3^
 
   N: Skipped tests^
   S: 1^
   A: $x*$y*2^
-  E: '6'^
+  E: 6^
+ ok: 4^
 
   N: Todo Test that Fails^
   U: zyw feature^
   S: 0^
   A: $x*$y*2^
-  E: '6'^
+  E: 6^
+ ok: 5^
 
+  N: demo only^
+ DO: ^
+  A: $x^
+  E: $y^
+  N: verify only^
+ VO: ^
+  A: $x^
+  E: $x^
+ ok: 6^
+
+  N: Test loop^
+
+  C:
+     my @expected = ('200','201','202');
+     my $i;
+     for( $i=0; $i < 3; $i++) {
+ ^
+
+  A: $i+200^
+  R: L<Test::STDmaker::tg1/capability-C [1]>^
+  E: $expected[$i]^
+ ok: 7,9,11^
+
+  A: $i + ($x * 100)^
+  R: L<Test::STDmaker::tg1/capability-B [4]>^
+  E: $expected[$i]^
+ ok: 8,10,12^
+
+  C:     };^
   N: Failed test that skips the rest^
-  R: L<STD::t::tg1/Capability-B [2]>^
+  R: L<Test::STDmaker::tg1/capability-B [2]>^
   A: $x + $y^
- SE: '6'^
+ SE: 6^
+ ok: 13^
 
   N: A test to skip^
   A: $x + $y + $x^
-  E: '9'^
+  E: 9^
+ ok: 14^
 
   N: A not skip to skip^
   S: 0^
-  R: L<STD::t::tg1/Capability-B [3]>^
+  R: L<Test::STDmaker::tg1/capability-B [3]>^
   A: $x + $y + $x + $y^
-  E: '10'^
+  E: 10^
+ ok: 15^
 
   N: A skip to skip^
   S: 1^
-  R: L<STD::t::tg1/Capability-B [3]>^
+  R: L<Test::STDmaker::tg1/capability-B [3]>^
   A: $x + $y + $x + $y + $x^
-  E: '10'^
+  E: 10^
+ ok: 16^
 
- See_Also: 
- http://perl.softwarediamonds.com
- L<STD::t::tg1>
+ See_Also:  L<Test::STDmaker::tg1>^
+ Copyright: This STD is public domain.^
+
+ HTML:
+ <hr>
+ <!-- /BLK -->
+ <p><br>
+ <!-- BLK ID="NOTICE" -->
+ <!-- /BLK -->
+ <p><br>
+ <!-- BLK ID="OPT-IN" -->
+ <!-- /BLK -->
+ <p><br>
+ <!-- BLK ID="LOG_CGI" -->
+ <!-- /BLK -->
+ <p><br>
  ^
 
- Copyright: Public Domain^
-
+ ~-~
  '
 
- => copy 'tg0.pm', 'tg1.pm'
- => $T->fin('tg1.pm')
+ => $fu->fin('tgB0n.pm')
+ '#!perl
+ #
+ # The copyright notice and plain old documentation (POD)
+ # are at the end of this file.
+ #
+ package  t::Test::STDmaker::tgB1;
+
+ use strict;
+ use warnings;
+ use warnings::register;
+
+ use vars qw($VERSION $DATE $FILE );
+ $VERSION = '0.01';
+ $DATE = '2003/06/14';
+ $FILE = __FILE__;
+
+ ########
+ # The Test::STDmaker module uses the data after the __DATA__ 
+ # token to automatically generate the this file.
+ #
+ # Don't edit anything before __DATA_. Edit instead
+ # the data after the __DATA__ token.
+ #
+ # ANY CHANGES MADE BEFORE the  __DATA__ token WILL BE LOST
+ #
+ # the next time Test::STDmaker generates this file.
+ #
+ #
+
+ __DATA__
+
+ File_Spec: Unix^
+ UUT: Test::STDmaker::tg1^
+ Revision: -^
+ End_User: General Public^
+ Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
+ Detail_Template: ^
+ STD2167_Template: ^
+ Version: 0.01^
+ Classification: None^
+ Temp: temp.pl^
+ Demo: tgB1.d^
+ Verify: tgB1.t^
+
+  T: 2^
+
+  C: 
+     #########
+     # For "TEST" 1.24 or greater that have separate std err output,
+     # redirect the TESTERR to STDOUT
+     #
+     tech_config( 'Test.TESTERR', \*STDOUT );   
+ ^  
+
+  R: L<Test::STDmaker::tg1/capability-A [1]>^
+  C: my $x = 2^
+  C: my $y = 3^
+  A: $x + $y^
+ SE: 5^
+ ok: 1^
+
+  A: [($x+$y,$y-$x)]^
+  E: ['5,2']^
+ ok: 2^
+
+ See_Also: L<Test::STDmaker::tg1>^
+ Copyright: This STD is public domain^
+
+ HTML:
+ <hr>
+ <!-- /BLK -->
+ <p><br>
+ <!-- BLK ID="NOTICE" -->
+ <!-- /BLK -->
+ <p><br>
+ <!-- BLK ID="OPT-IN" -->
+ <!-- /BLK -->
+ <p><br>
+ <!-- BLK ID="LOG_CGI" -->
+ <!-- /BLK -->
+ <p><br>
+ ^
+
+ ~-~
+ '
+
+ =>     copy $tgB0_pm, 'tgB1.pm';
+ =>     Test::STDmaker->fgenerate('t::Test::STDmaker::tgB1', {output=>'STD verify'});
+ => $s->scrub_date_version($fu->fin('tgB1.pm'))
+ '#!perl
+ #
+ # The copyright notice and plain old documentation (POD)
+ # are at the end of this file.
+ #
+ package  t::Test::STDmaker::tgB1;
+
+ use strict;
+ use warnings;
+ use warnings::register;
+
+ use vars qw($VERSION $DATE $FILE );
+ $VERSION = '0.00';
+ $DATE = 'Feb 6, 1969';
+ $FILE = __FILE__;
+
+ ########
+ # The Test::STDmaker module uses the data after the __DATA__ 
+ # token to automatically generate the this file.
+ #
+ # Don't edit anything before __DATA_. Edit instead
+ # the data after the __DATA__ token.
+ #
+ # ANY CHANGES MADE BEFORE the  __DATA__ token WILL BE LOST
+ #
+ # the next time Test::STDmaker generates this file.
+ #
+ #
+
+ =head1 TITLE PAGE
+
+  Detailed Software Test Description (STD)
+
+  for
+
+  Perl Test::STDmaker::tg1 Program Module
+
+  Revision: -
+
+  Version: 0.01
+
+  $DATE: Feb 6, 1969
+
+  Prepared for: General Public 
+
+  Prepared by:  http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com
+
+  Classification: None
+
+ =head1 SCOPE
+
+ This detail STD and the 
+ L<General Perl Program Module (PM) STD|Test::STD::PerlSTD>
+ establishes the tests to verify the
+ requirements of Perl Program Module (PM) L<Test::STDmaker::tg1|Test::STDmaker::tg1>
+
+ The format of this STD is a tailored L<2167A STD DID|Docs::US_DOD::STD>.
+ in accordance with 
+ L<Detail STD Format|Test::STDmaker/Detail STD Format>.
+
+ #######
+ #  
+ #  4. TEST DESCRIPTIONS
+ #
+ #  4.1 Test 001
+ #
+ #  ..
+ #
+ #  4.x Test x
+ #
+ #
+
+ =head1 TEST DESCRIPTIONS
+
+ The test descriptions uses a legend to
+ identify different aspects of a test description
+ in accordance with
+ L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description Fields>.
+
+ =head2 Test Plan
+
+  T: 2^
+
+ =head2 ok: 1
+
+   C:
+      #########
+      # For "TEST" 1.24 or greater that have separate std err output,
+      # redirect the TESTERR to STDOUT
+      #
+      tech_config( 'Test.TESTERR', \*STDOUT );
+  ^
+   R: L<Test::STDmaker::tg1/capability-A [1]>^
+   C: my $x = 2^
+   C: my $y = 3^
+   A: $x + $y^
+  SE: 5^
+  ok: 1^
+
+ =head2 ok: 2
+
+   A: [($x+$y,$y-$x)]^
+   E: ['\'5\',\'2\'']^
+  ok: 2^
+
+ #######
+ #  
+ #  5. REQUIREMENTS TRACEABILITY
+ #
+ #
+
+ =head1 REQUIREMENTS TRACEABILITY
+
+   Requirement                                                      Test
+  ---------------------------------------------------------------- ----------------------------------------------------------------
+  L<Test::STDmaker::tg1/capability-A [1]>                          L<t::Test::STDmaker::tgB1/ok: 1>
+
+   Test                                                             Requirement
+  ---------------------------------------------------------------- ----------------------------------------------------------------
+  L<t::Test::STDmaker::tgB1/ok: 1>                                 L<Test::STDmaker::tg1/capability-A [1]>
+
+ =cut
+
+ #######
+ #  
+ #  6. NOTES
+ #
+ #
+
+ =head1 NOTES
+
+ This STD is public domain
+
+ #######
+ #
+ #  2. REFERENCED DOCUMENTS
+ #
+ #
+ #
+
+ =head1 SEE ALSO
+
+ L<Test::STDmaker::tg1>
+
+ =back
+
+ =for html
+ <hr>
+ <!-- /BLK -->
+ <p><br>
+ <!-- BLK ID="NOTICE" -->
+ <!-- /BLK -->
+ <p><br>
+ <!-- BLK ID="OPT-IN" -->
+ <!-- /BLK -->
+ <p><br>
+ <!-- BLK ID="LOG_CGI" -->
+ <!-- /BLK -->
+ <p><br>
+
+ =cut
+
+ __DATA__
+
+ File_Spec: Unix^
+ UUT: Test::STDmaker::tg1^
+ Revision: -^
+ End_User: General Public^
+ Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
+ Detail_Template: ^
+ STD2167_Template: ^
+ Version: 0.01^
+ Classification: None^
+ Temp: temp.pl^
+ Demo: tgB1.d^
+ Verify: tgB1.t^
+
+  T: 2^
+
+  C:
+     #########
+     # For "TEST" 1.24 or greater that have separate std err output,
+     # redirect the TESTERR to STDOUT
+     #
+     tech_config( 'Test.TESTERR', \*STDOUT );
+ ^
+
+  R: L<Test::STDmaker::tg1/capability-A [1]>^
+  C: my $x = 2^
+  C: my $y = 3^
+  A: $x + $y^
+ SE: 5^
+ ok: 1^
+
+  A: [($x+$y,$y-$x)]^
+  E: ['\'5\',\'2\'']^
+ ok: 2^
+
+ See_Also: L<Test::STDmaker::tg1>^
+ Copyright: This STD is public domain^
+
+ HTML:
+ <hr>
+ <!-- /BLK -->
+ <p><br>
+ <!-- BLK ID="NOTICE" -->
+ <!-- /BLK -->
+ <p><br>
+ <!-- BLK ID="OPT-IN" -->
+ <!-- /BLK -->
+ <p><br>
+ <!-- BLK ID="LOG_CGI" -->
+ <!-- /BLK -->
+ <p><br>
+ ^
+
+ ~-~
+ '
+
+ =>     $test_results = `perl tgB1.t`;
+ =>     $fu->fout('tgB1.txt', $test_results);
+ => $s->scrub_probe($s->scrub_file_line($test_results))
+ '1..2
+ ok 1
+ not ok 2
+ # Test 2 got: ''5'
+ '1'
+ ' (xxxx.t at line 000)
+ #   Expected: ''5','2''
+ '
+
+ => $fu->fin( 'tg0.pm'  )
  '#!perl
  #
  # Documentation, copyright and license is at the end of this file.
  #
- package  STD::tg1;
+ package  Test::STDmaker::tg1;
 
  use 5.001;
  use strict;
@@ -1391,7 +2130,7 @@ follow on the next lines. For example,
 
  use vars qw($VERSION);
 
- $VERSION = '0.01';
+ $VERSION = '0.02';
 
  1
 
@@ -1441,105 +2180,31 @@ follow on the next lines. For example,
 
  '
 
- => Test::STDmaker->fgenerate('STD/tgA1.std', {fspec_in=>'Unix', output=>'clean all'} )
- => $T->scrub_file_line($T->fin('tgA1.std'))
- '
-
- File_Spec: Unix^
- UUT: STD/tg1.pm^
- Revision: -^
- End_User: General Public^
- Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
- SVD: None^
- Template: STD/STD001.frm^
- Classification: None^
- Temp: temp.pl^
- Clean: tgA1.std^
- Demo: tgA1.d^
- STD: tgA1-STD.pm^
- Verify: tgA1.t^
-
-  T: 9 - 2,5^
-
-  N: Pass test^
-  R: L<STD::t::tg1/capability-A [1]>^
-  C: my $x = 2^
-  C: my $y = 3^
-  A: $x + $y^
- SE: '5'^
- ok: 1^
-
-  N: Todo test that passes^
-  U: xy feature^
-  A: ($x+$y,$y-$x)^
-  E: '5','1'^
- ok: 2^
-
-  R:
-     L<STD::t::tg1/capability-A [2]>
-     L<STD::t::tg1/Capability-B [1]>
- ^
-
-  N: Test that fails^
-  A: ($x+4,$x*$y)^
-  E: '6','5'^
- ok: 3^
-
-  N: Skipped tests^
-  S: 1^
-  A: $x*$y*2^
-  E: '6'^
- ok: 4^
-
-  N: Todo Test that Fails^
-  U: zyw feature^
-  S: 0^
-  A: $x*$y*2^
-  E: '6'^
- ok: 5^
-
-  N: Failed test that skips the rest^
-  R: L<STD::t::tg1/Capability-B [2]>^
-  A: $x + $y^
- SE: '6'^
- ok: 6^
-
-  N: A test to skip^
-  A: $x + $y + $x^
-  E: '9'^
- ok: 7^
-
-  N: A not skip to skip^
-  S: 0^
-  R: L<STD::t::tg1/Capability-B [3]>^
-  A: $x + $y + $x + $y^
-  E: '10'^
- ok: 8^
-
-  N: A skip to skip^
-  S: 1^
-  R: L<STD::t::tg1/Capability-B [3]>^
-  A: $x + $y + $x + $y + $x^
-  E: '10'^
- ok: 9^
-
- See_Also:
- http://perl.softwarediamonds.com
- L<STD::t::tg1>
- ^
-
- Copyright: Public Domain^
-
- ~-~
- '
-
- => Test::STDmaker->fgenerate('STD/tgA1.std', {fspec_in=>'Unix', output=>'demo', replace => 1});
- => $T->fin('tg1.pm')
+ =>     #########
+ =>     #
+ =>     # Individual generate outputs using options
+ =>     #
+ =>     ########
+ =>     #####
+ =>     # Make sure there is no residue outputs hanging
+ =>     # around from the last test series.
+ =>     #
+ =>     @outputs = bsd_glob( 'tg*1.*' );
+ =>     unlink @outputs;
+ =>     copy 'tg0.pm', 'tg1.pm';
+ =>     copy 'tgA0.pm', 'tgA1.pm';
+ =>     my @cwd = File::Spec->splitdir( cwd() );
+ =>     pop @cwd;
+ =>     pop @cwd;
+ =>     unshift @INC, File::Spec->catdir( @cwd );  # put UUT in lib path
+ =>     Test::STDmaker->fgenerate('t::Test::STDmaker::tgA1', { output=>'demo', replace => 1});
+ =>     shift @INC;
+ => $s->scrub_date_version($fu->fin('tg1.pm'))
  '#!perl
  #
  # Documentation, copyright and license is at the end of this file.
  #
- package  STD::tg1;
+ package  Test::STDmaker::tg1;
 
  use 5.001;
  use strict;
@@ -1548,7 +2213,7 @@ follow on the next lines. For example,
 
  use vars qw($VERSION);
 
- $VERSION = '0.01';
+ $VERSION = '0.00';
 
  1
 
@@ -1606,22 +2271,52 @@ follow on the next lines. For example,
 
   ~~~~~~ The demonstration follows ~~~~~
 
+  =>     #########
+  =>     # For "TEST" 1.24 or greater that have separate std err output,
+  =>     # redirect the TESTERR to STDOUT
+  =>     #
+  =>     tech_config( 'Test.TESTERR', \*STDOUT );
   => my $x = 2
   => my $y = 3
   => $x + $y
   '5'
 
-  => ($x+$y,$y-$x)
-  '5'
+  => $y-$x
   '1'
 
-  => ($x+4,$x*$y)
-  '6'
+  => $x+4
   '6'
 
   => $x*$y*2
   '12'
 
+  => $x
+  2
+
+  =>     my @expected = ('200','201','202');
+  =>     my $i;
+  =>     for( $i=0; $i < 3; $i++) {
+  => $i+200
+  '200'
+
+  => $i + ($x * 100)
+  '200'
+
+  =>     };
+  => $i+200
+  '201'
+
+  => $i + ($x * 100)
+  '201'
+
+  =>     };
+  => $i+200
+  '202'
+
+  => $i + ($x * 100)
+  '202'
+
+  =>     };
   => $x + $y
   '5'
 
@@ -1641,7 +2336,7 @@ follow on the next lines. For example,
  =>     open SAVEOUT, ">&STDOUT";
  =>     use warnings;
  =>     open STDOUT, ">tgA1.txt";
- =>     Test::STDmaker->fgenerate('STD/tgA1.std', {fspec_in=>'Unix', output=>'verify', run=>1, verbose=>1});
+ =>     Test::STDmaker->fgenerate('t::Test::STDmaker::tgA1', { output=>'verify', run=>1, verbose=>1});
  =>     close STDOUT;
  =>     open STDOUT, ">&SAVEOUT";
  =>     
@@ -1651,64 +2346,357 @@ follow on the next lines. For example,
  =>     # Also the script name is absolute which is site dependent.
  =>     # Take it out of the comparision.
  =>     #
- =>     $test_results = $T->fin('tgA1.txt');
+ =>     $test_results = $fu->fin('tgA1.txt');
  =>     $test_results =~ s/.*?1..9/1..9/; 
  =>     $test_results =~ s/------.*?\n(\s*\()/\n $1/s;
- =>     $T->fout('tgA1.txt',$test_results);
- => $T->scrub_file_line($test_results)
+ =>     $fu->fout('tgA1.txt',$test_results);
+ => $s->scrub_probe($s->scrub_test_file($s->scrub_file_line($test_results)))
  'SoftwareDiamonds.com - Harnessing the power of automation.
-
- ~~~~
- Processing STD/tgA1.std
- ~~~~
- Running Tests
-
- 1..9 todo 2 5;
  # Pass test
  ok 1
  # Todo test that passes
  ok 2 # (xxxx.t at line 000 TODO?!)
  # Test that fails
  not ok 3
- # Test 3 got: '$VAR1 = '6';
- $VAR2 = '6';
- ' (xxxx.t at line 000)
- #   Expected: '$VAR1 = '6';
- $VAR2 = '5';
- '
+ # Test 3 got: '6' (xxxx.t at line 000)
+ #   Expected: '7'
  # Skipped tests
  ok 4 # skip
  # Todo Test that Fails
  not ok 5
- # Test 5 got: '$VAR1 = '12';
- ' (xxxx.t at line 000 *TODO*)
- #   Expected: '$VAR1 = '6';
- '
+ # Test 5 got: '12' (xxxx.t at line 000 *TODO*)
+ #   Expected: '6'
+ # verify only
+ ok 6
+ # Test loop
+ ok 7
+ # Test loop
+ ok 8
+ # Test loop
+ ok 9
+ # Test loop
+ ok 10
+ # Test loop
+ ok 11
+ # Test loop
+ ok 12
  # Failed test that skips the rest
- not ok 6
- # Test 6 got: '$VAR1 = '5';
- ' (xxxx.t at line 000)
- #   Expected: '$VAR1 = '6';
- '
+ not ok 13
+ # Test 13 got: '5' (xxxx.t at line 000)
+ #    Expected: '6'
  # A test to skip
  # Test invalid because of previous failure.
- ok 7 # skip
+ ok 14 # skip
  # A not skip to skip
  # Test invalid because of previous failure.
- ok 8 # skip
+ ok 15 # skip
  # A skip to skip
  # Test invalid because of previous failure.
- ok 9 # skip
- FAILED tests 3, 6
- 	Failed 2/9 tests, 77.78% okay (-4 skipped tests: 3 okay, 33.33%)
+ ok 16 # skip
+ FAILED tests 3, 13
+ 	Failed 2/16 tests, 87.50% okay (-4 skipped tests: 10 okay, 62.50%)
  Failed Test                      Status Wstat Total Fail  Failed  List of Failed
 
    (1 subtest UNEXPECTEDLY SUCCEEDED), 4 subtests skipped.
- Failed 1/1 test scripts, 0.00% okay. 2/9 subtests failed, 77.78% okay.
+ Failed 1/1 test scripts, 0.00% okay. 2/16 subtests failed, 87.50% okay.
  ****
  Finish Processing
  ****
  '
+
+ => $fu->fin('tgC0.pm')
+ '#!perl
+ #
+ # The copyright notice and plain old documentation (POD)
+ # are at the end of this file.
+ #
+ package  t::Test::STDmaker::tgC1;
+
+ use strict;
+ use warnings;
+ use warnings::register;
+
+ use vars qw($VERSION $DATE $FILE );
+ $VERSION = '0.01';
+ $DATE = '2003/06/14';
+ $FILE = __FILE__;
+
+ ########
+ # The Test::STDmaker module uses the data after the __DATA__ 
+ # token to automatically generate the this file.
+ #
+ # Don't edit anything before __DATA_. Edit instead
+ # the data after the __DATA__ token.
+ #
+ # ANY CHANGES MADE BEFORE the  __DATA__ token WILL BE LOST
+ #
+ # the next time Test::STDmaker generates this file.
+ #
+ #
+
+ __DATA__
+
+ File_Spec: Unix^
+ UUT: Test::STDmaker::tg1^
+ Revision: -^
+ End_User: General Public^
+ Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
+ Detail_Template: ^
+ STD2167_Template: ^
+ Version: 0.01^
+ Classification: None^
+ Temp: xx/temp.pl^
+ Demo: yy/zz/tg1B.d^
+ Verify: ccc/tg1B.t^
+
+  T: 2^
+
+  R: L<Test::STDmaker::tg1/capability-A [1]>^
+  C: my $x = 2^
+  C: my $y = 3^
+  A: $x + $y^
+ SE: 5^
+ ok: 1^
+
+  A: $y-$x^
+  E: 1^
+ ok: 2^
+
+ See_Also: L<Test::STDmaker::tg1>^
+ Copyright: This STD is public domain^
+
+ HTML:
+ <hr>
+ <!-- /BLK -->
+ <p><br>
+ <!-- BLK ID="NOTICE" -->
+ <!-- /BLK -->
+ <p><br>
+ <!-- BLK ID="OPT-IN" -->
+ <!-- /BLK -->
+ <p><br>
+ <!-- BLK ID="LOG_CGI" -->
+ <!-- /BLK -->
+ <p><br>
+ ^
+
+ ~-~
+ '
+
+ =>     copy 'tgC0.pm', 'tgC1.pm';
+ =>     Test::STDmaker->fgenerate('t::Test::STDmaker::tgC1', {fspec_out=>'os2',  output=>'STD'});
+ => $s->scrub_date_version($fu->fin('tgC1.pm'))
+ '#!perl
+ #
+ # The copyright notice and plain old documentation (POD)
+ # are at the end of this file.
+ #
+ package  t::Test::STDmaker::tgC1;
+
+ use strict;
+ use warnings;
+ use warnings::register;
+
+ use vars qw($VERSION $DATE $FILE );
+ $VERSION = '0.00';
+ $DATE = 'Feb 6, 1969';
+ $FILE = __FILE__;
+
+ ########
+ # The Test::STDmaker module uses the data after the __DATA__ 
+ # token to automatically generate the this file.
+ #
+ # Don't edit anything before __DATA_. Edit instead
+ # the data after the __DATA__ token.
+ #
+ # ANY CHANGES MADE BEFORE the  __DATA__ token WILL BE LOST
+ #
+ # the next time Test::STDmaker generates this file.
+ #
+ #
+
+ =head1 TITLE PAGE
+
+  Detailed Software Test Description (STD)
+
+  for
+
+  Perl Test::STDmaker::tg1 Program Module
+
+  Revision: -
+
+  Version: 0.01
+
+  $DATE: Feb 6, 1969
+
+  Prepared for: General Public 
+
+  Prepared by:  http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com
+
+  Classification: None
+
+ =head1 SCOPE
+
+ This detail STD and the 
+ L<General Perl Program Module (PM) STD|Test::STD::PerlSTD>
+ establishes the tests to verify the
+ requirements of Perl Program Module (PM) L<Test::STDmaker::tg1|Test::STDmaker::tg1>
+
+ The format of this STD is a tailored L<2167A STD DID|Docs::US_DOD::STD>.
+ in accordance with 
+ L<Detail STD Format|Test::STDmaker/Detail STD Format>.
+
+ #######
+ #  
+ #  4. TEST DESCRIPTIONS
+ #
+ #  4.1 Test 001
+ #
+ #  ..
+ #
+ #  4.x Test x
+ #
+ #
+
+ =head1 TEST DESCRIPTIONS
+
+ The test descriptions uses a legend to
+ identify different aspects of a test description
+ in accordance with
+ L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description Fields>.
+
+ =head2 Test Plan
+
+  T: 2^
+
+ =head2 ok: 1
+
+   R: L<Test::STDmaker::tg1/capability-A [1]>^
+   C: my $x = 2^
+   C: my $y = 3^
+   A: $x + $y^
+  SE: 5^
+  ok: 1^
+
+ =head2 ok: 2
+
+   A: $y-$x^
+   E: 1^
+  ok: 2^
+
+ #######
+ #  
+ #  5. REQUIREMENTS TRACEABILITY
+ #
+ #
+
+ =head1 REQUIREMENTS TRACEABILITY
+
+   Requirement                                                      Test
+  ---------------------------------------------------------------- ----------------------------------------------------------------
+  L<Test::STDmaker::tg1/capability-A [1]>                          L<t::Test::STDmaker::tgC1/ok: 1>
+
+   Test                                                             Requirement
+  ---------------------------------------------------------------- ----------------------------------------------------------------
+  L<t::Test::STDmaker::tgC1/ok: 1>                                 L<Test::STDmaker::tg1/capability-A [1]>
+
+ =cut
+
+ #######
+ #  
+ #  6. NOTES
+ #
+ #
+
+ =head1 NOTES
+
+ This STD is public domain
+
+ #######
+ #
+ #  2. REFERENCED DOCUMENTS
+ #
+ #
+ #
+
+ =head1 SEE ALSO
+
+ L<Test::STDmaker::tg1>
+
+ =back
+
+ =for html
+ <hr>
+ <!-- /BLK -->
+ <p><br>
+ <!-- BLK ID="NOTICE" -->
+ <!-- /BLK -->
+ <p><br>
+ <!-- BLK ID="OPT-IN" -->
+ <!-- /BLK -->
+ <p><br>
+ <!-- BLK ID="LOG_CGI" -->
+ <!-- /BLK -->
+ <p><br>
+
+ =cut
+
+ __DATA__
+
+ File_Spec: os2^
+ UUT: Test::STDmaker::tg1^
+ Revision: -^
+ End_User: General Public^
+ Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
+ Detail_Template: ^
+ STD2167_Template: ^
+ Version: 0.01^
+ Classification: None^
+ Temp: xx\temp.pl^
+ Demo: yy\zz\tg1B.d^
+ Verify: ccc\tg1B.t^
+
+  T: 2^
+
+  R: L<Test::STDmaker::tg1/capability-A [1]>^
+  C: my $x = 2^
+  C: my $y = 3^
+  A: $x + $y^
+ SE: 5^
+ ok: 1^
+
+  A: $y-$x^
+  E: 1^
+ ok: 2^
+
+ See_Also: L<Test::STDmaker::tg1>^
+ Copyright: This STD is public domain^
+
+ HTML:
+ <hr>
+ <!-- /BLK -->
+ <p><br>
+ <!-- BLK ID="NOTICE" -->
+ <!-- /BLK -->
+ <p><br>
+ <!-- BLK ID="OPT-IN" -->
+ <!-- /BLK -->
+ <p><br>
+ <!-- BLK ID="LOG_CGI" -->
+ <!-- /BLK -->
+ <p><br>
+ ^
+
+ ~-~
+ '
+
+ =>     #####
+ =>     # Make sure there is no residue outputs hanging
+ =>     # around from the last test series.
+ =>     #
+ =>     @outputs = bsd_glob( 'tg*1.*' );
+ =>     unlink @outputs;
+ =>     tech_config( 'Test.TESTERR', $restore_testerr);   
 
  =>     sub __warn__ 
  =>     { 
@@ -1717,20 +2705,11 @@ follow on the next lines. For example,
  =>        CORE::warn( $text );
  =>     };
 
- =>     #####
- =>     # Make sure there is no residue outputs hanging
- =>     # around from the last test series.
- =>     #
- =>     @outputs = bsd_glob( 'tg*1.*' );
- =>     unlink @outputs;
- =>     @outputs = bsd_glob( 'tg*1-STD.pm');
- =>     unlink @outputs;
-
 =head1 QUALITY ASSURANCE
 
-The file F<STD/t/testgen.std> is the Software
-Test Description file for the C<Test::Testgen>
-module. This file contains all the information
+The module "t::Test::STDmaker::STDmaker" is the Software
+Test Description file (STD) for the "Test::STDmaker".
+module. This module contains all the information
 necessary for this module to verify that
 this module meets its requirements.
 In other words, this module will verify
@@ -1741,14 +2720,15 @@ verify itself, it cannot verify that another
 module meets its requirements.
 
 To generate all the test output files, 
-run the generated test script F<Test/t/Testgen.t>
-and the demonstration script F<Test/t/Testgen.d>,
+run the generated test script,
+run the demonstration script,
 execute the following in any directory:
 
- tg -o="clean all" -verbose -replace -run  STD/t/TestGen.std
+ tg -verbose -replace -run  t::Test::STDmaker::STDmaker
 
-Note that F<tg.pl> must be in the execution path C<$ENV{PATH}>.
-A copy F<tg.pl> is at C<STD/t>
+Note that F<tg.pl> must be in the execution path C<$ENV{PATH}>
+and the "t" directory on the same level as the "lib" that
+contains the "Test::STDmaker" module.
 
 =head1 NOTES
 
