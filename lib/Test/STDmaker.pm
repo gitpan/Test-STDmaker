@@ -17,8 +17,8 @@ use File::SubPM;
 use File::PM2File;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.06';
-$DATE = '2003/07/04';
+$VERSION = '1.08';
+$DATE = '2003/07/05';
 
 use DataPort::Maker;
 use vars qw(@ISA);
@@ -29,6 +29,7 @@ my %targets = (
     Demo => [ [qw(generate Demo)] ],
     STD => [ [qw(generate STD)] ],
     Verify => [ [qw(generate Verify)] ],
+    test  => [ 'test' ],
     __no_target__ => [ qw(target_error) ],
 );
 
@@ -75,11 +76,40 @@ sub tmake
      ########
      # Default FormDB program module is "STD"
      #
-     $options->{pm} = 'STD' unless $options->{pm}; 
      my @t_inc = File::TestPath->find_t_roots( );
      $self->{Load_INC} = \@t_inc ;
      my $success = $self->make_pm( \%targets, @targets);
 
+     ######
+     # If have not picked up a pm and there are no test scripts
+     #
+     unless ($options->{pm} || $options->{test_scripts} ) {
+         $options->{pm} = 'STD';
+         $success = $self->make_pm( \%targets, @targets);
+     }
+
+     ######
+     # Add test script to the Verify generated files that
+     # will be ran using the test harness. 
+     #
+     if( $self->{options}->{run} && $options->{test_scripts} ) {
+         my @restore_inc = @INC;
+         unshift @INC, @t_inc;
+         my $test_fspec = $options->{test_fspec};
+         $test_fspec = 'Unix' unless $test_fspec;
+         my @test_scripts = split /(?: |,|;|\n)+/, $options->{test_scripts};
+         my $test_script;
+         foreach $test_script (@test_scripts) {
+             $test_script = File::AnySpec->fspec2os( $test_fspec, $test_script);
+             ($test_script) = File::PM2File->find_in_include( $test_script );
+             unshift   @{$self->{'Test::STDtype::Verify'}->{generated_files}} ,$test_script;
+         } 
+         @INC = @restore_inc; 
+     }
+
+     ########
+     # Post process any generated files
+     #
      if( $success ) {
          my $target;
          foreach $target (@targets) {
@@ -93,6 +123,12 @@ sub tmake
      $self = bless($self, $restore_class);
 
      return $success;
+}
+
+
+sub test
+{
+    
 }
 
 
@@ -184,6 +220,21 @@ module as follows:
   tmake -pm=t::MyTopLevel::MyUnitUnderTest
   perl -d root_dir/t/MyTopLevel/MyUnitUnderTest.t
   perl -d root_dir/t/MyTopLevel/MyUnitUnderTest.d
+
+
+
+The "Test::STDmaker" is part of the "STD2167A" bundle that contains,
+for starters, the following files:
+
+   Text::Scrub File::Package File::TestPath File::SmartNL
+
+     Test::Tech 
+
+        DataPort::FileType::FormDB DataPort::DataFile Text::Replace Text::Column
+        File::AnySpec File::Data File::PM2File File::SubPM
+
+            Test::STDmaker ExtUtils::SVDmaker
+
 
 =head2 Capabilities
 
@@ -1212,7 +1263,7 @@ follow on the next lines. For example,
  =>     use File::Copy;
  =>     use File::Package;
  =>     use File::SmartNL;
- =>     use Test::STD::Scrub;
+ =>     use Text::Scrub;
  =>  
  =>     #########
  =>     # For "TEST" 1.24 or greater that have separate std err output,
@@ -1223,7 +1274,7 @@ follow on the next lines. For example,
  =>     my $internal_number = tech_config('Internal_Number');
  =>     my $fp = 'File::Package';
  =>     my $snl = 'File::SmartNL';
- =>     my $s = 'Test::STD::Scrub';
+ =>     my $s = 'Text::Scrub';
  =>     my $tgB0_pm = ($internal_number eq 'string') ? 'tgB0s.pm' : 'tgB0n.pm';
  =>     my $tgB2_pm = ($internal_number eq 'string') ? 'tgB2s.pm' : 'tgB2n.pm';
  =>     my $tgB2_txt = ($internal_number eq 'string') ? 'tgB2s.txt' : 'tgB2n.txt';

@@ -10,8 +10,8 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE );
-$VERSION = '0.03';
-$DATE = '2003/07/04';
+$VERSION = '0.05';
+$DATE = '2003/07/05';
 $FILE = __FILE__;
 
 ########
@@ -40,7 +40,7 @@ $FILE = __FILE__;
 
  Version: 
 
- Date: 2003/07/04
+ Date: 2003/07/05
 
  Prepared for: General Public 
 
@@ -91,7 +91,7 @@ L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description 
      use File::Copy;
      use File::Package;
      use File::SmartNL;
-     use Test::STD::Scrub;
+     use Text::Scrub;
   
      #########
      # For "TEST" 1.24 or greater that have separate std err output,
@@ -101,7 +101,7 @@ L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description 
      my $internal_number = tech_config('Internal_Number');
      my $fp = 'File::Package';
      my $snl = 'File::SmartNL';
-     my $s = 'Test::STD::Scrub';
+     my $s = 'Text::Scrub';
      my $tgB0_pm = ($internal_number eq 'string') ? 'tgB0s.pm' : 'tgB0n.pm';
      my $tgB2_pm = ($internal_number eq 'string') ? 'tgB2s.pm' : 'tgB2n.pm';
      my $tgB2_txt = ($internal_number eq 'string') ? 'tgB2s.txt' : 'tgB2n.txt';
@@ -542,11 +542,25 @@ ANY WAY OUT OF THE POSSIBILITY OF SUCH DAMAGE.
 
 =item L<STD Automated Generation|Test::STDmaker>
 
-=item L<File::FileUtil|File::FileUtil>
+=item L<File::Package|File::Package>
 
-=item L<Test::STD::STDutil|Test::STD::STDutil>
+=item L<File::SmartNL|File::SmartNL>
 
-=item L<Test::STD::Scrub|Test::STD::Scrub>
+=item L<File::TestPath|File::TestPath>
+
+=item L<File::AnySpec|File::AnySpec>
+
+=item L<File::Data|File::Data>
+
+=item L<File::PM2File|File::PM2File>
+
+=item L<File::SubPM|File::PSubPM>
+
+=item L<Text::Replace|Text::Replace>
+
+=item L<Text::Column|Text::Column>
+
+=item L<Text::Scrub|Text::::Scrub>
 
 =item L<DataPort::FileType::FormDB|DataPort::FileType::FormDB>
 
@@ -605,7 +619,7 @@ Verify: STDmaker.t^
     use File::Copy;
     use File::Package;
     use File::SmartNL;
-    use Test::STD::Scrub;
+    use Text::Scrub;
  
     #########
     # For "TEST" 1.24 or greater that have separate std err output,
@@ -616,7 +630,7 @@ Verify: STDmaker.t^
     my $internal_number = tech_config('Internal_Number');
     my $fp = 'File::Package';
     my $snl = 'File::SmartNL';
-    my $s = 'Test::STD::Scrub';
+    my $s = 'Text::Scrub';
     my $tgB0_pm = ($internal_number eq 'string') ? 'tgB0s.pm' : 'tgB0n.pm';
     my $tgB2_pm = ($internal_number eq 'string') ? 'tgB2s.pm' : 'tgB2n.pm';
     my $tgB2_txt = ($internal_number eq 'string') ? 'tgB2s.txt' : 'tgB2n.txt';
@@ -936,11 +950,25 @@ See_Also:
 
 =item L<STD Automated Generation|Test::STDmaker>
 
-=item L<File::FileUtil|File::FileUtil>
+=item L<File::Package|File::Package>
 
-=item L<Test::STD::STDutil|Test::STD::STDutil>
+=item L<File::SmartNL|File::SmartNL>
 
-=item L<Test::STD::Scrub|Test::STD::Scrub>
+=item L<File::TestPath|File::TestPath>
+
+=item L<File::AnySpec|File::AnySpec>
+
+=item L<File::Data|File::Data>
+
+=item L<File::PM2File|File::PM2File>
+
+=item L<File::SubPM|File::PSubPM>
+
+=item L<Text::Replace|Text::Replace>
+
+=item L<Text::Column|Text::Column>
+
+=item L<Text::Scrub|Text::::Scrub>
 
 =item L<DataPort::FileType::FormDB|DataPort::FileType::FormDB>
 

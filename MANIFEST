@@ -14,7 +14,6 @@ t/Test/STDmaker/FileGenI.pm
 t/Test/STDmaker/STDmaker.d
 t/Test/STDmaker/STDmaker.pm
 t/Test/STDmaker/STDmaker.t
-t/Test/STDmaker/temp0.pl
 t/Test/STDmaker/tg0.pm
 t/Test/STDmaker/tg2.pm
 t/Test/STDmaker/tgA0.pm

@@ -14,12 +14,11 @@ use warnings::register;
 use File::Spec;
 use vars qw($VERSION $DATE);
 use Cwd;
-use Test::TestUtil;
 use DataPort::FileType::FormDB;
 use Test::STD::STDgen;
 
-$VERSION = '1.03';
-$DATE = '2003/06/14';
+$VERSION = '1.04';
+$DATE = '2003/07/05';
 
 ########
 # Inherit Test::STD::FileGen

@@ -16,8 +16,8 @@ use File::AnySpec;
 use File::SmartNL;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.05';
-$DATE = '2003/07/04';
+$VERSION = '1.06';
+$DATE = '2003/07/05';
 
 
 ########
@@ -215,11 +215,23 @@ sub post_print
 sub ok { '' }
 sub  T { '' }
 sub  R { '' }
-sub  E { '' }
 sub SE { '' }
 sub  N { '' }
 sub  U { '' }
 sub DO { '' }
+
+
+#####
+# Reset verify only
+#
+sub  E 
+{ 
+    my ($self) = @_;
+    my $module = ref($self);
+    $self->{$module}->{'verify_only'} = '';
+    ''
+}
+
 
 #######
 # Condition to skip a test

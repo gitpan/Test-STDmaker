@@ -13,13 +13,14 @@ use warnings::register;
 
 use DataPort::FileType::FormDB;
 use File::AnySpec;
-use Test::STD::STDutil;
+use Text::Replace;
+use Text::Column;
 use File::Package;
 use File::Data;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.05';
-$DATE = '2003/07/04';
+$VERSION = '1.07';
+$DATE = '2003/07/05';
 
 ########
 # Inherit Test::STD::FileGen
@@ -144,13 +145,13 @@ EOF
     #
     $self->{Trace_Requirement_Table} = "No requirements specified.\n";
     if( $module_db->{trace_req} ) {
-       $self->{Trace_Requirement_Table} = Test::STD::STDutil->format_hash_table( $module_db->{trace_req}, [64,64], ["Requirement", "Test"] );
+       $self->{Trace_Requirement_Table} = Text::Column->format_hash_table( $module_db->{trace_req}, [64,64], ["Requirement", "Test"] );
        $module_db->{trace_req} = {};
     }
 
     $self->{Trace_Test_Table} = '';
     if( $module_db->{trace_test} ) {
-       $self->{Trace_Test_Table} = Test::STD::STDutil->format_hash_table( $module_db->{trace_test}, [64,64], ["Test", "Requirement"] );
+       $self->{Trace_Test_Table} = Text::Column->format_hash_table( $module_db->{trace_test}, [64,64], ["Test", "Requirement"] );
        $module_db->{trace_test} = {};
     }
 
@@ -170,7 +171,7 @@ EOF
       Copyright See_Also Test_Descriptions Version
       Trace_Requirement_Table Trace_Test_Table HTML);
 
-    Test::STD::STDutil->replace_variables(\$template_contents, $self, \@vars);
+    Text::Replace->replace_variables(\$template_contents, $self, \@vars);
 
     $template_contents =~ s/\n\\=/\n=/g; # unescape POD directives
     $template_contents =~ s/\n \n/\n\n/g; # no white space lines

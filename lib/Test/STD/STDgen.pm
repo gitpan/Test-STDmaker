@@ -12,12 +12,16 @@ use warnings::register;
 
 use File::Glob ':glob';
 use File::Spec;
-use Test::TestUtil;
+use Text::Column;
+use Text::Replace;
+use File::AnySpec;
+use File::Package;
+use File::Data;
 use Cwd;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.02';
-$DATE = '2003/06/14';
+$VERSION = '1.04';
+$DATE = '2003/07/05';
 
 ########
 # Inherit Test::STD::FileGen
@@ -45,9 +49,9 @@ sub start
     $module_db->{trace_test} = {};
 
     $self->test_cleanup(); # test step cleanup
-    $self->{STD_PACKAGE} = Test::TestUtil->fspec2pm($self->{File_Spec},  $self->{STD});
-    $self->{STD_PM} = Test::TestUtil->fspec2pm($self->{File_Spec},  $self->{std} );
-    $self->{UUT_PM} = Test::TestUtil->fspec2pm($self->{File_Spec},  $self->{UUT} );
+    $self->{STD_PACKAGE} = File::AnySpec->fspec2pm($self->{File_Spec},  $self->{STD});
+    $self->{STD_PM} = Text::Column->fspec2pm($self->{File_Spec},  $self->{std} );
+    $self->{UUT_PM} = Text::Column->fspec2pm($self->{File_Spec},  $self->{UUT} );
 
     << "EOF"
 #!perl
@@ -96,13 +100,13 @@ sub finish
     #
     $module_db->{Trace_Requirement_Table} = "No requirements specified.\n";
     if( $module_db->{trace_req} ) {
-       $module_db->{Trace_Requirement_Table} = Test::TestUtil->format_hash_table( $module_db->{trace_req}, [64,64], ["Requirement", "Test"] );
+       $module_db->{Trace_Requirement_Table} = Text::Column->format_hash_table( $module_db->{trace_req}, [64,64], ["Requirement", "Test"] );
        $module_db->{trace_req} = {};
     }
 
     $module_db->{Trace_Test_Table} = '';
     if( $module_db->{trace_test} ) {
-       $module_db->{Trace_Test_Table} = Test::TestUtil->format_hash_table( $module_db->{trace_test}, [64,64], ["Test", "Requirement"] );
+       $module_db->{Trace_Test_Table} = Text::Column->format_hash_table( $module_db->{trace_test}, [64,64], ["Test", "Requirement"] );
        $module_db->{trace_test} = {};
     }
     $module_db->{Test_Script} = $self->{Verify};
@@ -119,8 +123,8 @@ sub finish
     #  
     my ($error, $template_contents);
     if( $self->{STD2167_Template} ) {
-        $error = Test::TestUtil->load_package( $self->{STD2167_Template} );
-        $template_contents = Test::TestUtil->pm2data( $self->{STD2167_Template} );
+        $error = File::Package->load_package( $self->{STD2167_Template} );
+        $template_contents = File::Data->pm2data( $self->{STD2167_Template} );
     }
     $template_contents = default_template() unless $template_contents;
 
@@ -128,13 +132,13 @@ sub finish
       Test_Script Tests Test_Descriptions 
       Trace_Requirement_Table Trace_Test_Table);
 
-    Test::TestUtil->replace_variables(\$template_content, $module_db, \@vars);
+    Text::Replace->replace_variables(\$template_content, $module_db, \@vars);
 
     @vars = qw(
       Date UUT_PM STD_PM Revision End_User Author Classification 
       SVD  See_Also Copyright);
 
-    Test::TestUtil->replace_variables(\$template_content, $self, \@vars);
+    Text::Replace->replace_variables(\$template_content, $self, \@vars);
 
     $module_db->{ok} = 0;
     $module_db->{Test_Descriptions} = '';
@@ -273,7 +277,7 @@ sub ok
 
     my $requirement;
     my @clean_requirement = ();
-    my $std_pm = Test::TestUtil->fspec2pm($self->{File_Spec}, $self->{STD});
+    my $std_pm = File::AnySpec->fspec2pm($self->{File_Spec}, $self->{STD});
     foreach $requirement (@{$module_db->{requirements}}) {
         ($requirement) = $requirement =~ /^\s*(.*)\s*$/; # remove leading and tailing white space
         next unless $requirement;

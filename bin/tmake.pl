@@ -12,8 +12,8 @@ use Test::STDmaker;
 use Pod::Usage;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.03';
-$DATE = '2003/07/04';
+$VERSION = '1.04';
+$DATE = '2003/07/05';
 
 my $output = 'all';
 my $man = '0';
@@ -25,6 +25,10 @@ unless ( GetOptions(
             'help|?!' => \$help,
             'man!' => \$man,
             'pm=s' => \$options{pm},
+            'options_pm=s' => \$options{options_pm}, 
+            'targets=s' => \$options{targets}, 
+            'test_scripts' => \$options{test_scripts},
+            'test_fspec' => \$options{test_fspec},
             'replace!' => \$options{replace},
             'nounlink!' => \$options{nounlink},
             'STD2167!' => \$options{STD2167},

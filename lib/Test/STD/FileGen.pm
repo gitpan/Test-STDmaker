@@ -10,8 +10,8 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.05';
-$DATE = '2003/07/04';
+$VERSION = '1.06';
+$DATE = '2003/07/05';
 
 use File::Spec;
 use Cwd;
@@ -19,7 +19,6 @@ use DataPort::FileType::FormDB;
 use Test::STD::Check;
 use File::AnySpec;
 use File::SmartNL;
-use Test::STD::STDutil;
 
 #####
 # New class that formats the input data and stores it as object data
@@ -59,7 +58,7 @@ sub load_std
     # Record file load stats in the object database
     #
     $self->{std_db} = $self->{FormDB};
-    $self->{Date} = Test::STD::STDutil->get_date( );
+    $self->{Date} = get_date( );
     $self->{Record} = $self->{FormDB_Record};
     $self->{std_file} = $self->{FormDB_File};
     ($self->{vol}, $self->{dir}, $self->{file}) = File::Spec->splitpath( $self->{FormDB_File});
@@ -218,6 +217,21 @@ sub print
     $success;
 
 }
+
+
+######
+# Date with year first
+#
+sub get_date
+{
+   my @d = localtime();
+   @d = @d[5,4,3];
+   $d[0] += 1900;
+   $d[1] += 1;
+   sprintf( "%04d/%02d/%02d", @d[0,1,2]);
+
+}
+
 
 
 1;

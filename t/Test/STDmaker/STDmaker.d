@@ -7,8 +7,8 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE);
-$VERSION = '0.05';   # automatically generated file
-$DATE = '2003/07/04';
+$VERSION = '0.06';   # automatically generated file
+$DATE = '2003/07/05';
 
 
 ##### Demonstration Script ####
@@ -93,7 +93,7 @@ demo( "\ \ \ \ use\ vars\ qw\(\$loaded\)\;\
 \ \ \ \ use\ File\:\:Copy\;\
 \ \ \ \ use\ File\:\:Package\;\
 \ \ \ \ use\ File\:\:SmartNL\;\
-\ \ \ \ use\ Test\:\:STD\:\:Scrub\;\
+\ \ \ \ use\ Text\:\:Scrub\;\
 \ \
 \ \ \ \ \#\#\#\#\#\#\#\#\#\
 \ \ \ \ \#\ For\ \"TEST\"\ 1\.24\ or\ greater\ that\ have\ separate\ std\ err\ output\,\
@@ -104,7 +104,7 @@ demo( "\ \ \ \ use\ vars\ qw\(\$loaded\)\;\
 \ \ \ \ my\ \$internal_number\ \=\ tech_config\(\'Internal_Number\'\)\;\
 \ \ \ \ my\ \$fp\ \=\ \'File\:\:Package\'\;\
 \ \ \ \ my\ \$snl\ \=\ \'File\:\:SmartNL\'\;\
-\ \ \ \ my\ \$s\ \=\ \'Test\:\:STD\:\:Scrub\'\;\
+\ \ \ \ my\ \$s\ \=\ \'Text\:\:Scrub\'\;\
 \ \ \ \ my\ \$tgB0_pm\ \=\ \(\$internal_number\ eq\ \'string\'\)\ \?\ \'tgB0s\.pm\'\ \:\ \'tgB0n\.pm\'\;\
 \ \ \ \ my\ \$tgB2_pm\ \=\ \(\$internal_number\ eq\ \'string\'\)\ \?\ \'tgB2s\.pm\'\ \:\ \'tgB2n\.pm\'\;\
 \ \ \ \ my\ \$tgB2_txt\ \=\ \(\$internal_number\ eq\ \'string\'\)\ \?\ \'tgB2s\.txt\'\ \:\ \'tgB2n\.txt\'\;\
@@ -117,7 +117,7 @@ demo( "\ \ \ \ use\ vars\ qw\(\$loaded\)\;\
     use File::Copy;
     use File::Package;
     use File::SmartNL;
-    use Test::STD::Scrub;
+    use Text::Scrub;
  
     #########
     # For "TEST" 1.24 or greater that have separate std err output,
@@ -128,7 +128,7 @@ demo( "\ \ \ \ use\ vars\ qw\(\$loaded\)\;\
     my $internal_number = tech_config('Internal_Number');
     my $fp = 'File::Package';
     my $snl = 'File::SmartNL';
-    my $s = 'Test::STD::Scrub';
+    my $s = 'Text::Scrub';
     my $tgB0_pm = ($internal_number eq 'string') ? 'tgB0s.pm' : 'tgB0n.pm';
     my $tgB2_pm = ($internal_number eq 'string') ? 'tgB2s.pm' : 'tgB2n.pm';
     my $tgB2_txt = ($internal_number eq 'string') ? 'tgB2s.txt' : 'tgB2n.txt';

@@ -18,36 +18,30 @@
 use ExtUtils::MakeMaker;
 
 my $tests = join ' ',unix2os('t/Test/STDmaker/STDmaker.t');
-my $exe;
-if( $exe ) {
-  $exe = [join ' ',unix2os($exe)];
-}
-else {
-   $exe = [];
-}
+my @exe = unix2os('bin/tmake.pl');
 
 WriteMakefile(
     NAME => 'Test::STDmaker',
     DISTNAME => 'Test-STDmaker',
-    VERSION  => '0.03',
+    VERSION  => '0.05',
     dist     => {COMPRESS => 'gzip',
                 'gz' => 'gz'},
     test     => {TESTS => $tests},
     PREREQ_PM => {'DataPort::DataFile' => '0.02',
-'DataPort::FileType::FormDB' => '0.02',
-'DataPort::Maker' => '0',
-'Test::STD::STDutil' => '1.07',
-'Test::Tech' => '1.08',
-'Test::STD::Scrub' => '1.07',
-'Test::STD::STDutil' => '0',
-'File::AnySpec' => '0',
-'File::TestPath' => '0',
-'File::SubPM' => '0',
-'File::PM2File' => '0',
-'File::SmartNL' => '0',
-'File::Package' => '0',
-'File::Data' => '0',},
-    EXE_FILES => $exe,
+                  'DataPort::FileType::FormDB' => '0.02',
+                  'DataPort::Maker' => '0',
+                  'Test::Tech' => '1.08',
+                  'Text::Scrub' => '0',
+                  'Text::Replace' => '0',
+                  'Text::Column' => '0',
+                  'File::AnySpec' => '0',
+                  'File::TestPath' => '0',
+                  'File::SubPM' => '0',
+                  'File::PM2File' => '0',
+                  'File::SmartNL' => '0',
+                  'File::Package' => '0',
+                  'File::Data' => '0',},
+    EXE_FILES => \@exe,
 
     ($] >= 5.005 ?     
         (AUTHOR    => 'SoftwareDiamonds.com E<lt>support@SoftwareDiamonds.comE<gt>',
