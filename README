@@ -55,13 +55,13 @@ DESCRIPTION
         ISO, British Military do not dictate detail format. US agencies such
         as FAA will generally tailor down the DOD required formats. Thus,
         there is an extremely wide variation in the format of the same
-        information among ISO certified comericail activities and militaries
+        information among ISO certified comericial activities and militaries
         other than US. Once the information is in a POD, different
         translators may format nearly exactly as dictated by the end user,
         whether it is the US DOD, ISO certified commericial activity,
         British Military or whoever. By being able to provide the most
-        demanding, which is usually US DOD, capabilities is there for all
-        the others.
+        demanding, which is usually US DOD, the capabilities are there for
+        all the others.
 
     The "Test::STDmaker" package relieves the designer and developer from
     the burden of filling out word processor boiler plate templates (whether
@@ -72,9 +72,17 @@ DESCRIPTION
     developers need only to fill in a form using a test description short
     hand. The "Test::STDmaker" will take it from there and automatically and
     quickly generate the desired test scripts, demo scripts, and test
-    description documents. It does not make economically sense to have
-    expensive talent or even suppport clerks to manually do this work when
-    it can so easily be automated.
+    description documents.
+
+    Look at the economics. It does not make economically sense to have
+    expensive talent do this work. In does not even make economically sense
+    to take a bright 16 year, at mimimum wage and have him manually count
+    oks. Perl can count those oks much much cheaper and it is so easily to
+    automated with Perl. And something like this were you are doing it year
+    in and year out, the saving are enormous. To a program manager or
+    contract officer, this is what programming and computers are all about,
+    saving money and increasing productivity, not object oriented oriented
+    programing, gotos or other such things.
 
     The "Test::STDmaker" class package automates the generation of Software
     Test Descriptions (STD) Plain Old Documentation (POD), test scripts,
@@ -653,10 +661,14 @@ METHODS
         Under Test (UUT) =headx Demonstration POD section. The STD PM UUT
         field specifies the UUT file.
 
+    nosemi
+        Do not automatically add ';' at the end of the "C", code, test
+        description short hand field.
+
     nounlink
          nounlink => 1
 
-        do not delete the check test script
+        do not delete the check test script (typically "temp.pl")
 
     pm
          pm => $program_module
@@ -2868,9 +2880,9 @@ Title Page
 
      Docs::Site_SVD::Test_STDmaker - generate test scripts, demo scripts from a test description short hand
 
-     Revision: M
+     Revision: N
 
-     Version: 0.15
+     Version: 0.16
 
      Date: 2004/05/21
 
@@ -2931,7 +2943,7 @@ Title Page
 
   1.3 Document overview.
 
-    This document releases Test::STDmaker version 0.15 providing description
+    This document releases Test::STDmaker version 0.16 providing description
     of the inventory, installation instructions and other information
     necessary to utilize and track this release.
 
@@ -2943,7 +2955,7 @@ Title Page
 
     This document releases the file
 
-     Test-STDmaker-0.15.tar.gz
+     Test-STDmaker-0.16.tar.gz
 
     found at the following repository(s):
 
@@ -3000,15 +3012,15 @@ Title Page
 
      file                                                         version date       comment
      ------------------------------------------------------------ ------- ---------- ------------------------
-     lib/Docs/Site_SVD/Test_STDmaker.pm                           0.15    2004/05/21 revised 0.14
-     MANIFEST                                                     0.15    2004/05/21 generated, replaces 0.14
-     Makefile.PL                                                  0.15    2004/05/21 generated, replaces 0.14
-     README                                                       0.15    2004/05/21 generated, replaces 0.14
-     lib/Test/STDmaker.pm                                         1.17    2004/05/21 revised 1.16
-     lib/Test/STDmaker/Check.pm                                   1.12    2004/05/20 unchanged
-     lib/Test/STDmaker/Demo.pm                                    1.13    2004/05/20 unchanged
-     lib/Test/STDmaker/STD.pm                                     1.11    2004/05/21 revised 1.1
-     lib/Test/STDmaker/Verify.pm                                  1.13    2004/05/20 unchanged
+     lib/Docs/Site_SVD/Test_STDmaker.pm                           0.16    2004/05/21 revised 0.15
+     MANIFEST                                                     0.16    2004/05/21 generated, replaces 0.15
+     Makefile.PL                                                  0.16    2004/05/21 generated, replaces 0.15
+     README                                                       0.16    2004/05/21 generated, replaces 0.15
+     lib/Test/STDmaker.pm                                         1.18    2004/05/21 revised 1.17
+     lib/Test/STDmaker/Check.pm                                   1.13    2004/05/21 revised 1.12
+     lib/Test/STDmaker/Demo.pm                                    1.14    2004/05/21 revised 1.13
+     lib/Test/STDmaker/STD.pm                                     1.11    2004/05/21 unchanged
+     lib/Test/STDmaker/Verify.pm                                  1.14    2004/05/21 revised 1.13
      lib/Test/STD/PerlSTD.pm                                      1.08    2004/05/19 unchanged
      t/Test/STDmaker/STDmaker.d                                   0.13    2004/05/20 unchanged
      t/Test/STDmaker/STDmaker.pm                                  0.11    2004/05/20 unchanged
@@ -3017,21 +3029,21 @@ Title Page
      t/Test/STDmaker/tg2A.pm                                      0.03    2004/05/14 unchanged
      t/Test/STDmaker/tg2B.pm                                      0.04    2004/05/14 unchanged
      t/Test/STDmaker/tgA0.pm                                      0.05    2004/05/18 unchanged
-     t/Test/STDmaker/tgA2.pm                                      0.06    2004/05/21 revised 0.05
+     t/Test/STDmaker/tgA2.pm                                      0.06    2004/05/21 unchanged
      t/Test/STDmaker/tgA2A2.txt                                   0.1     2004/05/14 unchanged
      t/Test/STDmaker/tgA2A3.txt                                   0.10    2004/05/14 unchanged
      t/Test/STDmaker/tgA2B.txt                                    0.08    2004/05/14 unchanged
      t/Test/STDmaker/tgA2C.txt                                    0.09    2004/05/14 unchanged
      t/Test/STDmaker/tgB0.pm                                      0.02    2004/05/18 unchanged
-     t/Test/STDmaker/tgB2.pm                                      0.03    2004/05/21 revised 0.02
+     t/Test/STDmaker/tgB2.pm                                      0.03    2004/05/21 unchanged
      t/Test/STDmaker/tgB2.txt                                     0.09    2004/05/14 unchanged
      t/Test/STDmaker/tgC0.pm                                      0.04    2004/05/18 unchanged
-     t/Test/STDmaker/tgC2.pm                                      0.05    2004/05/21 revised 0.04
+     t/Test/STDmaker/tgC2.pm                                      0.05    2004/05/21 unchanged
      t/Test/STDmaker/tmake.pl                                     1.06    2004/05/21 unchanged
      t/Test/STDmaker/Text/Scrub.pm                                1.14    2004/05/21 unchanged
      t/Test/STDmaker/Test/Tech.pm                                 1.26    2004/05/21 unchanged
      t/Test/STDmaker/Data/Secs2.pm                                1.26    2004/05/21 unchanged
-     t/Test/STDmaker/Data/Str2Num.pm                              0.08    2004/05/21 revised 0.07
+     t/Test/STDmaker/Data/Str2Num.pm                              0.08    2004/05/21 unchanged
      t/Test/STDmaker/Data/Startup.pm                              0.07    2004/05/21 unchanged
 
   3.3 Changes
@@ -3276,7 +3288,32 @@ Title Page
 
         Corrective Action:
 
-        Real wild shot. Change the "Don't" to "Do not"
+        Change the "Don't" to "Do not"
+
+    Test-STDmaker-0.16
+        Test Failure:
+
+         Subject: FAIL Test-STDmaker-0.15 ppc-linux 2.4.19-4a 
+         From: alian@cpan.org (CPAN Tester + CPAN++ automate) 
+
+        t/Test/STDmaker/STDmaker....Missing right curly or square bracket at
+        temp.pl line 331, at end of line syntax error at temp.pl line 331,
+        at EOF
+
+        Analysis:
+
+        The generated Perl has semicolon after a right curly bracket, "};".
+        Some Perl get upset and do not count the right curly bracket.
+
+        Corrective Action:
+
+        Changed the "Test::STDmaker::Clean", "Test::STDmaker::Demo" and
+        "Test::STDMaker::Verify" that automatically adds a semicolon to a
+        "C" test description if one does not exist, also not to add the
+        semicolon if a right or left curly bracket exists at the end of the
+        "C" test description field. Add the option, "nosemi", to disable the
+        automatic addition of a semicolon to the end of C <C> test
+        description field.
 
   3.4 Adaptation data.
 
@@ -3311,12 +3348,12 @@ Title Page
           http://www.softwarediamonds/packages/
           http://www.perl.com/CPAN/authors/id/S/SO/SOFTDIA/
 
-        Right click on 'Test-STDmaker-0.15.tar.gz' and download to a
+        Right click on 'Test-STDmaker-0.16.tar.gz' and download to a
         temporary installation directory. Enter the following where $make is
         'nmake' for microsoft windows; otherwise 'make'.
 
-         gunzip Test-STDmaker-0.15.tar.gz
-         tar -xf Test-STDmaker-0.15.tar
+         gunzip Test-STDmaker-0.16.tar.gz
+         tar -xf Test-STDmaker-0.16.tar
          perl Makefile.PL
          $make test
          $make install

@@ -16,8 +16,8 @@ use File::AnySpec;
 use File::SmartNL;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.13';
-$DATE = '2004/05/20';
+$VERSION = '1.14';
+$DATE = '2004/05/21';
 
 
 ########
@@ -90,9 +90,19 @@ sub C
     my $module = ref($self);
     return '' if  $self->{$module}->{'verify_only'};
     my $datameta = quotemeta($data);
+
+    while (chomp $data) { };
+    unless( $self->{options}->{nosemi} ) {
+        my $end_char = substr($data,-1,1);
+        if ($end_char ne ';' &&  $end_char ne '{' &&   $end_char ne '}' ) {
+           $data .= ';'
+        }
+    }
+    $data .= " # execution\n\n";
+
     my $msg = << "EOF";
 demo( \"$datameta\"); # typed in command           
-      $data; # execution
+      $data
 
 EOF
 
@@ -156,8 +166,20 @@ sub QC
     my ($self, $command, $data) = @_;
     my $module = ref($self);
     return '' if  $self->{$module}->{'verify_only'};
-    my $msg = << "EOF";
-      $data; # execution
+ 
+    while (chomp $data) { };
+ 
+    unless( $self->{options}->{nosemi} ) {
+        my $end_char = substr($data,-1,1);
+        if ($end_char ne ';' &&  $end_char ne '{' &&   $end_char ne '}' ) {
+           $data .= ';'
+        }
+    }
+
+    $data .= " # execution\n\n"; 
+ 
+my $msg = << "EOF";
+      $data 
 
 EOF
 
@@ -511,6 +533,11 @@ the results from the demo script.
 =item replace 
 
 same as the C<demo> option
+
+=item nosemi
+
+The C<C> subroutine will not automatically add a ';' at
+the end of the code field.
 
 =back
 

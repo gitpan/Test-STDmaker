@@ -16,8 +16,8 @@ use vars qw($VERSION $DATE);
 use Cwd;
 use File::AnySpec;
 
-$VERSION = '1.12';
-$DATE = '2004/05/20';
+$VERSION = '1.13';
+$DATE = '2004/05/21';
 
 ########
 # Inherit classes
@@ -60,9 +60,12 @@ sub C
 
     ($data) = $data =~ /^\s*(.*)\s*$/s; # drop leading trailing white space
 
-    my $last_char = substr( $data, length($data)-1,1);
-   
-    $data .= ';' if $last_char ne ';' && $last_char ne '{';
+    while (chomp $data) { };
+    my $end_char = substr( $data,-1,1);
+    unless( $self->{options}->{nosemi} ) {
+        my $last_char = substr( $data, length($data)-1,1);
+        $data .= ';' if $last_char ne ';' && $last_char ne '{'  && $last_char ne '}';
+    }
 
     << "EOF";
    # Perl code from ${command}:

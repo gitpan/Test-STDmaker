@@ -15,7 +15,7 @@ use File::AnySpec;
 use File::Where;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.17';
+$VERSION = '1.18';
 $DATE = '2004/05/21';
 
 use vars qw(@ISA @EXPORT_OK);
@@ -486,7 +486,7 @@ US agencies such as FAA will generally
 tailor down the DOD required formats.
 Thus, there is an extremely wide variation
 in the format of the same information among
-ISO certified comericail activities and 
+ISO certified comericial activities and 
 militaries other than US.
 Once the information is in a POD, different
 translators may format nearly
@@ -495,7 +495,7 @@ it is the US DOD, ISO certified commericial activity,
 British Military or whoever.
 By being able to provide the most demanding,
 which is usually US DOD, 
-capabilities is there for all the others.
+the capabilities are there for all the others.
 
 =back
 
@@ -515,9 +515,20 @@ The C<Test::STDmaker> will take it from there
 and automatically and quickly generate
 the desired test scripts, demo scripts,
 and test description documents.
+
+Look at the economics.
 It does not make economically sense to have expensive talent
-or even suppport clerks to manually do this work when it can so
-easily be automated.
+do this work.
+In does not even make economically sense to take a bright
+16 year, at mimimum wage and have him manually count oks.
+Perl can count those oks much much cheaper
+and it is so easily to automated with Perl.
+And something like this were you are doing it year in and
+year out, the saving are enormous.
+To a program manager or contract officer, 
+this is what programming and computers are all about,
+saving money and increasing productivity, not object oriented
+oriented programing, gotos or other such things.
 
 The C<Test::STDmaker> class package automates the
 generation of Software Test Descriptions (STD)
@@ -1207,11 +1218,16 @@ run the all demo scripts and use thier output to replace the
 Unit Under Test (UUT)  =headx Demonstration POD section.
 The STD PM UUT field specifies the UUT file.
 
+=item nosemi
+
+Do not automatically add ';' at
+the end of the C<C>, code, test description short hand field.
+
 =item nounlink
 
  nounlink => 1
 
-do not delete the check test script
+do not delete the check test script (typically C<temp.pl>)
 
 =item pm
 

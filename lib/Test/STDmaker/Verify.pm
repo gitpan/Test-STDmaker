@@ -16,8 +16,8 @@ use File::Where;
 use Test::Harness 2.42;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.13';
-$DATE = '2004/05/20';
+$VERSION = '1.14';
+$DATE = '2004/05/21';
 
 ########
 # Inherit classes
@@ -64,7 +64,14 @@ sub C
    my $module = ref($self);
    return '' if  $self->{$module}->{'demo_only'};
 
-   $data .= ';' if substr( $data, length($data)-1,1) ne ';';
+   while (chomp $data) { };
+   my $end_char = substr( $data,-1,1);
+   unless( $self->{options}->{nosemi} ) {
+       if ($end_char ne ';' &&  $end_char ne '{' &&   $end_char ne '}' ) {
+           $data .= ';'
+       }
+   }
+   $data .= "\n\n";
 
    << "EOF";
    # Perl code from ${command}:
@@ -704,6 +711,11 @@ Run the test script under the L<Test::Harness|Test::Harness>
 =item test_verbose
 
 Set any L<Test::Harness|Test::Harness> run to verbose
+
+=item nosemi
+
+The C<C> subroutine will not automatically add a ';' at
+the end of the code field.
 
 =back
 
