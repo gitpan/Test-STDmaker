@@ -18,8 +18,8 @@ use File::Package;
 use Tie::Form;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.08';
-$DATE = '2004/05/14';
+$VERSION = '1.09';
+$DATE = '2004/05/18';
 
 ########
 # Inherit classes
@@ -152,7 +152,11 @@ sub default_template
 {
     <<'EOF';
 
-=head1 TITLE PAGE
+\=head1 NAME
+
+${Name} - Software Test Description for ${UUT}
+
+\=head1 TITLE PAGE
 
  Detailed Software Test Description (STD)
 
@@ -172,35 +176,40 @@ sub default_template
 
  Classification: ${Classification}
 
-=head1 SCOPE
+#######
+#  
+#  1. SCOPE
+#
+#
+\=head1 SCOPE
 
 This detail STD and the 
 L<General Perl Program Module (PM) STD|Test::STD::PerlSTD>
 establishes the tests to verify the
 requirements of Perl Program Module (PM) L<${UUT}|${UUT}>
-
 The format of this STD is a tailored L<2167A STD DID|Docs::US_DOD::STD>.
-in accordance with 
-L<Detail STD Format|Test::STDmaker/Detail STD Format>.
+
+#######
+#  
+#  3. TEST PREPARATIONS
+#
+#
+\=head1 TEST PREPARATIONS
+
+Test preparations are establishes by the L<General STD|Test::STD::PerlSTD>.
+
 
 #######
 #  
 #  4. TEST DESCRIPTIONS
 #
-#  4.1 Test 001
 #
-#  ..
-#
-#  4.x Test x
-#
-#
-
-=head1 TEST DESCRIPTIONS
+\=head1 TEST DESCRIPTIONS
 
 The test descriptions uses a legend to
 identify different aspects of a test description
 in accordance with
-L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description Fields>.
+L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Database Test Description Fields>.
 
 ${Test_Descriptions}
 
@@ -210,13 +219,13 @@ ${Test_Descriptions}
 #
 #
 
-=head1 REQUIREMENTS TRACEABILITY
+\=head1 REQUIREMENTS TRACEABILITY
 
  ${Trace_Requirement_Table}
 
  ${Trace_Test_Table}
 
-=cut
+\=cut
 
 #######
 #  
@@ -224,7 +233,7 @@ ${Test_Descriptions}
 #
 #
 
-=head1 NOTES
+\=head1 NOTES
 
 ${Copyright}
 
@@ -235,16 +244,16 @@ ${Copyright}
 #
 #
 
-=head1 SEE ALSO
+\=head1 SEE ALSO
 
 ${See_Also}
 
-=back
+\=back
 
-=for html
+\=for html
 ${HTML}
 
-=cut
+\=cut
 
 EOF
 
@@ -346,7 +355,7 @@ EOF
     }
     $template_contents = default_template() unless $template_contents;
 
-    my @vars = qw(UUT Revision Date End_User Author Classification
+    my @vars = qw(Name UUT Revision Date End_User Author Classification
       Copyright See_Also Test_Descriptions Version
       Trace_Requirement_Table Trace_Test_Table HTML);
 
@@ -439,37 +448,158 @@ __END__
 
 Test::STDmaker::STD - generates a STD POD from the STD database
 
+
+=head1 DESCRIPTION
+
+The C<Test::STDmaker::STD> package is an internal driver package to
+the L<Test::STDmaker|Test::STDmaker> package that supports the 
+L<Test::STDmaker::tmake()|Test::STDmaker/tmake> method.
+Any changes to the internal drive interface and this package will not
+even consider backward compatibility.
+Thus, this POD serves as a Software Design Folder 
+documentation the current internal design of the
+C<Test::STDmaker> and its driver packages.
+
+The C<Test::STDmaker::STD> package inherits the methods of the
+C<Test::STDmaker> package.
+The C<Test::STDmaker> C<build> C<generate> and <print>
+methods directs the C<Test::STDmaker::STD> to perform
+its work by calling its methods.
+
+The C<Test::STDmaker::STD> package methods use the L<Tie::Form|Tie::Form>
+methods to encode a STD POD and STD form database from the internal
+database checked by the C<Test::STDmaker::STD> package methods.
+The C<Test::STDmaker> package takes this data from the 
+C<Test::STDmaker::STD> package methods and generates a STD program
+module with a fresh POD and a checked C<__DATA__> form database
+with correctly counted C<ok> fields.
+The C<Test::STDmaker::STD> package useful product is tables
+that trace requirements to tests and test headers that may
+be used to link (cite) tests in the tracebility matrices and
+other PODs.
+
+During the course of the processing the C<Test::STDmaker::STD>
+package maintains the following in the C<$self> object
+data hash:
+
+=over 4
+
+=item $fields
+
+cumulative fields for the C<__DATA__> form section
+
+=item @requirements
+
+list of requirements for a test
+
+=item $test
+
+short hand test descriptions for a test
+
+=item $Test_Descriptions
+
+cumulative test descriptions POD
+
+=item %trace_req
+
+cumulative requirements to test hash
+
+=item %trace_test
+
+cumulative test to requirements hash
+
+=back
+
+The C<Test::STDmaker::STD> package processes following
+options that are passed as part of the C<$self> hash
+from C<Test::STDmaker> methods:
+
+=over 4
+
+=item fspec_out
+
+The file specification for the files in the
+C<__DATA__> form database.
+
+=back
+
 =head1 TEST DESCRIPTION METHODS
-
-=head2 N
-
- $file_data = N($command, $name_data)
 
 =head2 ok
 
  $file_data = ok($command, $test_number)
 
+If a C<ok> test description short hand is in a loop, 
+C<test_number> will contain
+multiple numbers. 
+The C<ok> splits C<$test_number> into separate tests and
+enters all combinations of the tests and the C<@requirements>
+object data into the C<%test_req> and C<%req_test> object data;
+after which, the subroutine resets C<@requements> to an empty list.
+The C<ok> subroutine formats C<$command, $test_number> in
+the L<Tie::Form> format and adds it to both the
+C<$test> and C<$fields> object data.
+The C<T> subroutine adds a ok header followed
+by the C<$test> formated short hand test descriptions
+to the C<$Test_Description> object data and resets
+the C<$test> object data to a empty string.
+The subroutine returns an empty string for C<$file_data>.
+
 =head2 R
 
  $file_data = R($command, $requirement_data)
+
+The C<R> subroutine formats C<$command, $requirement_data> in
+the L<Tie::Form> format and adds it to both the
+C<$test> and C<$fields> object data.
+The C<R> subroutine splits the C<$requirement_data> into
+individual requirements and adds them to C<@requirments>.
+The subroutine returns an empty string for C<$file_data>.
 
 =head2 T
 
  $file_data = T($command,  $tests )
 
+The C<T> subroutine formats C<$command, $data> in
+the L<Tie::Form> format and adds it to both the
+C<$test> and C<$fields> object data.
+The C<T> subroutine adds a test plan header followed
+by the C<$test> formated short hand test descriptions
+to the C<$Test_Description> object data and resets
+the C<$test> object data to a empty string.
+The subroutine returns an empty string for C<$file_data>.
+
 =head1 ADMINSTRATIVE METHODS
 
-=head2 start
+=head2 AUTOLOAD
 
- $file_data = start()
+The C<AUTOLOAD> routine formats C<$command, $data> in
+the L<Tie::Form> format and adds it to both the
+C<$test> and C<$fields> object data.
 
 =head2 finish
 
  $file_data = finish()
 
-=head2 post_print
+The C<finish> subroutine encodes and adds the
+last adminstrative fields to the C<fields> object
+data, builds the C<__DATA_> form database record,
+builds and adds the tracebility tables from the
+C<%test_req> and C<%req_test> hash to the
+C<Test_Description> object data, uses a build-in
+template and C<Test_Description> to build the
+STD POD, puts it all together and returns
+it in C<$file_data> to the C<Test::STDmaker>
+package methods.
 
- $file_data = post_print()
+=head2 start
+
+ $file_data = start()
+
+The <start> subroutine initializes the object data,
+and starts the C<fields> object data by adding
+encoded adminstrative fields.
+The subroutine returns an empty string for C<$file_data>.
 
 =head1 NOTES
 

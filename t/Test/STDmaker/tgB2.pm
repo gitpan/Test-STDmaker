@@ -10,8 +10,8 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE );
-$VERSION = '0.01';
-$DATE = '2004/04/09';
+$VERSION = '0.02';
+$DATE = '2004/05/18';
 $FILE = __FILE__;
 
 ########
@@ -28,6 +28,10 @@ $FILE = __FILE__;
 #
 
 
+=head1 NAME
+
+t::Test::STDmaker::tgB1 - Software Test Description for Test::STDmaker::tg1
+
 =head1 TITLE PAGE
 
  Detailed Software Test Description (STD)
@@ -40,7 +44,7 @@ $FILE = __FILE__;
 
  Version: 0.01
 
- Date: 2004/04/09
+ Date: 2004/05/16
 
  Prepared for: General Public 
 
@@ -48,35 +52,40 @@ $FILE = __FILE__;
 
  Classification: None
 
+#######
+#  
+#  1. SCOPE
+#
+#
 =head1 SCOPE
 
 This detail STD and the 
 L<General Perl Program Module (PM) STD|Test::STD::PerlSTD>
 establishes the tests to verify the
 requirements of Perl Program Module (PM) L<Test::STDmaker::tg1|Test::STDmaker::tg1>
-
 The format of this STD is a tailored L<2167A STD DID|Docs::US_DOD::STD>.
-in accordance with 
-L<Detail STD Format|Test::STDmaker/Detail STD Format>.
+
+#######
+#  
+#  3. TEST PREPARATIONS
+#
+#
+=head1 TEST PREPARATIONS
+
+Test preparations are establishes by the L<General STD|Test::STD::PerlSTD>.
+
 
 #######
 #  
 #  4. TEST DESCRIPTIONS
 #
-#  4.1 Test 001
 #
-#  ..
-#
-#  4.x Test x
-#
-#
-
 =head1 TEST DESCRIPTIONS
 
 The test descriptions uses a legend to
 identify different aspects of a test description
 in accordance with
-L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description Fields>.
+L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Database Test Description Fields>.
 
 =head2 Test Plan
 
@@ -168,16 +177,17 @@ L<Test::STDmaker::tg1>
 
 __DATA__
 
-File_Spec: Unix^
-UUT: Test::STDmaker::tg1^
-Revision: -^
-End_User: General Public^
 Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
-Detail_Template: ^
-STD2167_Template: ^
-Version: 0.01^
 Classification: None^
+Detail_Template: ^
+End_User: General Public^
+File_Spec: Unix^
+Name: t::Test::STDmaker::tgB1^
+Revision: -^
+STD2167_Template: ^
 Temp: temp.pl^
+UUT: Test::STDmaker::tg1^
+Version: 0.01^
 Demo: tgB1.d^
 Verify: tgB1.t^
 

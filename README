@@ -1,6 +1,6 @@
 NAME
-    Test::STDmaker - generates test scripts, demo scripts and STD program
-    module sections
+    Test::STDmaker - generate test scripts, demo scripts from a test
+    description short hand
 
 SYNOPSIS
      #######
@@ -62,12 +62,17 @@ DESCRIPTION
         the others.
 
     The "Test::STDmaker" package relieves the designer and developer from
-    the burden of filling out templates, counting oks, providing
-    documentation examples, tracing tests to test requirments, and other
-    such time consuming, boring, development tasks. Instead the designers
-    and developers need only to fill in an a form. The "Test::STDmaker" will
-    take it from there and automatically and quickly generate the desired
-    test scripts, demo scripts, and test description documents.
+    the burden of filling out word processor boiler plate templates (whether
+    run-off, Word, or vi), counting oks, providing documentation examples,
+    tracing tests to test requirments, making sure it is in the proper
+    corporate, ISO or military format, and other such extremely time
+    consuming, boring, development support tasks. Instead the designers and
+    developers need only to fill in a form using a test description short
+    hand. The "Test::STDmaker" will take it from there and automatically and
+    quickly generate the desired test scripts, demo scripts, and test
+    description documents. It does not make economically sense to have
+    expensive talent or even suppport clerks to manually do this work when
+    it can so easily be automated.
 
     The "Test::STDmaker" class package automates the generation of Software
     Test Descriptions (STD) Plain Old Documentation (POD), test scripts,
@@ -140,18 +145,18 @@ DESCRIPTION
      # @INC contains the absolute path for MyUnitUnderTest_dir 
      # and does not contain the absolute path for devlopment_dir
 
-    When "Test::STDmaker" searches for a STD form database program module,
-    it looks for it first under all the directories in @INC This means the
-    STD program module name must start with ""t::"". Thus the program module
-    name for the Unit Under Test (UUT), "MyTopLevel::MyUnitUNderTest", and
-    the UUT STD program module, "t::MyTopLevel::MyUnitUNderTest", are always
+    When "Test::STDmaker" methods searches for a STD PM, it looks for it
+    first under all the directories in @INC This means the STD program
+    module name must start with ""t::"". Thus the program module name for
+    the Unit Under Test (UUT), "MyTopLevel::MyUnitUNderTest", and the UUT
+    STD program module, "t::MyTopLevel::MyUnitUNderTest", are always
     different.
 
     Use the "tmake.pl" (test make), found in the distribution file, cover
     script for Test::STDmaker to process a STD database module to generate a
     test script for debug and development as follows:
 
-      tmake -verbose -nounlink -pm=t::MyTopLevel::MyUnitUnderTest
+     tmake -verbose -nounlink -pm=t::MyTopLevel::MyUnitUnderTest
 
     The "tmake" script creates a "$std" object and runs the "tmake" method
 
@@ -236,91 +241,13 @@ STD Program Module
 
   POD Section
 
-    The STD2167 POD is a tailored Software Test Description (STD) Data Item
-    Description (DID), STD that eliminates paragraphs that are not
-    applicable for Perl POD modules. This greatly improves the readability
-    of the document without any loss of information.
-
-    The tailoring removes paragraph levels, reducing the number of paragraph
-    levels from four to two.
-
-    While the tailoring improves the readability considerably, all tailoring
-    is reversible for strict, conserative compliance to the DID by an
-    appropriate special POD translator.
-
-    The tailoring is as follows:
-
-    Paragraph Numbers
-        The tailoring removed paragraph numbers in the Plain Old
-        Documentation (POD) file. Normal POD processing or post-processing
-        of the normal POD processing, html html whatever, can add the
-        paragraph numbers and other requirements that large number of
-        technical communities are so fond. POD processing is the proper
-        place for such window dressing, not the POD itself.
-
-    2. REFERENCE DOCUMENTS
-        Tailoring renames this section to *SEE ALSO* and moved it to the end
-        of the document. This is the customary location for this info for
-        the Unix community and where the Unix community expects to find this
-        information.
-
-    3. TEST PREPARATIONS
-        The test preparations are the same for all tests. The addition of
-        Perl modules is straight forward, consistent and the same for all
-        new Perl moduels.
-
-        To improve readability with no loss of data provided, the test
-        paragraph level x, 3.x.1, 3.x.2, 3.x.3, 3.x.4, of the Software Test
-        Description (STD) Data Item Description (DID), has been tailored
-        out.
-
-        Similarily sections 4.x.y.5, 4.x.y.6, 4.x.y.7, are the same for all
-        tests. The tailoring removes the x.y levels and moves this sections
-        to 3.4, 3.5 and 3.6 respectively.
-
-        The tailored Section 3 is as follows:
-
-         3. TEST PREPARATIONS
-
-         3.1 Hardware preparation
-
-         3.2 Software preparation
-
-         3.3 Other pre-test preparations
-
-         3.4 Criteria for evaluating results.
-
-         3.5 Test procedure.
-
-         3.6 Assumptions and constraints 
-
-    Section 4. TEST DESCRIPTIONS
-        For the addition of Perl program modules and scripts the paragraphs
-        4.x.y.1, 4.x.y.2, 4.x.y.3 and 4.x.y.4 are one-liners herein, and
-        there is only one test case per test. Tailoring removes the
-        confusing level y, and replaces the lower level with a simple item
-        list.
-
-        POD processing has the flexibility of changing a item list into a
-        level 3 paragraph.
-
-        The tailored Section 4 is as follows:
-
-          4. TEST DESCRIPTIONS
-
-          4.1 ${Unique Test ID 1}
-
-           (a) ${Unique Test ID 1} Requirements addressed:
-           (b) ${Unique Test ID 1} Test:
-           (c) ${Unique Test ID 1} Expected test results:
-
-          ..
-
-          4.x ${Unique Test ID x}
-
-           (a) ${Unique Test ID x} Requirements addressed:
-           (b) ${Unique Test ID x} Test:
-           (c) ${Unique Test ID x} Expected test results:
+    The POD sectin contains the detail STD for the program module under
+    test. US DOD 490A 3.1.2 allows for general/detail separation of
+    requirement for a group of configuration items with a set of common
+    requirements. Perl program modules qualify as such. This avoids
+    repetition of common requirements in detail specifications. The detail
+    specification and the referenced general specification then constitute
+    the total requirements.
 
   Form Database Section
 
@@ -374,7 +301,7 @@ STD Program Module
     to beat. And, altough most of us are adverse to forms, it makes good try
     of being people friendly.
 
-    An example of a STD FormDB follows:
+    An example of a STD Form follows:
 
      File_Spec: Unix^
      UUT: Test::STDmaker::tg1^
@@ -435,66 +362,78 @@ STD PM Form Database Fields
     The following database file fields are information needed to generate
     the documentation files and not information about the tests themselves:
 
-    Author field
-        The *prepare for* STD title page entry.
+  Author field
 
-    Classification field
-        Security classification.
+    The *prepare for* STD title page entry.
 
-    Copyright field
-        Any copyright and license requirements. This is integrated into the
-        Demo Script, Test Script and the STD module.
+  Classification field
 
-    Detail_Template field
-        This field contains a template program module that the
-        "Test::STDmaker" package method uses to generate the STD POD section
-        of the STD PM. Normally this field is left blank and the
-        "Test::STDmaker" package methods uses its built-in detail template.
+    Security classification.
 
-        The "Test::STDmaker" package methods merges the following variables
-        with the template in generating the "STD" file:
+  Copyright field
 
-        Date UUT_PM Revision End_User Author Classification Test_Script SVD
-        Tests STD_PM Test_Descriptions See_Also Trace_Requirement_Table
-        Trace_Test_Table Copyright
+    Any copyright and license requirements. This is integrated into the Demo
+    Script, Test Script and the STD module.
 
-    Demo field
-        The file for the "Demo output" relative to the STD PM directory.
+  Detail_Template field
 
-    End_User field
-        The *prepare for* STD title page entry.
+    This field contains a template program module that the "Test::STDmaker"
+    package method uses to generate the STD POD section of the STD PM.
+    Normally this field is left blank and the "Test::STDmaker" package
+    methods uses its built-in detail template.
 
-    File_Spec field
-        the operating system file specification used for the following
-        fields:
+    The "Test::STDmaker" package methods merges the following variables with
+    the template in generating the "STD" file:
 
-         Verify Demo
+    Date UUT_PM Revision End_User Author Classification Test_Script SVD
+    Tests STD_PM Test_Descriptions See_Also Trace_Requirement_Table
+    Trace_Test_Table Copyright
 
-        Valid values are Unix MacOS MSWin32 os2 VMS epoc. The scope of this
-        value is very limited. It does not apply to any file specification
-        used in the test steps nor the files used for input to the
-        "Test::STDmaker" package method.
+  Demo field
 
-    Revision field
-        Enter the revision for the STD POD. Revision numbers, in accordance
-        with standard engineering drawing practices are letters A .. B AA ..
-        ZZ except for the orginal revision which is -.
+    The file for the "Demo output" relative to the STD PM directory.
 
-    STD2167_Template field
-        Similar to the Detail_Template field except that the template is a
-        tailored STD2167 template.
+  End_User field
 
-    See_Also field
-        This section provides links to other resources.
+    The *prepare for* STD title page entry.
 
-    Test Description Fields
-        The Test Description Fields are described in the next section.
+  File_Spec field
 
-    UUT field
-        The Unit Under Test (UUT).
+    the operating system file specification used for the following fields:
 
-    Verify field
-        The file for the "Verify output" relative to the STD PM directory.
+     Verify Demo
+
+    Valid values are Unix MacOS MSWin32 os2 VMS epoc. The scope of this
+    value is very limited. It does not apply to any file specification used
+    in the test steps nor the files used for input to the "Test::STDmaker"
+    package method.
+
+  Revision field
+
+    Enter the revision for the STD POD. Revision numbers, in accordance with
+    standard engineering drawing practices are letters A .. B AA .. ZZ
+    except for the orginal revision which is -.
+
+  STD2167_Template field
+
+    Similar to the Detail_Template field except that the template is a
+    tailored STD2167 template.
+
+  See_Also field
+
+    This section provides links to other resources.
+
+  Test Description Fields
+
+    The Test Description Fields are described in the next section.
+
+  UUT field
+
+    The Unit Under Test (UUT).
+
+  Verify field
+
+    The file for the "Verify output" relative to the STD PM directory.
 
 STD PM Form Database Test Description Fields
     The test description fields are order sensitive data as follows:
@@ -736,6 +675,11 @@ METHODS
         Under Test (UUT) =headx Demonstration POD section. The STD PM UUT
         field specifies the UUT file.
 
+    nounlink
+         nounlink => 1
+
+        do not delete the check test script
+
     pm
          pm => $program_module
 
@@ -745,7 +689,7 @@ METHODS
 
          pm => t::Test::STDmaker::STDmaker
 
-        If there is no pm option, "tmake" subroutine uses "t::STD"
+        If there is no pm option, the "tmake" subroutine uses "t::STD"
 
     report option
          report => 1
@@ -759,10 +703,15 @@ METHODS
 
         run all generated test scripts using the Test::Harness
 
+    test_verbose option
+         test_verbose => 1           
+
+        use verbose mode when using the Test::Harness
+
     verbose option
          verbose => 1           
 
-        use verbose mode when using the Test::Harness
+        print out informative messages about processing steps and such
 
 INTERNAL METHODS
     The methods in this section are methods internal to the
@@ -840,30 +789,30 @@ REQUIREMENTS
     pod check [2]
         shall[2] passed the Pod::Checker check without error.
 
-  Clean FormDB requirements
+  Clean "Form Database Section" requirements
 
-    Before generating any output from a FormDB read from a STD PM, the
-    "Test::STDmaker" package methods fill clean the data. The requirements
-    for cleaning the data are as follows:
+    Before generating any output from a "Form Database Section" read from a
+    STD PM, the "Test::STDmaker" package methods fill clean the data. The
+    requirements for cleaning the data are as follows:
 
-    clean FormDB [1]
+    clean "Form Database Section" [1]
         The "Test::STDmaker" package methods shall[1] ensure there is a test
         step number field "ok: $test_number^" after each " E: $expected ^"
         and each "E: $expected^" field. The "$test_number" will apply to all
         fields preceding the "ok: $test_number^" to the previous "ok:
         $test_number^" or <T: $total_tests^> field
 
-    clean FormDB [2]
+    clean "Form Database Section" [2]
         The "Test::STDmaker" package methods shall[2] ensure all test
         numbers in the "ok: test_number^" fields are numbered the same as
         when executed by the test script.
 
-    clean FormDB [3]
+    clean "Form Database Section" [3]
         The "Test::STDmaker" package methods shall[3] ensure the first test
         field is "T: $total_tests^" where "$total_tests" is the number of
         "ok: $test_number^" fields.
 
-    clean FormDB [4]
+    clean "Form Database Section" [4]
         The "Test::STDmaker" package methods shall[4] include a "$todo_list"
         in the "T: $total_tests - $todo_list^" field where each number in
         the list is the $test_number for a "U: ^" field.
@@ -940,8 +889,8 @@ REQUIREMENTS
     When the "tmake" subroutine c<@targets> contains "STD", "all" (case
     insensitive) or is empty, the "Test::STDmaker" package methods, for each
     input STD PM, will generate the code and POD sections of the STD PM from
-    the FormDB section. The requirements for the generated STD output file
-    are as follow:
+    the "Form Database Section" section. The requirements for the generated
+    STD output file are as follow:
 
     STD PM POD [1]
         The "Test::STDmaker" package methods shall[2] produce the STD output
@@ -951,7 +900,7 @@ REQUIREMENTS
 
         "Copyright Revision End_User Author SVD Classification"
 
-        fields from the ".std" and the generated
+        fields from the "Form Database Section " and the generated
 
         "Date UUT_PM STD_PM Test_Descriptions Test_Script Tests
         Trace_Requirement_Table Trace_Requirement_Table"
@@ -965,31 +914,31 @@ REQUIREMENTS
         The current data
 
     UUT_PM
-        The Perl :: module specfication for the UUT field in the ".std"
-        database
+        The Perl :: module specfication for the UUT field in the "Form
+        Database Section " database
 
     STD_PM
-        The Perl :: module specification for the ".std" Unix file
-        specification
+        The Perl :: module specification for the "Form Database Section "
+        Unix file specification
 
     Test_Script
-        The the "Verify" field in the ".std" database
+        The the "Verify" field in the "Form Database Section " database
 
     Tests
-        The number of tests in the ".std" database
+        The number of tests in the "Form Database Section " database
 
     Test_Descriptions
         A description of a test defined by the fields between "ok:" fields
-        in the ".std" database. The test descriptions will be in a STD
-        format as tailored by STDtailor
+        in the "Form Database Section " database. The test descriptions will
+        be in a STD format as tailored by STDtailor
 
     Trace_Requirement_Table
         A table that relates the "R:" requirement fields to the test number
-        in the ".std" database.
+        in the "Form Database Section " database.
 
     Trace_Test_Table
-        A table that relates the test number in the ".std" database to the
-        "R:" requirement fields.
+        A table that relates the test number in the "Form Database Section "
+        database to the "R:" requirement fields.
 
     The usual template file is the "STD/STD001.fmt" file. This template is
     in the STD format as tailored by STDtailor.
@@ -1015,7 +964,8 @@ The "fgenerate" option processing requirements are as follows:
         with c<@targets> containing "Demo", shall[2] cause the c<tmake>
         method to execute the demo script that it generates and replace the
         "/(\n=head\d\s+Demonstration).*?\n=/i" section in the module named
-        by the "UUT" field in ".std" with the output from the demo script.
+        by the "UUT" field in "Form Database Section" with the output from
+        the demo script.
 
     run option [3]
         Specifying the option
@@ -2919,11 +2869,11 @@ Title Page
 
      Docs::Site_SVD::Test_STDmaker - Test Scripts, Demo Scripts and Software Test Description (STD) Automation
 
-     Revision: J
+     Revision: K
 
-     Version: 0.10
+     Version: 0.11
 
-     Date: 2004/05/14
+     Date: 2004/05/18
 
      Prepared for: General Public 
 
@@ -2983,7 +2933,7 @@ Title Page
 
   1.3 Document overview.
 
-    This document releases Test::STDmaker version 0.10 providing description
+    This document releases Test::STDmaker version 0.11 providing description
     of the inventory, installation instructions and other information
     necessary to utilize and track this release.
 
@@ -2995,7 +2945,7 @@ Title Page
 
     This document releases the file
 
-     Test-STDmaker-0.10.tar.gz
+     Test-STDmaker-0.11.tar.gz
 
     found at the following repository(s):
 
@@ -3012,16 +2962,6 @@ Title Page
          603 882-0846 E<lt>support@SoftwareDiamonds.comE<gt>
 
     License.
-        These files are a POD derived works from the hard copy public domain
-        version freely distributed by the United States Federal Government.
-
-        The original hardcopy version is always the authoritative document
-        and any conflict between the original hardcopy version governs
-        whenever there is any conflict. In more explicit terms, any conflict
-        is a transcription error in converting the origninal hard-copy
-        version to this POD format. Software Diamonds assumes no responsible
-        for such errors.
-
         Software Diamonds permits the redistribution and use in source and
         binary forms, with or without modification, provided that the
         following conditions are met:
@@ -3062,42 +3002,40 @@ Title Page
 
      file                                                         version date       comment
      ------------------------------------------------------------ ------- ---------- ------------------------
-     lib/Docs/Site_SVD/Test_STDmaker.pm                           0.10    2004/05/14 revised 0.09
-     MANIFEST                                                     0.10    2004/05/14 generated, replaces 0.09
-     Makefile.PL                                                  0.10    2004/05/14 generated, replaces 0.09
-     README                                                       0.10    2004/05/14 generated, replaces 0.09
-     lib/Test/STDmaker.pm                                         1.13    2004/05/14 revised 1.12
-     lib/Test/STDmaker/Check.pm                                   1.09    2004/05/14 new
-     lib/Test/STDmaker/Demo.pm                                    1.1     2004/05/14 new
-     lib/Test/STDmaker/STD.pm                                     1.08    2004/05/14 new
-     lib/Test/STDmaker/Verify.pm                                  1.1     2004/05/14 new
-     t/Test/STDmaker/STDmaker.d                                   0.11    2004/05/14 revised 0.1
-     t/Test/STDmaker/STDmaker.pm                                  0.09    2004/05/14 revised 0.08
-     t/Test/STDmaker/STDmaker.t                                   0.11    2004/05/14 revised 0.1
+     lib/Docs/Site_SVD/Test_STDmaker.pm                           0.11    2004/05/18 revised 0.10
+     MANIFEST                                                     0.11    2004/05/18 generated, replaces 0.10
+     Makefile.PL                                                  0.11    2004/05/18 generated, replaces 0.10
+     README                                                       0.11    2004/05/18 generated, replaces 0.10
+     lib/Test/STDmaker.pm                                         1.14    2004/05/18 revised 1.13
+     lib/Test/STDmaker/Check.pm                                   1.1     2004/05/18 revised 1.09
+     lib/Test/STDmaker/Demo.pm                                    1.11    2004/05/18 revised 1.1
+     lib/Test/STDmaker/STD.pm                                     1.09    2004/05/18 revised 1.08
+     lib/Test/STDmaker/Verify.pm                                  1.11    2004/05/18 revised 1.1
+     lib/Test/STD/PerlSTD.pm                                      1.07    2004/05/18 new
+     t/Test/STDmaker/STDmaker.d                                   0.12    2004/05/18 revised 0.11
+     t/Test/STDmaker/STDmaker.pm                                  0.1     2004/05/18 revised 0.09
+     t/Test/STDmaker/STDmaker.t                                   0.12    2004/05/18 revised 0.11
      t/Test/STDmaker/tg0.pm                                       0.03    2004/04/09 unchanged
-     t/Test/STDmaker/tg2A.pm                                      0.03    2004/05/14 revised 0.02
-     t/Test/STDmaker/tg2B.pm                                      0.04    2004/05/14 revised 0.03
-     t/Test/STDmaker/tgA0.pm                                      0.04    2004/05/14 revised 0.03
-     t/Test/STDmaker/tgA1.pm                                      0.04    2004/05/14 revised 0.03
-     t/Test/STDmaker/tgA2.pm                                      0.04    2004/05/14 revised 0.03
-     t/Test/STDmaker/tgA2A2.txt                                   0.1     2004/05/14 revised 0.09
-     t/Test/STDmaker/tgA2A3.txt                                   0.10    2004/05/14 new
-     t/Test/STDmaker/tgA2B.txt                                    0.08    2004/05/14 revised 0.07
-     t/Test/STDmaker/tgA2C.txt                                    0.09    2004/05/14 revised 0.08
-     t/Test/STDmaker/tgB0.pm                                      0.01    2004/04/09 unchanged
-     t/Test/STDmaker/tgB1.pm                                      0.01    2004/04/09 unchanged
-     t/Test/STDmaker/tgB2.pm                                      0.01    2004/04/09 unchanged
-     t/Test/STDmaker/tgB2.txt                                     0.09    2004/05/14 revised 0.08
-     t/Test/STDmaker/tgC0.pm                                      0.03    2004/04/09 unchanged
-     t/Test/STDmaker/tgC1.pm                                      0.01    2004/04/09 unchanged
-     t/Test/STDmaker/tgC2.pm                                      0.03    2004/04/09 unchanged
-     t/Test/STDmaker/tmake.pl                                     1.06    2004/05/14 new
-     t/Test/STDmaker/Text/Scrub.pm                                1.13    2004/05/14 revised 1.11
-     t/Test/STDmaker/Test/Tech.pm                                 1.25    2004/05/14 revised 1.19
-     t/Test/STDmaker/Data/Secs2.pm                                1.23    2004/05/14 revised 1.17
-     t/Test/STDmaker/Data/SecsPack.pm                             0.08    2004/05/14 revised 0.02
-     t/Test/Data/SecsPack.pm                                      0.08    2004/05/14 new
-     t/Test/Data/Startup.pm                                       0.06    2004/05/14 new
+     t/Test/STDmaker/tg2A.pm                                      0.03    2004/05/14 unchanged
+     t/Test/STDmaker/tg2B.pm                                      0.04    2004/05/14 unchanged
+     t/Test/STDmaker/tgA0.pm                                      0.05    2004/05/18 revised 0.04
+     t/Test/STDmaker/tgA2.pm                                      0.05    2004/05/18 revised 0.04
+     t/Test/STDmaker/tgA2A2.txt                                   0.1     2004/05/14 unchanged
+     t/Test/STDmaker/tgA2A3.txt                                   0.10    2004/05/14 unchanged
+     t/Test/STDmaker/tgA2B.txt                                    0.08    2004/05/14 unchanged
+     t/Test/STDmaker/tgA2C.txt                                    0.09    2004/05/14 unchanged
+     t/Test/STDmaker/tgB0.pm                                      0.02    2004/05/18 revised 0.01
+     t/Test/STDmaker/tgB2.pm                                      0.02    2004/05/18 revised 0.01
+     t/Test/STDmaker/tgB2.txt                                     0.09    2004/05/14 unchanged
+     t/Test/STDmaker/tgC0.pm                                      0.04    2004/05/18 revised 0.03
+     t/Test/STDmaker/tgC2.pm                                      0.04    2004/05/18 revised 0.03
+     t/Test/STDmaker/tmake.pl                                     1.06    2004/05/18 unchanged
+     t/Test/STDmaker/Text/Scrub.pm                                1.13    2004/05/18 unchanged
+     t/Test/STDmaker/Test/Tech.pm                                 1.25    2004/05/18 unchanged
+     t/Test/STDmaker/Data/Secs2.pm                                1.23    2004/05/18 unchanged
+     t/Test/STDmaker/Data/SecsPack.pm                             0.08    2004/05/18 unchanged
+     t/Test/Data/SecsPack.pm                                      0.08    2004/05/18 unchanged
+     t/Test/Data/Startup.pm                                       0.06    2004/05/18 unchanged
 
   3.3 Changes
 
@@ -3238,6 +3176,27 @@ Title Page
         Recoded so that none of the modules uses "File::Data" program
         module.
 
+    Test-STDmaker-0.11
+        CPAN is picking up the templates as PODs. Escape out the template
+        POD commands with a '\'.
+
+        Under certain test conditions, the Software Test Description (STD)
+        program module (PM) cannot be found.
+
+        From: "Thurn, Martin" <martin.thurn@ngc.com> Subject: FAIL
+        Test-STDmaker-0.10 sun4-solaris 2.8
+
+        Can't locate t/Test/STDmaker/tgA1.pm in @INC (@INC contains: .
+        /disk1/src/PERL/.cpanplus/5.9.1/5.9.1/build/Test-STDmaker-0.10/t/Tes
+        t
+
+        Added code that will add the appropriate directory to @INC for these
+        test conditions.
+
+        For regression tests, the POD describes the relationship between the
+        'lib' and the 't' directories so that the "Test::STDmaker" package
+        can find the STD PM.
+
   3.4 Adaptation data.
 
     This installation requires that the installation site has the Perl
@@ -3271,12 +3230,12 @@ Title Page
           http://www.softwarediamonds/packages/
           http://www.perl.com/CPAN/authors/id/S/SO/SOFTDIA/
 
-        Right click on 'Test-STDmaker-0.10.tar.gz' and download to a
+        Right click on 'Test-STDmaker-0.11.tar.gz' and download to a
         temporary installation directory. Enter the following where $make is
         'nmake' for microsoft windows; otherwise 'make'.
 
-         gunzip Test-STDmaker-0.10.tar.gz
-         tar -xf Test-STDmaker-0.10.tar
+         gunzip Test-STDmaker-0.11.tar.gz
+         tar -xf Test-STDmaker-0.11.tar
          perl Makefile.PL
          $make test
          $make install
@@ -3297,14 +3256,13 @@ Title Page
     Prerequistes.
          'File::AnySpec' => '1.1',
          'File::Package' => '1.1',
-         'File::Where' => '0.02',
+         'File::Where' => '1.16',
          'File::SmartNL' => '1.1',
-         'File::SubPM' => '1.1',
          'Text::Replace' => '1.08',
          'Text::Column' => '1.08',
          'File::Maker' => '0.03',
-         'Tie::Form' => '0.00',
-         'Tie::Layers' => '0.00',
+         'Tie::Form' => '0.02',
+         'Tie::Layers' => '0.04',
          'Test::Harness' => '2.42',
          'Data::Startup' => '0.02',
 
@@ -3325,24 +3283,7 @@ Title Page
 
   3.7 Possible problems and known errors
 
-    The open issues are as follows:
-
-    *   The STD2167 option, for a full singe STD, instead of a detailed STD
-        with a general STD, is commented out.
-
-    *   There is no requirement tracebility to a particular line in a file
-        containing the expected results
-
-    *   There is no provisions for Software Development Document (SDD)
-        design requirements and tracing functional requirements to design
-        requirements and to design requirements tests
-
-    *   Functional requirements are basically requirements important to the
-        end-user and stated from the point of view of the end-user. Test
-        coverage is not an issue. However, when design requirements are
-        added to the mix, test coverage of the design requirements becomes
-        important. Test coverage means as a minimum, the tests causes the
-        execution of all paths in the software under test.
+    Establish all the requirements.
 
 4.0 NOTES
     The following are useful acronyms:

@@ -16,8 +16,8 @@ use File::AnySpec;
 use File::SmartNL;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.1';
-$DATE = '2004/05/14';
+$VERSION = '1.11';
+$DATE = '2004/05/18';
 
 
 ########
@@ -98,7 +98,16 @@ EOF
 
 }
 
-
+#####
+# Reset verify only
+#
+sub  E 
+{ 
+    my ($self) = @_;
+    my $module = ref($self);
+    $self->{$module}->{'verify_only'} = '';
+    ''
+}
 
 sub DM { '' }
 
@@ -111,20 +120,6 @@ sub DO {
     $self->{$module}->{'verify_only'} = '';
     ''
 }
-
-
-
-#####
-# Reset verify only
-#
-sub  E 
-{ 
-    my ($self) = @_;
-    my $module = ref($self);
-    $self->{$module}->{'verify_only'} = '';
-    ''
-}
-
 
 
 #######
@@ -223,9 +218,6 @@ sub VO
 #
 #
 
-sub extension { '.d' }
-
-
 sub AUTOLOAD
 {
     our $AUTOLOAD;
@@ -234,15 +226,39 @@ sub AUTOLOAD
     undef;
 }
 
+sub extension { '.d' }
+
 sub finish
 {
     my ($self) = @_;
+    my $module = ref($self);
 
-    ########
-    #  End the test
-    #
-    my $data = $self->perl_podgen( );
-    $data
+    my (undef,undef,$demo_script) = File::Spec->splitpath( $self->{'Demo'} );
+    my $pm = File::AnySpec->fspec2pm($self->{File_Spec}, $self->{UUT});
+
+    << "EOF";
+
+\=head1 NAME
+
+$demo_script - demostration script for $pm
+
+\=head1 SYNOPSIS
+
+ $demo_script
+
+\=head1 OPTIONS
+
+None.
+
+\=head1 COPYRIGHT
+
+$self->{Copyright}
+
+## end of test script file ##
+
+\=cut
+
+EOF
 }
 
 
@@ -299,42 +315,6 @@ sub post_generate
      File::SmartNL->fout( $uut_file, $uut_contents);
  
      1   
-
-}
-
-
-
-sub perl_podgen
-{
-    my ($self) = @_;
-    my $module = ref($self);
-
-    my (undef,undef,$demo_script) = File::Spec->splitpath( $self->{'Demo'} );
-    my $pm = File::AnySpec->fspec2pm($self->{File_Spec}, $self->{UUT});
-
-    << "EOF";
-
-=head1 NAME
-
-$demo_script - demostration script for $pm
-
-=head1 SYNOPSIS
-
- $demo_script
-
-=head1 OPTIONS
-
-None.
-
-=head1 COPYRIGHT
-
-$self->{Copyright}
-
-## end of test script file ##
-
-=cut
-
-EOF
 
 }
 
@@ -465,18 +445,59 @@ __END__
 
 =head1 NAME
 
-Test::STDmaker::Demo - generates C<$mydemo . '.d'> demo script from the STD database
+Test::STDmaker::Demo - generate demo scripts from a test description short hand
 
 =head1 DESCRIPTION
 
-The C<Test::STDmaker::Demo> class inherits methods from C<Test::STD::FileGen>.
-The combine methods provides means to generate a demo script.
+The C<Test::STDmaker::Demo> package is an internal driver package to
+the L<Test::STDmaker|Test::STDmaker> package that supports the 
+L<Test::STDmaker::tmake()|Test::STDmaker/tmake> method.
+Any changes to the internal drive interface and this package will not
+even consider backward compatibility.
+Thus, this POD serves as a Software Design Folder 
+documentation the current internal design of the
+C<Test::STDmaker> and its driver packages.
 
-During the course of the processing the C<Test::STDmaker::Check>
+The C<Test::STDmaker::Check> package inherits the methods of the
+C<Test::STDmaker> package.
+The C<Test::STDmaker> C<build> C<generate> and <print>
+methods directs the C<Test::STDmaker::Demo> package to perform
+its work by calling its methods.
+
+The C<Test::STDmaker::Demo> methods builds a demo script whereby
+the demo script loads the L<Test::Tech|Test::Tech> package and
+uses the methods from the C<Test::Tech> package.
+
+During the course of the processing the C<Test::STDmaker::Demo>
 package maintains the following in the C<$self> object
 data hash:
 
 =over 4
+
+=item $skip
+
+condition that a test should be skipped
+
+=item $verify_only
+
+flag that a test is for the verify (test script) output only
+
+=back
+
+The C<Test::STDmaker::Demo> package has the following
+options that are passed as part of the C<$self> hash
+from C<Test::STDmaker> methods:
+
+=over 4
+
+=item demo
+
+Replaces the C<UUT> DEMONSTRATION POD section with
+the results from the demo script.
+
+=item replace 
+
+same as the C<demo> option
 
 =back
 
@@ -486,43 +507,87 @@ data hash:
 
  $file_data = A($command, $actual-expression )
 
+If the C<$verify_only> object data is set, the
+C<A> subroutine 
+resets the C<$verify_only> and C<$skip> object data and
+returns empty for C<file_data>;
+otherwise, performs the following.
+
+If the C<skip> flag is set, the C<A> subroutine
+adds the following to the demo script
+by returning it in C<$file_data>
+
+ demo( text_of($actual_expression), $actual-expression) )
+   unless C<$skip>;
+
+and resets the C<$skip> condition; otherwise
+
+ demo( text_of($actual_expression), $actual-expression) );
+
 =head2 E
  
  $file_data = E($command, $expected-expression)
+
+The C<E> subroutine resets the C<verify_only> object
+data and returns empty for C<$file_data>. 
 
 =head2 C
 
  $file_data = C($command, $code)
 
+If the C<$verify_only> object data is set, the
+C<C> subroutine returns empty for C<file_data>;
+otherwise, adds the following to the demo script
+by returning it in C<$file_data>
+
+  demo( text_of($actual_expression)) )
+  $actual-expression
+
 =head2 DM
 
  $file_data = DM($command, $msg)
 
-The C<DM> subroutine does nothing.
+The C<DM> subroutine returns empty for C<$file_data>.
 
 =head2 DO
 
  $file_data = DO($command, $comment)
 
+The C<DO> subroutine resets the C<verify_only> object
+data and returns empty for C<$file_data>. 
+
 =head2 N
 
  $file_data = N($command, $name_data)
+
+If the C<$verify_only> object data is set, the
+C<C> subroutine returns empty for C<file_data>;
+otherwise, adds the C<$name_data> as a comment
+to the demo script
+by returning it in C<$file_data>
 
 =head2 ok
 
  $file_data = ok($command, $test_number)
 
-The C<ok> subroutine does nothing.
+The C<ok> subroutine returns empty for C<$file_data>.
 
 =head2 QC
 
  $file_data = QC($command, $code)
 
+If the C<verify_only> object data is set, the
+C<QC> subroutine returns empty for C<file_data>;
+otherwise, adds the following to the demo script
+by returning it in C<$file_data>
+
+  $actual-expression
+
 =head2 R
 
  $file_data = R($command, $requirement_data)
 
-The C<R> subroutine does nothing.
+The C<R> subroutine returns empty for C<$file_data>.
 
 =head2 S
 
@@ -533,42 +598,62 @@ The C<R> subroutine does nothing.
 
  $file_data = SE($command, $expected-expression)
 
-The C<SE> subroutine does nothing.
+The C<SE> subroutine returns empty for C<$file_data>.
 
 =head2 SF
 
  $file_data = SF($command, "$value,$msg")
 
-The C<SF> subroutine does nothing.
+The C<SF> subroutine returns empty for C<$file_data>.
 
 =head2 T
 
  $file_data = T($command,  $tests )
 
-The C<T> subroutine does nothing.
+The C<T> subroutine returns empty for C<$file_data>.
 
 =head2 TS
 
  $file_data = TS(command, \&subroutine)
 
-The C<T> subroutine does nothing.
+The C<TS> subroutine returns empty for C<$file_data>.
 
 =head2 U
 
  $file_data = U($command, $comment)
 
-The C<T> subroutine does nothing.
+The C<U> subroutine returns empty for  C<$file_data>.
 
 =head2 VO
 
  $file_data = VO($command, $comment)
 
-The C{VO} subroutine sets the C<$verify_only> flag.
+The C{VO} subroutine sets the C<$verify_only> flag
+and returns empty for  C<$file_data>.
 
 
 =head1 ADMINSTRATIVE METHODS
 
 =head2 AUTOLOAD
+
+The C<AUTOLOAD> subroutine issues a warning
+whether called by the orphan method C<$AUTOLOAD>
+
+=head2 finish
+
+ $file_data = finish()
+
+The C<finish> subroutine returns adds a short POD
+to the demo script by returning it in C<$file_data>.
+
+=head2 post_print
+
+ $success = post_print()
+
+If either the C<demo> or C<replace> option is set,
+the C<post_print> subroutine will run the demo script
+and replace the DEMONSTRATION section of the UUT POD
+with the results. 
 
 =head2 start
 
@@ -576,14 +661,14 @@ The C{VO} subroutine sets the C<$verify_only> flag.
 
 The C<start> routine returns in C<$file_data> the
 C<BEGIN> and <END> block for the demo script.
-
-=head2 finish
-
- $file_data = finish()
-
-=head2 post_print
-
- $success = post_print()
+The C<BEGIN> block loads the L<Test::Tech|Test::Tech> 
+program module, changes the working directory
+to the directory of the demo script, and
+adds some extra directories to the front of
+C<@INC>.
+The <END> block restores everything to
+the state before the execution of the
+C<BEGIN> block.
 
 =head1 NOTES
 

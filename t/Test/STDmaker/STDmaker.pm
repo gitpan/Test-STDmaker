@@ -10,8 +10,8 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE );
-$VERSION = '0.09';
-$DATE = '2004/05/14';
+$VERSION = '0.1';
+$DATE = '2004/05/18';
 $FILE = __FILE__;
 
 ########
@@ -28,6 +28,10 @@ $FILE = __FILE__;
 #
 
 
+=head1 NAME
+
+t::Test::STDmaker::STDmaker - Software Test Description for Test::STDmaker
+
 =head1 TITLE PAGE
 
  Detailed Software Test Description (STD)
@@ -40,7 +44,7 @@ $FILE = __FILE__;
 
  Version: 
 
- Date: 2004/05/14
+ Date: 2004/05/17
 
  Prepared for: General Public 
 
@@ -48,35 +52,40 @@ $FILE = __FILE__;
 
  Classification: None
 
+#######
+#  
+#  1. SCOPE
+#
+#
 =head1 SCOPE
 
 This detail STD and the 
 L<General Perl Program Module (PM) STD|Test::STD::PerlSTD>
 establishes the tests to verify the
 requirements of Perl Program Module (PM) L<Test::STDmaker|Test::STDmaker>
-
 The format of this STD is a tailored L<2167A STD DID|Docs::US_DOD::STD>.
-in accordance with 
-L<Detail STD Format|Test::STDmaker/Detail STD Format>.
+
+#######
+#  
+#  3. TEST PREPARATIONS
+#
+#
+=head1 TEST PREPARATIONS
+
+Test preparations are establishes by the L<General STD|Test::STD::PerlSTD>.
+
 
 #######
 #  
 #  4. TEST DESCRIPTIONS
 #
-#  4.1 Test 001
 #
-#  ..
-#
-#  4.x Test x
-#
-#
-
 =head1 TEST DESCRIPTIONS
 
 The test descriptions uses a legend to
 identify different aspects of a test description
 in accordance with
-L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description Fields>.
+L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Database Test Description Fields>.
 
 =head2 Test Plan
 
@@ -457,13 +466,13 @@ L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description 
       require Config;
       $OS = $Config::Config{'osname'};
     } 
-    my $dir = File::Spec->catdir(cwd(),'lib');
-    $dir =~ s=/=\\=g if $OS eq 'MSWin32';
-    unshift @INC,$dir;
-    my @t_path = $tmaker->find_t_roots( );
-    $t_path[0] = $t_path[0]; # stop temp.pl warning
-    $dir = cwd();
-    $dir =~ s=/=\\=g if $OS eq 'MSWin32';
+    my($vol, $dir) = File::Spec->splitpath(cwd(),'nofile');
+    my @dirs = File::Spec->splitdir($dir);
+    pop @dirs; # pop STDmaker
+    pop @dirs; # pop Test
+    pop @dirs; # pop t
+    $dir = File::Spec->catdir($vol,@dirs);
+    my @t_path = $tmaker->find_t_roots();
  ^
   A: $t_path[0]^
   E: $dir^
@@ -669,16 +678,17 @@ ANY WAY OUT OF THE POSSIBILITY OF SUCH DAMAGE.
 
 __DATA__
 
-File_Spec: Unix^
-UUT: Test::STDmaker^
-Revision: -^
-End_User: General Public^
 Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
-Detail_Template: ^
-STD2167_Template: ^
-Version: ^
 Classification: None^
+Detail_Template: ^
+End_User: General Public^
+File_Spec: Unix^
+Name: t::Test::STDmaker::STDmaker^
+Revision: -^
+STD2167_Template: ^
 Temp: temp.pl^
+UUT: Test::STDmaker^
+Version: ^
 Demo: STDmaker.d^
 Verify: STDmaker.t^
 
@@ -1060,13 +1070,13 @@ ok: 13^
      require Config;
      $OS = $Config::Config{'osname'};
    } 
-   my $dir = File::Spec->catdir(cwd(),'lib');
-   $dir =~ s=/=\\=g if $OS eq 'MSWin32';
-   unshift @INC,$dir;
-   my @t_path = $tmaker->find_t_roots( );
-   $t_path[0] = $t_path[0]; # stop temp.pl warning
-   $dir = cwd();
-   $dir =~ s=/=\\=g if $OS eq 'MSWin32';
+   my($vol, $dir) = File::Spec->splitpath(cwd(),'nofile');
+   my @dirs = File::Spec->splitdir($dir);
+   pop @dirs; # pop STDmaker
+   pop @dirs; # pop Test
+   pop @dirs; # pop t
+   $dir = File::Spec->catdir($vol,@dirs);
+   my @t_path = $tmaker->find_t_roots();
 ^
 
  A: $t_path[0]^

@@ -7,8 +7,8 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE);
-$VERSION = '0.11';   # automatically generated file
-$DATE = '2004/05/14';
+$VERSION = '0.12';   # automatically generated file
+$DATE = '2004/05/18';
 
 
 ##### Demonstration Script ####
@@ -433,25 +433,25 @@ demo( "\ \ \ my\ \$OS\ \=\ \$\^O\;\ \ \#\ Need\ to\ escape\ the\ form\ delimitin
 \ \ \ \ \ require\ Config\;\
 \ \ \ \ \ \$OS\ \=\ \$Config\:\:Config\{\'osname\'\}\;\
 \ \ \ \}\ \
-\ \ \ my\ \$dir\ \=\ File\:\:Spec\-\>catdir\(cwd\(\)\,\'lib\'\)\;\
-\ \ \ \$dir\ \=\~\ s\=\/\=\\\\\=g\ if\ \$OS\ eq\ \'MSWin32\'\;\
-\ \ \ unshift\ \@INC\,\$dir\;\
-\ \ \ my\ \@t_path\ \=\ \$tmaker\-\>find_t_roots\(\ \)\;\
-\ \ \ \$t_path\[0\]\ \=\ \$t_path\[0\]\;\ \#\ stop\ temp\.pl\ warning\
-\ \ \ \$dir\ \=\ cwd\(\)\;\
-\ \ \ \$dir\ \=\~\ s\=\/\=\\\\\=g\ if\ \$OS\ eq\ \'MSWin32\'\;"); # typed in command           
+\ \ \ my\(\$vol\,\ \$dir\)\ \=\ File\:\:Spec\-\>splitpath\(cwd\(\)\,\'nofile\'\)\;\
+\ \ \ my\ \@dirs\ \=\ File\:\:Spec\-\>splitdir\(\$dir\)\;\
+\ \ \ pop\ \@dirs\;\ \#\ pop\ STDmaker\
+\ \ \ pop\ \@dirs\;\ \#\ pop\ Test\
+\ \ \ pop\ \@dirs\;\ \#\ pop\ t\
+\ \ \ \$dir\ \=\ File\:\:Spec\-\>catdir\(\$vol\,\@dirs\)\;\
+\ \ \ my\ \@t_path\ \=\ \$tmaker\-\>find_t_roots\(\)\;"); # typed in command           
          my $OS = $^O;  # Need to escape the form delimiting char ^
    unless ($OS) {   # on some perls $^O is not defined
      require Config;
      $OS = $Config::Config{'osname'};
    } 
-   my $dir = File::Spec->catdir(cwd(),'lib');
-   $dir =~ s=/=\\=g if $OS eq 'MSWin32';
-   unshift @INC,$dir;
-   my @t_path = $tmaker->find_t_roots( );
-   $t_path[0] = $t_path[0]; # stop temp.pl warning
-   $dir = cwd();
-   $dir =~ s=/=\\=g if $OS eq 'MSWin32';; # execution
+   my($vol, $dir) = File::Spec->splitpath(cwd(),'nofile');
+   my @dirs = File::Spec->splitdir($dir);
+   pop @dirs; # pop STDmaker
+   pop @dirs; # pop Test
+   pop @dirs; # pop t
+   $dir = File::Spec->catdir($vol,@dirs);
+   my @t_path = $tmaker->find_t_roots();; # execution
 
 demo( "\$t_path\[0\]", # typed in command           
       $t_path[0]); # execution

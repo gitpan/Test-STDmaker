@@ -10,12 +10,13 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE );
-$VERSION = '0.04';
-$DATE = '2004/05/14';
+$VERSION = '0.05';
+$DATE = '2004/05/18';
 $FILE = __FILE__;
 
 __DATA__
 
+Name: t::Test::STDmaker::tgA1^
 File_Spec: Unix^
 UUT: Test::STDmaker::tg1^
 Revision: -^

@@ -16,8 +16,8 @@ use vars qw($VERSION $DATE);
 use Cwd;
 use File::AnySpec;
 
-$VERSION = '1.09';
-$DATE = '2004/05/14';
+$VERSION = '1.1';
+$DATE = '2004/05/18';
 
 ########
 # Inherit classes
@@ -28,9 +28,8 @@ use vars qw(@ISA);
 
 use vars qw(@required_data_base); 
 @required_data_base = qw(
-    File_Spec UUT Revision End_User Author
-    Detail_Template STD2167_Template Version
-    Classification Temp See_Also Copyright HTML);
+   Author Classification Copyright Detail_Template  End_User File_Spec 
+   HTML Name  Revision See_Also STD2167_Template Temp UUT Version);
 
 #############################################################################
 #  
@@ -177,83 +176,7 @@ sub AUTOLOAD
     '';
 }
 
-sub start
-{
-
-    my ($self) = @_;
-
-    #########
-    # Always lead off with a N and a T
-    #
-    my @test_db = ('T', '');
-    my $module = ref($self);
-    $self->{$module}->{test_db} =  \@test_db;
-    $self->{$module}->{ok} = 1;
-    $self->{$module}->{success} = 1;
-    $self->{$module}->{todo} = [];
-    $self->{$module}->{name} = '';
-
-    ###########
-    # use in variables without have to backslash escape the dollar sign
-    # every which way in the below << here statement
-    #   
-    my ($__test__, $__restore_dir__) = ('$__test__', '$__restore_dir__');
-    my ($vol, $dirs, $T) = ('$vol', '$dirs', '$T');
-
-    << "EOF";
-#!perl
-#
-#
-
-BEGIN { 
-
-    use Cwd;
-    use FindBin;
-    use File::Spec;
-    use Test::Tech qw( finish is_skip ok plan skip skip_tests tech_config);
-    use vars qw(%__tests__ $__test__ $__restore_dir__);
-    
-    $__test__ = 0;
-    %__tests__ = ();
-
-    ########
-    # The working directory for this script file is the directory where
-    # the test script resides. Thus, any relative files written or read
-    # by this test script are located relative to this test script.
-    #
-    $__restore_dir__ = cwd();
-    my ($vol, $dirs) = File::Spec->splitpath(\$FindBin::Bin,'nofile');
-    chdir $vol if $vol;
-    chdir $dirs if $dirs;
-
-    #######
-    # Pick up any testing program modules off this test script.
-    #
-    # When testing on a target site before installation, place any test
-    # program modules that should not be installed in the same directory
-    # as this test script. Likewise, when testing on a host with a \@INC
-    # restricted to just raw Perl distribution, place any test program
-    # modules in the same directory as this test script.
-    #
-    use lib \$FindBin::Bin;
-}
-
-END {
-
-   finish( );
-
-   #########
-   # Restore working directory and \@INC back to when enter script
-   #
-   \@INC = \@lib::ORIG_INC;
-   chdir $__restore_dir__;
-
-}
-
-EOF
-
-
-}
+sub file_out { 'temp.pl' }
 
 sub finish
 {
@@ -284,8 +207,6 @@ sub finish
    # all required fields
    #
    $self->{File_Spec} = 'Unix' unless $self->{File_Spec};
-   my $fspec_out = ($self->{options}->{fspec_out}) ? 
-                  $self->{options}->{fspec_out} : $self->{File_Spec};
 
    my @required_data = @required_data_base;
    $self->{required_data} = \@required_data;
@@ -315,7 +236,7 @@ sub finish
        #######
        # Change generator spec to current operating system spec
        #
-       elsif( $self->{options}->{fspec_out} ) {
+       else {
            $self->{$generator} = File::AnySpec->fspec2os( 
                    $self->{File_Spec}, $self->{$generator} );
        }
@@ -417,15 +338,103 @@ sub post_print
 
 }
 
+sub start
+{
+
+    my ($self) = @_;
+
+    #########
+    # Always lead off with a N and a T
+    #
+    my @test_db = ('T', '');
+    my $module = ref($self);
+    $self->{$module}->{test_db} =  \@test_db;
+    $self->{$module}->{ok} = 1;
+    $self->{$module}->{success} = 1;
+    $self->{$module}->{todo} = [];
+    $self->{$module}->{name} = '';
+
+    ###########
+    # use in variables without have to backslash escape the dollar sign
+    # every which way in the below << here statement
+    #   
+    my ($__test__, $__restore_dir__) = ('$__test__', '$__restore_dir__');
+    my ($vol, $dirs, $T) = ('$vol', '$dirs', '$T');
+
+    << "EOF";
+#!perl
+#
+#
+
+BEGIN { 
+
+    use Cwd;
+    use FindBin;
+    use File::Spec;
+    use Test::Tech qw( finish is_skip ok plan skip skip_tests tech_config);
+    use vars qw(%__tests__ $__test__ $__restore_dir__);
+    
+    $__test__ = 0;
+    %__tests__ = ();
+
+    ########
+    # The working directory for this script file is the directory where
+    # the test script resides. Thus, any relative files written or read
+    # by this test script are located relative to this test script.
+    #
+    $__restore_dir__ = cwd();
+    my ($vol, $dirs) = File::Spec->splitpath(\$FindBin::Bin,'nofile');
+    chdir $vol if $vol;
+    chdir $dirs if $dirs;
+
+    #######
+    # Pick up any testing program modules off this test script.
+    #
+    # When testing on a target site before installation, place any test
+    # program modules that should not be installed in the same directory
+    # as this test script. Likewise, when testing on a host with a \@INC
+    # restricted to just raw Perl distribution, place any test program
+    # modules in the same directory as this test script.
+    #
+    use lib \$FindBin::Bin;
+}
+
+END {
+
+   finish( );
+
+   #########
+   # Restore working directory and \@INC back to when enter script
+   #
+   \@INC = \@lib::ORIG_INC;
+   chdir $__restore_dir__;
+
+}
+
+EOF
+
+
+}
+
+
 1
 
 __END__
 
 =head1 NAME
 
-Test::STDmaker::Check - checks STD database, runs probe script to determine # test, etc.
+Test::STDmaker::Check - checks a software test description short hand
 
 =head1 DESCRIPTION
+
+The C<Test::STDmaker::Check> package is an internal driver package to
+the L<Test::STDmaker|Test::STDmaker> package that supports the 
+L<Test::STDmaker::tmake()|Test::STDmaker/tmake> method.
+Any changes to the internal drive interface and this package will not
+even consider backward compatibility.
+Thus, this POD serves as a Software Design Folder 
+documentation the current internal design of the
+C<Test::STDmaker> and its driver packages.
 
 The C<Test::STDmaker::Check> package performs the following:
 
@@ -464,7 +473,7 @@ table from the check script.
 The C<Test::STDmaker::Check> package inherits the methods of the
 C<Test::STDmaker> package.
 The C<Test::STDmaker> C<build> C<generate> and <print>
-methods directs the C<Test::STDmaker::Check> to perform
+methods directs the C<Test::STDmaker::Check> package to perform
 its work by calling its methods.
 
 During the course of the processing the C<Test::STDmaker::Check>
@@ -505,16 +514,23 @@ A list of todo tests.
 
 =back
 
-The C<Test::STDmaker::Check> package use the following
-STD database options:
+The C<Test::STDmaker::Check> package has the following
+options that are passed as part of the C<$self> hash
+from C<Test::STDmaker> methods:
 
 =over 4
 
-=item File_Spec
+=item fspec_out
 
-Used by the
+The C<File_Spec> field determines he file specification for the STD database.
+The C<finish> routine will set the C<File_Spec> to the
+C<fspec_out> optin if it is present.
 
-=item 
+=item nounlink
+
+The C<post_generate> subroutine will not unlink the
+check script (usually temp.pl) if there is a nounlink
+option.
 
 =back
 
@@ -529,8 +545,7 @@ array in the same order as the test description fields.
 The C<$file_data> return from the test description
 methods are appended to the check test script.
 
-
-The test description fields are 
+The test description methods are 
 as follows. 
 
 =head2 A
@@ -689,27 +704,18 @@ causes a false error.
 
  $file_data = start();
 
-The C<start> subroutine initilizes the following
-flags
-
-=over 4
-
-=item demo_only
-
-=item demo_only_expected
-
-=item name
-
-=item ok
-
-=item success
-
-=item @todo
-
-=back
-
+The C<start> subroutine initilizes the object
+data.
 The C<start> routine returns in C<$file_data> the
-C<BEGIN> and <END> block for the check script.
+C<BEGIN> and <END> block for the demo script.
+The C<BEGIN> block loads the L<Test::Tech|Test::Tech> 
+program module, changes the working directory
+to the directory of the demo script, and
+adds some extra directories to the front of
+C<@INC>.
+The <END> block restores everything to
+the state before the execution of the
+C<BEGIN> block.
 
 =head2 finish
 

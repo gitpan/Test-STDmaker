@@ -12,12 +12,11 @@ use warnings::register;
 use File::Spec;
 use Cwd;
 use File::AnySpec;
-use File::SubPM;
 use File::Where;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.13';
-$DATE = '2004/05/14';
+$VERSION = '1.14';
+$DATE = '2004/05/18';
 
 use vars qw(@ISA @EXPORT_OK);
 @ISA = qw();
@@ -106,9 +105,19 @@ sub find_t_roots
    my ($t_dir,@dirs,$vol);
    my %t_root=();
    my @t_root = ();
+   my @t;
    foreach my $dir (@INC) {
        ($vol,$t_dir) = File::Spec->splitpath( $dir, 'nofile' );
        @dirs = File::Spec->splitdir($t_dir);
+       @t = ();
+       for (@dirs) {
+           if($_ eq 't') {
+               $t_dir = File::Spec->catdir( @t);
+               @t_root = (File::Spec->catpath( $vol, $t_dir, ''));
+               return @t_root;
+           }
+           push @t,$_;
+       } 
        pop @dirs;
        $t_dir = File::Spec->catdir( @dirs);
        $t_dir = File::Spec->catpath( $vol, $t_dir, '');
@@ -298,7 +307,7 @@ sub tmake
      ########
      # Load output generators
      #
-     my @generators = File::SubPM->sub_modules( __FILE__, 'STDmaker');
+     my @generators = File::Where->program_modules( __FILE__, 'file', 'STDmaker');
      my ($error);
      my @output_generators = ();
      foreach (@generators) {
@@ -321,7 +330,7 @@ sub tmake
      my $generator;
      for (@targets) {
          next if ref($_);
-         $generator = File::SubPM->is_module($_, @output_generators);
+         $generator = File::Where->is_module($_, @output_generators);
          $_ = $generator if $generator;     
      }
 
@@ -382,7 +391,7 @@ __END__
 
 =head1 NAME
 
-Test::STDmaker - generates test scripts, demo scripts and STD program module sections
+Test::STDmaker - generate test scripts, demo scripts from a test description short hand
 
 =head1 SYNOPSIS
 
@@ -471,16 +480,23 @@ capabilities is there for all the others.
 
 The C<Test::STDmaker> package relieves the designer
 and developer from the burden of filling
-out templates, counting oks, providing
+out word processor boiler plate templates
+(whether run-off, Word, or vi), 
+counting oks, providing
 documentation examples, tracing tests to
-test requirments, and other such time
-consuming, boring, development tasks.
+test requirments, making sure it is in the
+proper corporate, ISO or military format,
+and other such extremely time
+consuming, boring, development support tasks.
 Instead the designers and developers need
-only to fill in an a form. 
+only to fill in a form using a test description short hand.
 The C<Test::STDmaker> will take it from there
 and automatically and quickly generate
 the desired test scripts, demo scripts,
 and test description documents.
+It does not make economically sense to have expensive talent
+or even suppport clerks to manually do this work when it can so
+easily be automated.
 
 The C<Test::STDmaker> class package automates the
 generation of Software Test Descriptions (STD)
@@ -565,7 +581,7 @@ the C<MyUnitUnderTest> would be as follows:
  # @INC contains the absolute path for MyUnitUnderTest_dir 
  # and does not contain the absolute path for devlopment_dir
 
-When "Test::STDmaker" searches for a STD form database program module,
+When C<Test::STDmaker> methods searches for a STD PM,
 it looks for it first under all the directories in @INC
 This means the STD program module name must start with C<"t::">.
 Thus the program module name for the Unit Under
@@ -577,7 +593,7 @@ Use the C<tmake.pl> (test make), found in the distribution file,
 cover script for  L<Test::STDmaker|Test::STDmaker> to process a STD database
 module to generate a test script for debug and development as follows:
 
-  tmake -verbose -nounlink -pm=t::MyTopLevel::MyUnitUnderTest
+ tmake -verbose -nounlink -pm=t::MyTopLevel::MyUnitUnderTest
 
 The C<tmake> script creates a C<$std> object and runs the C<tmake> method
 
@@ -678,115 +694,16 @@ Perl code section and the STD POD section.
 
 =head2 POD Section
 
-The STD2167 POD is a tailored 
-Software Test Description (STD) 
-Data Item Description (DID), L<STD|Docs::US_DOD::STD> 
-that eliminates paragraphs that are not
-applicable for Perl POD modules.
-This greatly improves the
-readability of the document without any loss 
-of information.
-
-The tailoring removes paragraph levels, reducing
-the number of paragraph levels from four to two.
-
-While the tailoring improves the readability
-considerably, all tailoring is reversible 
-for strict, conserative compliance to the DID
-by an appropriate special POD translator.
-
-The tailoring is as follows:
-
-=over 4
-
-=item Paragraph Numbers
-
-The tailoring removed paragraph numbers in the 
-Plain Old Documentation (POD) file.
-Normal POD processing or post-processing of the
-normal POD processing, html html whatever, can
-add the paragraph numbers and other requirements
-that large number of technical communities are
-so fond. POD processing is the proper place
-for such window dressing, not the POD itself.
-
-=item 2. REFERENCE DOCUMENTS
-
-Tailoring renames this section to I<SEE ALSO> and
-moved it to the end of the document.
-This is the customary location for this info
-for the Unix community and where the Unix
-community expects to find this information.
-
-=item 3. TEST PREPARATIONS
-
-The test preparations are the same for all tests.
-The addition of Perl modules is straight forward,
-consistent and the same for all new Perl moduels.
-
-To improve readability with no loss of data provided, 
-the test paragraph level x,
-3.x.1, 3.x.2, 3.x.3, 3.x.4, 
-of the Software Test Description (L<STD|Docs::US_DOD::STD>)
-Data Item Description (DID),
-has been tailored out. 
-
-Similarily sections 4.x.y.5, 4.x.y.6, 4.x.y.7, are
-the same for all tests. The tailoring removes the
-x.y levels and moves this sections to 3.4, 3.5 and
-3.6 respectively.
-
-The tailored Section 3 is as follows:
-
- 3. TEST PREPARATIONS
-
- 3.1 Hardware preparation
-
- 3.2 Software preparation
-
- 3.3 Other pre-test preparations
-
- 3.4 Criteria for evaluating results.
-
- 3.5 Test procedure.
-
- 3.6 Assumptions and constraints 
-
-=item Section 4. TEST DESCRIPTIONS 
-
-For the addition of Perl program modules and
-scripts the paragraphs
-4.x.y.1, 4.x.y.2, 4.x.y.3 and
-4.x.y.4 are one-liners herein,
-and there is only one test case per test.
-Tailoring removes the confusing level y,
-and replaces the lower level with a
-simple item list.
-
-POD processing has the flexibility of changing
-a item list into a level 3 paragraph.
-
-The tailored Section 4 is as follows:
- 
-  4. TEST DESCRIPTIONS
-
-  4.1 ${Unique Test ID 1}
-
-   (a) ${Unique Test ID 1} Requirements addressed:
-   (b) ${Unique Test ID 1} Test:
-   (c) ${Unique Test ID 1} Expected test results:
-
-
-  ..
-
-
-  4.x ${Unique Test ID x}
-
-   (a) ${Unique Test ID x} Requirements addressed:
-   (b) ${Unique Test ID x} Test:
-   (c) ${Unique Test ID x} Expected test results:
-
-=back
+The POD sectin contains the detail STD for the
+program module under test.
+L<US DOD 490A 3.1.2|Docs::US_DOD::490A/3.1.2 Coverage of specifications.>
+allows for general/detail separation of requirement for a group
+of configuration items with a set of common requirements.
+Perl program modules qualify as such.
+This avoids repetition of common requirements
+in detail specifications.
+The detail specification and the referenced general specification
+then constitute the total requirements.
 
 =head2 Form Database Section 
 
@@ -866,7 +783,7 @@ And, altough most of us are adverse to
 forms, it makes good try of being
 people friendly.
 
-An example of a STD FormDB follows:
+An example of a STD Form follows:
 
  File_Spec: Unix^
  UUT: Test::STDmaker::tg1^
@@ -930,24 +847,22 @@ The following database file fields are information
 needed to generate the documentation files
 and not information about the tests themselves:
 
-=over 4
-
-=item Author field
+=head2 Author field
 
 The I<prepare for> STD title page
 entry.
 
-=item Classification field
+=head2 Classification field
 
 Security classification.
 
-=item Copyright field
+=head2 Copyright field
 
 Any copyright and license requirements.
 This is integrated into the Demo Script, Test Script
 and the STD module.
 
-=item Detail_Template field
+=head2 Detail_Template field
 
 This field contains a template program module
 that the C<Test::STDmaker> package method uses to generate
@@ -964,17 +879,17 @@ Date UUT_PM Revision End_User Author Classification
 Test_Script SVD Tests STD_PM Test_Descriptions See_Also
 Trace_Requirement_Table Trace_Test_Table Copyright
 
-=item Demo field
+=head2 Demo field
 
 The file for the L<C<Demo output>|Test::STDmaker/Demo output>
 relative to the STD PM directory.
 
-=item  End_User field
+=head2  End_User field
 
 The I<prepare for> STD title page
 entry.
 
-=item File_Spec field
+=head2 File_Spec field
 
 the operating system file specification
 used for the following fields:
@@ -987,7 +902,7 @@ It does not apply to any file specification
 used in the test steps nor the files used
 for input to the C<Test::STDmaker> package method.
 
-=item  Revision field
+=head2  Revision field
 
 Enter the revision for the STD POD.
 Revision numbers, in accordance
@@ -996,29 +911,28 @@ practices are letters A .. B AA .. ZZ
 except for the orginal revision which
 is -.
 
-=item STD2167_Template field
+=head2 STD2167_Template field
 
 Similar to the Detail_Template field except that
 the template is a tailored STD2167 template.
 
-=item See_Also field
+=head2 See_Also field
 
 This section provides links to other resources.
 
-=item Test Description Fields
+=head2 Test Description Fields
 
 The Test Description Fields are described in the next section.
 
-=item UUT field
+=head2 UUT field
 
 The Unit Under Test (UUT).
 
-=item Verify field
+=head2 Verify field
 
 The file for the L<C<Verify output>|Test::STDmaker/Verify output>
 relative to the STD PM directory.
 
-=back
 
 =head1 STD PM Form Database Test Description Fields
 
@@ -1295,7 +1209,13 @@ The C<@options]> are as follows:
 
 run the all demo scripts and use thier output to replace the
 Unit Under Test (UUT)  =headx Demonstration POD section.
-The STD PM  UUT field specifies the UUT file.
+The STD PM UUT field specifies the UUT file.
+
+=item nounlink
+
+ nounlink => 1
+
+do not delete the check test script
 
 =item pm
 
@@ -1309,7 +1229,7 @@ For example, the STD PM for this program module is
 
  pm => t::Test::STDmaker::STDmaker
 
-If there is no pm option, C<tmake> subroutine uses C<t::STD>
+If there is no pm option, the C<tmake> subroutine uses C<t::STD>
 
 =item report option
 
@@ -1325,11 +1245,17 @@ The STD PM  UUT field specifies the UUT file.
 
 run all generated test scripts using the L<Test::Harness|Test::Harness>
 
+=item test_verbose option
+
+ test_verbose => 1           
+
+use verbose mode when using the L<Test::Harness|Test::Harness>
+
 =item verbose option
 
  verbose => 1           
 
-use verbose mode when using the L<Test::Harness|Test::Harness>
+print out informative messages about processing steps and such
 
 =back
 
@@ -1430,15 +1356,15 @@ without error.
 
 =back
 
-=head2 Clean FormDB requirements
+=head2 Clean C<Form Database Section> requirements
 
-Before generating any output from a FormDB read from a STD PM,
+Before generating any output from a C<Form Database Section> read from a STD PM,
 the C<Test::STDmaker> package methods fill clean the data.
 The requirements for cleaning the data are as follows:
 
 =over 4
 
-=item clean FormDB [1]
+=item clean C<Form Database Section> [1]
 
 The C<Test::STDmaker> package methods shall[1] ensure there is a test 
 step number field C<ok: $test_number^> 
@@ -1446,19 +1372,19 @@ after each C< E: $expected ^> and each C<E: $expected^> field.
 The C<$test_number> will apply to all fields preceding the C<ok: $test_number^>
 to the previous C<ok: $test_number^> or <T: $total_tests^> field
 
-=item clean FormDB [2]
+=item clean C<Form Database Section> [2]
 
 The C<Test::STDmaker> package methods shall[2] ensure all test numbers in 
 the C<ok: test_number^> fields are numbered the same as when
 executed by the test script.
 
-=item clean FormDB [3]
+=item clean C<Form Database Section> [3]
 
 The C<Test::STDmaker> package methods shall[3] ensure the first test field is C<T: $total_tests^> 
 where C<$total_tests>
 is the number of C<ok: $test_number^> fields.
 
-=item clean FormDB [4]
+=item clean C<Form Database Section> [4]
 
 The C<Test::STDmaker> package methods shall[4] include a C<$todo_list> in the C<T: $total_tests - $todo_list^> field
 where each number in the list is the $test_number for a C<U: ^> field.
@@ -1553,7 +1479,7 @@ the C<S: $skip-condition>, C<VO: comment> and C<U: comment> test fields.
 When the C<tmake> subroutine c<@targets> contains C<STD>, C<all>
 (case insensitive) or is empty,  
 the C<Test::STDmaker> package methods, for each input STD PM,
-will generate the code and POD sections of the STD PM from the FormDB section. 
+will generate the code and POD sections of the STD PM from the C<Form Database Section> section. 
 The requirements for the generated STD output file are as follow:
 
 =over 4
@@ -1566,7 +1492,7 @@ C<STD2167_Template> field in the STD PM or a built-in template with the
 
 C<Copyright Revision End_User Author SVD Classification>
 
-fields from the C<.std> and the generated  
+fields from the C<Form Database Section > and the generated  
 
 C<Date UUT_PM STD_PM Test_Descriptions
 Test_Script Tests Trace_Requirement_Table Trace_Requirement_Table>
@@ -1586,35 +1512,35 @@ The current data
 
 =item UUT_PM
 
-The Perl :: module specfication for the UUT field in the C<.std> database
+The Perl :: module specfication for the UUT field in the C<Form Database Section > database
 
 =item STD_PM 
 
-The Perl :: module specification for the C<.std> Unix file specification
+The Perl :: module specification for the C<Form Database Section > Unix file specification
 
 =item Test_Script
 
-The the C<Verify> field in the C<.std> database
+The the C<Verify> field in the C<Form Database Section > database
 
 =item Tests
 
-The number of tests in the C<.std> database
+The number of tests in the C<Form Database Section > database
 
 =item Test_Descriptions
 
 A description of a test defined by the fields between
-C<ok:> fields in the C<.std> database.
+C<ok:> fields in the C<Form Database Section > database.
 The test descriptions will be in a L<STD|Docs::US_DOD::STD> format
 as tailored by L<STDtailor|STD::STDtailor>
 
 =item Trace_Requirement_Table
 
 A table that relates the C<R:> requirement fields to the test number
-in the C<.std> database.
+in the C<Form Database Section > database.
 
 =item Trace_Test_Table
 
-A table that relates the test number in the C<.std> database
+A table that relates the test number in the C<Form Database Section > database
 to the C<R:> requirement fields.
 
 =back
@@ -1648,7 +1574,7 @@ Specifying the option
 with c<@targets> containing C<Demo>, 
 shall[2] cause the c<tmake> method to execute the demo script that it generates
 and replace the C</(\n=head\d\s+Demonstration).*?\n=/i> section in
-the module named by the C<UUT> field in C<.std> with the output from the
+the module named by the C<UUT> field in C<Form Database Section> with the output from the
 demo script. 
 
 =item run option [3]

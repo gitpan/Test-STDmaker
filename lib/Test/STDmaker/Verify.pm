@@ -16,8 +16,8 @@ use File::Where;
 use Test::Harness 2.42;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.1';
-$DATE = '2004/05/14';
+$VERSION = '1.11';
+$DATE = '2004/05/18';
 
 ########
 # Inherit classes
@@ -33,109 +33,57 @@ use vars qw(@ISA);
 #
 #
 
-sub extension { '.t' };
-
-sub start
+sub A
 {
-    my ($self) = @_;
-    my $module = ref($self);
-    my $module_db = $self->{$module};
+   my ($self, $command,$data) = @_;
+   my $module = ref($self);
+   my $module_db = $self->{$module};
+   if ( $module_db->{demo_only} ) {
+       $module_db->{requirement} = '';
+       $module_db->{demo_only} = '';
+       $module_db->{demo_only_expected} = 1;
+       $module_db->{skip} = '';
+       $module_db->{test_name} = '';
+       $module_db->{diag_msg} = '';
+       $module_db->{test_subroutine} = '',
+       return '';
+   }
+   $module_db->{demo_only_expected} = '';
 
-    $module_db->{'requirement'} = '';
-    $module_db->{test_name} = '';
-    $module_db->{diag_msg} = '';
+   ######
+   # Save for expected the next statement
+   #
+   $self->{$module}->{actual} = $data;
 
+   ''  # writing actual out in the expected statement
 }
 
-
-sub finish
+sub C
 {
-     my ($self) = @_;
+   my ($self, $command, $data) = @_;
+   my $module = ref($self);
+   return '' if  $self->{$module}->{'demo_only'};
 
-    ########
-    #  End the test
-    #
-    $self->podgen( ); 
+   $data .= ';' if substr( $data, length($data)-1,1) ne ';';
+
+   << "EOF";
+   # Perl code from ${command}:
+$data
+
+EOF
+ 
 }
 
-
-#####
-#
-# Start generating the file 
-#
-sub post_generate
-{
-     my ($self) = @_;
-
-     my $module = ref($self);
-
-     #####
-     # Run the tests and use the output to
-     # replace the =head2 Test Report header in the UUT
-     # program module 
-     #
-     if ($self->{options}->{report}) {
-         my $test_report = ();
-         my $test_script = '';
-         my @test_report;
-         my $base_test_script;
-         foreach $test_script (@{$self->{$module}->{generated_files}}) {
-            (undef,undef,$base_test_script) = File::Spec->splitpath($test_script);
-            @test_report = `perl $test_script`;
-            $test_report .= "\n => perl $base_test_script\n\n";
-            $test_report .= join '',@test_report;
-         };
-         $test_report =~ s/\n/\n /g;         
-
-         ######
-         # Find uut file
-         #
-         my $uut = $self->{'UUT'};
-         if( $uut ) {
-            my ($uut_file) = File::Where->where_pm($uut);
-            if( $uut_file && -e $uut_file ) {
-                my $uut_contents = File::SmartNL->fin( $uut_file );
-                $uut_contents =~ s/(\n=head\d\s+Test Report).*?\n=/$1\n$test_report\n=/si;
-                File::SmartNL->fout( $uut_file, $uut_contents);
-             }
-            else {
-                warn("No UUT specified.\n");
-            }
-         }
-     }
-
-     #####
-     # Run tests under test harness
-     #
-     unless ($self->{options}->{run}) {
-         @{$self->{$module}->{generated_files}} = ();
-         return 1 
-     }
-
-     if( $self->{options}->{test_verbose} ) {
-         print( "~~~~\nRunning Tests\n\n" );
-         $Test::Harness::verbose = 1;
-     }
-     else {
-         $Test::Harness::verbose = 0;
-     } 
-
-     ########
-     # Run under eval because runtests is loaded with dies
-     #
-     eval 'runtests( @{$self->{$module}->{generated_files}} )';
-     print $@ if $@; # send any die messages to standard out
-
-     @{$self->{$module}->{generated_files}} = ();
-
-     print( "~~~~\nFinished running Tests\n\n" ) if $self->{options}->{test_verbose};
-
-     return 1;
-
-}
+sub DM 
+{ 
+   my ($self, $command, $data) = @_;
+   my $module = ref($self);
+   return '' if  $self->{$module}->{demo_only};
+   $self->{$module}->{diag_msg} = $data;
+   '' 
+};
 
 
-sub VO { '' }
 
 #######
 # Condition to skip a test
@@ -147,6 +95,202 @@ sub DO
     $self->{$module}->{demo_only} = "    $data";
     ''
 }
+
+
+
+
+
+sub E
+{
+   my ($self, $command, $data) = @_;
+   my $module = ref($self);
+   my $module_db = $self->{$module};
+
+   if ( $module_db->{demo_only_expected} ) {
+       $module_db->{requirement} = '';
+       $module_db->{demo_only_expected} = '';
+       $module_db->{skip} = '';
+       $module_db->{test_name} = '';
+       $module_db->{diag_msg} = '';
+       $module_db->{test_subroutine} = '',
+       return '';
+   }
+
+   my $skip = $module_db->{skip};
+   my $subroutine = $module_db->{test_subroutine};
+   my $requirement = $module_db->{requirement};
+   $module_db->{skip} = '';
+   $module_db->{requirement} = '';
+   $module_db->{test_subroutine} = '';
+
+   my $msg = '';
+   if($requirement) {
+       $requirement =~ s/\n/\n# /g;
+       $msg = "\n####\n# verifies requirement(s):\n# $requirement\n\n#####\n";
+   }
+
+   $msg .=  'skip_tests( 1 ) unless' . "\n  " if(  $command eq 'SE' );
+
+   if( $subroutine ) {        
+
+       #######
+       # Skip stop statement
+       #
+       if( $skip ) {
+           $msg .=  << "EOF";
+skip_sub( $subroutine, # test subroutine
+          $skip, # condition to skip test   
+          $module_db->{actual}, # actual results
+          $data,  # expected results
+          \"$module_db->{diag_msg}\",
+          \"$module_db->{test_name}\");
+ 
+EOF
+       }
+       
+       #######
+       # ok stop statement
+       #
+       else {
+
+           $msg .=  << "EOF";
+ok_sub( $subroutine, # test subroutine
+        $module_db->{actual}, # actual results
+        $data, # expected results
+        \"$module_db->{diag_msg}\",
+        \"$module_db->{test_name}\"); 
+
+EOF
+
+       }
+  
+
+   }
+   else {
+
+       #######
+       # Skip ok statement
+       #
+       if( $skip ) {
+           $msg .=  << "EOF";
+skip( $skip, # condition to skip test   
+      $module_db->{actual}, # actual results
+      $data, # expected results
+      \"$module_db->{diag_msg}\",
+      \"$module_db->{test_name}\");
+
+EOF
+       }
+       
+       #######
+       # ok statement
+       #
+       else {
+
+           $msg .=  << "EOF";
+ok(  $module_db->{actual}, # actual results
+     $data, # expected results
+     \"$module_db->{diag_msg}\",
+     \"$module_db->{test_name}\");
+
+EOF
+       }
+   }
+
+   $module_db->{test_name} = '';
+   $module_db->{diag_msg} = '',
+   $msg;
+
+}
+
+
+sub N 
+{ 
+   my ($self, $command, $data) = @_;
+   my $module = ref($self);
+   return '' if  $self->{$module}->{demo_only};
+   $self->{$module}->{test_name} = $data;
+   '' 
+};
+
+
+
+
+sub ok
+{
+   my ($self, $command,$data) = @_;
+
+   << "EOF";
+#  ${command}:  $data
+
+EOF
+
+}
+
+
+
+
+
+sub QC { C(@_) };
+
+sub R
+{
+   my ($self, $command,$data) = @_;
+   my $module = ref($self);
+   return '' if  $self->{$module}->{demo_only};
+
+   ######
+   # Accumulate for the next expected statement
+   #
+   $data .= "\n" if substr( $data, length($data)-1,1) ne "\n";
+   $self->{$module}->{'requirement'} .= "$data";
+   '';
+}
+
+
+sub S
+{
+   my ($self, $command,$data) = @_;
+   my $module = ref($self);
+   $self->{$module}->{skip} = $data;
+   '';
+}
+
+
+sub SE { E(@_) };
+
+
+sub SF
+{
+   my ($self, $command,$data) = @_;
+   
+   my @data;
+   if ($data ) {
+       @data = split /\s*,\s*/;
+   }
+   unless($data[0]) {
+       $data[0] = 1;
+   }
+  
+   if($data[1]) {
+
+   << "EOF";
+skip_tests( $data[0],$data[1] );
+
+EOF
+
+   }
+   else { 
+
+   << "EOF";
+skip_tests( $data[0] );
+
+EOF
+
+   }
+}
+
+
 
 
 sub T
@@ -272,68 +416,11 @@ END {
 }
 
 
-=head1 comment_out
-
-###
-# Have been problems with debugger with trapping CARP
-#
-
-####
-# Poor man's eval where the test script traps off the Carp::croak 
-# Carp::confess functions.
-#
-# The Perl authorities have Core::die locked down tight so
-# it is next to impossible to trap off of Core::die. Lucky 
-# must everyone uses Carp to die instead of just dieing.
-#
-use Carp;
-use vars qw($restore_croak $croak_die_error $restore_confess $confess_die_error);
-$restore_croak = \\&Carp::croak;
-$croak_die_error = '';
-$restore_confess = \\&Carp::confess;
-$confess_die_error = '';
-no warnings;
-*Carp::croak = sub {
-   $croak_die_error = '# Test Script Croak. ' . (join '', \@_);
-   $croak_die_error .= Carp::longmess (join '', \@_);
-   $croak_die_error =~ s/\\n/\\n#/g;
-       goto CARP_DIE; # once croak can not continue
-};
-*Carp::confess = sub {
-   $confess_die_error = '# Test Script Confess. ' . (join '', \@_);
-   $confess_die_error .= Carp::longmess (join '', \@_);
-   $confess_die_error =~ s/\\n/\\n#/g;
-       goto CARP_DIE; # once confess can not continue
-
-};
-use warnings;
-=cut
 
 
 EOF
 
 }
-
-
-sub N 
-{ 
-   my ($self, $command, $data) = @_;
-   my $module = ref($self);
-   return '' if  $self->{$module}->{demo_only};
-   $self->{$module}->{test_name} = $data;
-   '' 
-};
-
-
-sub DM 
-{ 
-   my ($self, $command, $data) = @_;
-   my $module = ref($self);
-   return '' if  $self->{$module}->{demo_only};
-   $self->{$module}->{diag_msg} = $data;
-   '' 
-};
-
 
 sub TS 
 { 
@@ -343,50 +430,6 @@ sub TS
    $self->{$module}->{test_subroutine} = $data;
    '' 
 };
-
-
-sub ok
-{
-   my ($self, $command,$data) = @_;
-
-   << "EOF";
-#  ${command}:  $data
-
-EOF
-
-}
-
-
-
-sub SF
-{
-   my ($self, $command,$data) = @_;
-   
-   my @data;
-   if ($data ) {
-       @data = split /\s*,\s*/;
-   }
-   else {
-       $data[0] = 1;
-   }
-  
-   if($data[1]) {
-
-   << "EOF";
-skip_tests( $data[0],$data[1] );
-
-EOF
-
-   }
-   else { 
-
-   << "EOF";
-skip_tests( $data );
-
-EOF
-
-   }
-}
 
 
 sub U
@@ -404,182 +447,25 @@ EOF
 }
 
 
-sub R
-{
-   my ($self, $command,$data) = @_;
-   my $module = ref($self);
-   return '' if  $self->{$module}->{demo_only};
+sub VO { '' }
 
-   ######
-   # Accumulate for the next expected statement
-   #
-   $data .= "\n" if substr( $data, length($data)-1,1) ne "\n";
-   $self->{$module}->{'requirement'} .= "$data";
-   '';
+##################################################################################
+#
+#                            ADMINSTRATIVE METHODS
+#
+#
+sub AUTOLOAD
+{
+    our $AUTOLOAD;
+    return undef if $AUTOLOAD =~ /DESTROY/;
+    warn "Method $AUTOLOAD not supported by STD::Gen::Verify";
+    undef;
 }
 
+sub extension { '.t' };
 
-sub S
+sub finish
 {
-   my ($self, $command,$data) = @_;
-   my $module = ref($self);
-   $self->{$module}->{skip} = $data;
-   '';
-}
-
-sub QC { C(@_) };
-sub C
-{
-   my ($self, $command, $data) = @_;
-   my $module = ref($self);
-   return '' if  $self->{$module}->{'demo_only'};
-
-   $data .= ';' if substr( $data, length($data)-1,1) ne ';';
-
-   << "EOF";
-   # Perl code from ${command}:
-$data
-
-EOF
- 
-}
-
-
-sub A
-{
-   my ($self, $command,$data) = @_;
-   my $module = ref($self);
-   my $module_db = $self->{$module};
-   if ( $module_db->{demo_only} ) {
-       $module_db->{requirement} = '';
-       $module_db->{demo_only} = '';
-       $module_db->{demo_only_expected} = 1;
-       $module_db->{skip} = '';
-       $module_db->{test_name} = '';
-       $module_db->{diag_msg} = '';
-       $module_db->{test_subroutine} = '',
-       return '';
-   }
-   $module_db->{demo_only_expected} = '';
-
-   ######
-   # Save for expected the next statement
-   #
-   $self->{$module}->{actual} = $data;
-
-   ''  # writing actual out in the expected statement
-}
-
-
-sub SE { E(@_) };
-sub E
-{
-   my ($self, $command, $data) = @_;
-   my $module = ref($self);
-   my $module_db = $self->{$module};
-
-   if ( $module_db->{demo_only_expected} ) {
-       $module_db->{requirement} = '';
-       $module_db->{demo_only_expected} = '';
-       $module_db->{skip} = '';
-       $module_db->{test_name} = '';
-       $module_db->{diag_msg} = '';
-       $module_db->{test_subroutine} = '',
-       return '';
-   }
-
-   my $skip = $module_db->{skip};
-   my $subroutine = $module_db->{test_subroutine};
-   my $requirement = $module_db->{requirement};
-   $module_db->{skip} = '';
-   $module_db->{requirement} = '';
-   $module_db->{test_subroutine} = '';
-
-   my $msg = '';
-   if($requirement) {
-       $requirement =~ s/\n/\n# /g;
-       $msg = "\n####\n# verifies requirement(s):\n# $requirement\n\n#####\n";
-   }
-
-   $msg .=  'skip_tests( 1 ) unless' . "\n  " if(  $command eq 'SE' );
-
-   if( $subroutine ) {        
-
-       #######
-       # Skip stop statement
-       #
-       if( $skip ) {
-           $msg .=  << "EOF";
-skip_sub( $subroutine, # test subroutine
-          $skip, # condition to skip test   
-          $module_db->{actual}, # actual results
-          $data,  # expected results
-          \"$module_db->{diag_msg}\",
-          \"$module_db->{test_name}\");
- 
-EOF
-       }
-       
-       #######
-       # ok stop statement
-       #
-       else {
-
-           $msg .=  << "EOF";
-ok_sub( $subroutine, # test subroutine
-        $module_db->{actual}, # actual results
-        $data, # expected results
-        \"$module_db->{diag_msg}\",
-        \"$module_db->{test_name}\"); 
-
-EOF
-
-       }
-  
-
-   }
-   else {
-
-       #######
-       # Skip ok statement
-       #
-       if( $skip ) {
-           $msg .=  << "EOF";
-skip( $skip, # condition to skip test   
-      $module_db->{actual}, # actual results
-      $data, # expected results
-      \"$module_db->{diag_msg}\",
-      \"$module_db->{test_name}\");
-
-EOF
-       }
-       
-       #######
-       # ok statement
-       #
-       else {
-
-           $msg .=  << "EOF";
-ok(  $module_db->{actual}, # actual results
-     $data, # expected results
-     \"$module_db->{diag_msg}\",
-     \"$module_db->{test_name}\");
-
-EOF
-       }
-   }
-
-   $module_db->{test_name} = '';
-   $module_db->{diag_msg} = '',
-   $msg;
-
-}
-
-
-
-sub podgen
-{
-
     my ($self) = @_;
 
     my (undef,undef,$test_script) = File::Spec->splitpath( $self->{'Verify'} );
@@ -589,24 +475,6 @@ sub podgen
 
     my $msg = << "EOF";
 
-=head1 comment out
-
-# does not work with debugger
-CARP_DIE:
-    if ($croak_die_error || $confess_die_error) {
-        print \$Test::TESTOUT = "not ok \$Test::ntest\\n";
-        \$Test::ntest++;
-        print \$Test::TESTERR $croak_die_error . $confess_die_error;
-        $croak_die_error = '';
-        $confess_die_error = '';
-        skip_tests(1, 'Test invalid because of Carp die.');
-    }
-    no warnings;
-    *Carp::croak = $restore_croak;    
-    *Carp::confess = $restore_confess;
-    use warnings;
-=cut
-
     finish();
 
 __END__
@@ -615,29 +483,29 @@ __END__
 
 $test_script - test script for $self->{UUT}
 
-=head1 SYNOPSIS
+\=head1 SYNOPSIS
 
  $test_script -log=I<string>
 
-=head1 OPTIONS
+\=head1 OPTIONS
 
 All options may be abbreviated with enough leading characters
 to distinguish it from the other options.
 
-=over 4
+\=over 4
 
-=item C<-log>
+\=item C<-log>
 
 $test_script uses this option to redirect the test results 
 from the standard output to a log file.
 
-=back
+\=back
 
-=head1 COPYRIGHT
+\=head1 COPYRIGHT
 
 $self->{Copyright}
 
-=cut
+\=cut
 
 ## end of test script file ##
 
@@ -645,12 +513,100 @@ EOF
 
 }
 
-sub AUTOLOAD
+
+
+
+
+#####
+#
+# Start generating the file 
+#
+sub post_generate
 {
-    our $AUTOLOAD;
-    return undef if $AUTOLOAD =~ /DESTROY/;
-    warn "Method $AUTOLOAD not supported by STD::Gen::Verify";
-    undef;
+     my ($self) = @_;
+
+     my $module = ref($self);
+
+     #####
+     # Run the tests and use the output to
+     # replace the =head2 Test Report header in the UUT
+     # program module 
+     #
+     if ($self->{options}->{report}) {
+         my $test_report = ();
+         my $test_script = '';
+         my @test_report;
+         my $base_test_script;
+         foreach $test_script (@{$self->{$module}->{generated_files}}) {
+            (undef,undef,$base_test_script) = File::Spec->splitpath($test_script);
+            @test_report = `perl $test_script`;
+            $test_report .= "\n => perl $base_test_script\n\n";
+            $test_report .= join '',@test_report;
+         };
+         $test_report =~ s/\n/\n /g;         
+
+         ######
+         # Find uut file
+         #
+         my $uut = $self->{'UUT'};
+         if( $uut ) {
+            my ($uut_file) = File::Where->where_pm($uut);
+            if( $uut_file && -e $uut_file ) {
+                my $uut_contents = File::SmartNL->fin( $uut_file );
+                $uut_contents =~ s/(\n=head\d\s+Test Report).*?\n=/$1\n$test_report\n=/si;
+                File::SmartNL->fout( $uut_file, $uut_contents);
+             }
+            else {
+                warn("No UUT specified.\n");
+            }
+         }
+     }
+
+     #####
+     # Run tests under test harness
+     #
+     unless ($self->{options}->{run}) {
+         @{$self->{$module}->{generated_files}} = ();
+         return 1 
+     }
+
+     if( $self->{options}->{test_verbose} ) {
+         print( "~~~~\nRunning Tests\n\n" );
+         $Test::Harness::verbose = 1;
+     }
+     else {
+         $Test::Harness::verbose = 0;
+     } 
+
+     ########
+     # Run under eval because runtests is loaded with dies
+     #
+     eval 'runtests( @{$self->{$module}->{generated_files}} )';
+     print $@ if $@; # send any die messages to standard out
+
+     @{$self->{$module}->{generated_files}} = ();
+
+     print( "~~~~\nFinished running Tests\n\n" ) if $self->{options}->{test_verbose};
+
+     return 1;
+
+}
+
+
+
+sub start
+{
+     my ($self) = @_;
+     my $module = ref($self);
+     my $module_db = $self->{$module};
+
+     $module_db->{requirement} = '';
+     $module_db->{demo_only} = '';
+     $module_db->{demo_only_expected} = 1;
+     $module_db->{skip} = '';
+     $module_db->{test_name} = '';
+     $module_db->{diag_msg} = '';
+     $module_db->{test_subroutine} = '',
 }
 
 1
@@ -659,89 +615,353 @@ __END__
 
 =head1 NAME
 
-Test::STDmaker::Verify - generates the C<$mytest . '.t'> test script from the STD database
+Test::STDmaker::Verify - generate test scripts from a test description short hand
+
+=head1 DESCRIPTION
+
+The C<Test::STDmaker::Verify> package is an internal driver package to
+the L<Test::STDmaker|Test::STDmaker> package that supports the 
+L<Test::STDmaker::tmake()|Test::STDmaker/tmake> method.
+Any changes to the internal drive interface and this package will not
+even consider backward compatibility.
+Thus, this POD serves as a Software Design Folder 
+documentation the current internal design of the
+C<Test::STDmaker> and its driver packages.
+
+The C<Test::STDmaker::Verify> package inherits the methods of the
+C<Test::STDmaker> package.
+The C<Test::STDmaker> C<build> C<generate> and <print>
+methods directs the C<Test::STDmaker::Verify> package to perform
+its work by calling its methods.
+
+The C<Test::STDmaker::Verify> methods builds a test script whereby
+the test script loads the L<Test::Tech|Test::Tech> package and
+uses the methods from the C<Test::Tech> package.
+
+During the course of the processing the C<Test::STDmaker::Verify>
+package maintains the following in the C<$self> object
+data hash:
+
+=over 4
+
+=item $actual
+
+the actual results
+
+=item $diag_msg
+
+a diagnostic message
+
+=item $demo_only
+
+Flags if the test is demo only and 
+will be ignore as far as the generating
+the check test script
+
+=item $demo_only_expected
+
+Once only flag set by the C<A> subroutine
+and reset by the next C<E> subroutine.
+There should be no C<E> subroutine after
+a C<A> demo only subroutine.
+
+=item $requirement
+
+requirements addressed by test
+
+=item $skip
+
+skip condition
+
+=item $name
+
+the name of the test
+
+=item $subroutine
+
+a reference to a test subroutine
+
+}
+
+=back
+
+The C<Test::STDmaker::Verify> package processes the following
+options that are passed as part of the C<$self> hash
+from C<Test::STDmaker> methods:
+
+=over 4
+
+=item report
+
+Replace the UUT POD 'Test Report' section with the
+results from the test script
+
+=item run
+
+Run the test script under the L<Test::Harness|Test::Harness>
+
+=item test_verbose
+
+Set any L<Test::Harness|Test::Harness> run to verbose
+
+=back
 
 =head1 TEST DESCRIPTION METHODS
 
 =head2 A
 
- $file_data = A($command, $actual-expression )
+ $file_data = A($command, $actual-expression );
+
+If the C<demo_only> object data is set, the
+C<A> subroutine 
+resets the object data and
+returns empty for C<$file_data>;
+otherwise, the subroutine saves
+the C<$actual-expression> in the
+C<$actual> object data and returns
+empty for C<$file_data>.
+
+=head2 C
+
+ $file_data = C($command, $code);
+
+If the C<demo_only> object data is set, the
+C<C> subroutine returns empty for C<$file_data>;
+otherwise, the subroutine 
+returns C<$file_data> with C<$code> and a comment.
+
+=head2 DM
+
+ $file_data = DM($command, $msg);
+
+If the C<demo_only> object data is set, the
+C<DM> subroutine returns empty for C<$file_data>;
+otherwise, the subroutine 
+sets C<$diag_msg> object data to C<$msg> and
+returns an empty for C<$file_data>
+
+=head2 DO
+
+ $file_data = DO($command, $comment);
+
+The C<DO> subroutine 
+sets C<$demo_only> object data to C<$comment> and
+returns an empty for C<$file_data>
 
 =head2 E
  
  $file_data = E($command, $expected-expression)
 
-=head2 C
+If the C<demo_only> object data is set, the
+C<E> subroutine 
+resets the object data and
+returns empty for C<$file_data>;
+otherwise, the subroutine builds
+and returns C<$file_data> as follows:
 
- $file_data = C($command, $code)
+=over 4
 
-=head2 DO
+=item  requirements
 
- $file_data = DO($command, $comment)
+adds the C<$requirement> object data as a comment of the
+requirementd addressed
 
-=head2 DM
+=item skip with subroutine
 
- $file_data = DM($command, $msg)
+if there is C<$skip> and C<$subroutine> data,
+adds the below (all arguments except $expected-expression
+are object data):
+
+  skip_sub( $subroutine,
+          $skip,    
+          $actual,
+          $expected-expression,
+          $diag_msg,
+          $name);
+
+=item skip without subroutine
+
+if there is C<$skip> and no C<$subroutine> data,
+adds the below (all arguments except $expected-expression
+are object data):
+
+  skip( $subroutine,
+          $skip,    
+          $actual,
+          $expected-expression,
+          $diag_msg,
+          $name);
+
+=item no skip and subroutine
+
+if there is no C<$skip> and C<$subroutine> data,
+adds the below (all arguments except $expected-expression
+are object data):
+
+  ok_sub( $subroutine,
+          $actual,
+          $expected-expression,
+          $diag_msg,
+          $name);
+
+=item no skip and no subroutine
+
+if there is no C<$skip> and no C<$subroutine> data,
+adds the below (all arguments except $expected-expression
+are object data):
+
+  ok( $actual,
+      $expected-expression,
+      $diag_msg,
+      $name);
+
+=back
+
+=item reset object data
+
+reset the appropriate object data before return
+the above describe construction as C<$file_data>.
 
 =head2 N
 
- $file_data = N($command, $name_data)
+ $file_data = N($command, $name_data);
+
+If the C<demo_only> object data is set, the
+C<N> subroutine returns empty for C<$file_data>;
+otherwise, the subroutine 
+sets C<$name> object data to C<$name_data> and
+returns an empty for C<$file_data>
 
 =head2 ok
 
- $file_data = ok($command, $test_number)
+ $file_data = ok($command, $test_number);
+
+The
+C<ok> subroutine 
+returns the following for C<$file_data>
+
+ # ok: $test_number
 
 =head2 QC
 
- $file_data = QC($command, $code)
+ $file_data = QC($command, $code);
+
+If the C<demo_only> object data is set, the
+C<QC> subroutine returns empty for C<$file_data>;
+otherwise, the subroutine 
+returns C<$file_data> with C<$code> and a comment.
 
 =head2 R
 
- $file_data = R($command, $requirement_data)
+ $file_data = R($command, $requirement_data);
+
+If the C<demo_only> object data is set, the
+C<R> subroutine returns empty for C<$file_data>;
+otherwise, the subroutine 
+sets C<$requirement> object data to C<$requirement_data> and
+returns an empty for C<$file_data>
 
 =head2 S
 
- $file_data = S($command, $expression)
+ $file_data = S($command, $expression);
 
-
-=head2 SF
-
- $file_data = SF($command, "$value,$msg")
+If the C<demo_only> object data is set, the
+C<S> subroutine returns empty for C<$file_data>;
+otherwise, the subroutine 
+sets C<$skip> object data to C<$expression> and
+returns an empty for C<$file_data>
 
 =head2 SE
 
- $file_data = SE($command, $expected-expression)
+ $file_data = SE($command, $expected-expression);
 
+The C<SE> subroutine performs the same processing
+as the C<S> subroutine expect that the subroutine 
+also adds the following to the beginning of
+C<$file_data>:
+
+ skip_tests( 1 ) unless
+
+Thus, if the test fails the rest of the tests
+are skipped effectively stopping the testing.
+
+=head2 SF
+
+ $file_data = SF($command, "$value,$msg");
+
+The C<SF> command splits C<"$value,$msg">
+and returns the following as C<$file_data>
+
+ skip_tests($value,$msg)
 
 =head2 T
 
- $file_data = T($command,  $tests )
+ $file_data = T($command,  $tests );
+
+The C<T> routine returns in C<$file_data> the
+C<BEGIN> and <END> block for the demo script.
+The C<BEGIN> block loads the L<Test::Tech|Test::Tech> 
+program module, 
+executes a C<plan($tests)>,
+changes the working directory
+to the directory of the demo script, and
+adds some extra directories to the front of
+C<@INC>.
+The <END> block restores everything to
+the state before the execution of the
+C<BEGIN> block.
 
 =head2 TS
 
- $file_data = TS(command, \&subroutine)
+ $file_data = TS(command, \&subroutine);
+
+If the C<demo_only> object data is set, the
+C<TS> subroutine returns empty for C<$file_data>;
+otherwise, the subroutine 
+sets C<$subroutine> object data to C<\&subroutine> and
+returns an empty for C<$file_data>
 
 =head2 U
 
- $file_data = U($command, $comment)
+ $file_data = U($command, $comment);
 
 =head2 VO
 
- $file_data = VO($command, $comment)
+ $file_data = VO($command, $comment);
+
+The C<VO> subroutine returns a empty
+for C<$file_data>.
 
 =head1 ADMINSTRATIVE METHODS
 
-=head2 start
-
- $file_data = start()
-
 =head2 finish
 
- $file_data = finish()
+ $file_data = finish();
+
+The C<finish> subroutine returns adds a short POD
+to the test script by returning it in C<$file_data>.
 
 =head2 post_print
 
- $success = post_print()
+ $success = post_print();
+
+If the C<report> option is set,
+the C<post_print> subroutine will run the test script
+and replace the 'Test Report' section of the UUT POD
+with the results. 
+
+If the C<run> option is set,
+the C<post_print> subroutine will run the test script
+under the L<Test::Harness|Test::Harness>. If the
+C<test_verbose> option is set, the subroutine runs
+the test harness in verbose.
+
+=head2 start
+
+ $file_data = start();
+
+The C<start> routine initializes the
+object data.
 
 =head1 NOTES
 
