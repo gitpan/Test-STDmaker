@@ -1,0 +1,1842 @@
+#!perl
+#
+# Documentation, copyright and license is at the end of this file.
+#
+package  Test::STDmaker;
+
+use 5.001;
+use strict;
+use warnings;
+use warnings::register;
+
+use File::Spec;
+use Cwd;
+use Test::TestUtil;
+
+use vars qw($VERSION $DATE);
+$VERSION = '1.04';
+$DATE = '2003/06/14';
+
+#####
+# Gen data and write data to an output file
+#
+sub fgenerate
+{
+     my (undef, @std) = @_;
+     my $self = {};
+
+     ########
+     # Have hash pointer, have options
+     # Normally $self is not blessed and not a hash so cannot
+     # drop %options into the $self hash
+     # 
+     my $options = {}; 
+     $options = pop @std if ref($std[-1]) eq 'HASH';
+
+     #######
+     # Take care of the file input
+     #
+     unless( @std ) {
+         warn( "No files specified.\n" );
+         return undef;
+     }
+     $options->{output} = 'all' unless $options->{output};
+     my $output_type = $options->{output};
+
+     my @output_type=();
+     $output_type = join ' ',@$output_type if ref($output_type) eq 'ARRAY';
+     if( ref($output_type) ) {
+         my $type = ref($output_type);
+         warn( "Cannot process output_type referenced to a $type\n" );
+         return undef;
+     }
+
+     ########
+     # Load output generators
+     #
+     my @generators = Test::TestUtil->drivers( __FILE__, 'STDtype');
+     my $error;
+     foreach my $generator (@generators) {
+          $error = Test::TestUtil->load_package( "Test::STDtype::$generator" );
+          if( $error ) {
+             warn "\t$error\n";
+             next;
+          }
+     }
+     $self->{generators} = \@generators;
+
+     ########
+     # Determine output types
+     #
+     ($output_type) = $output_type =~ /^\s*(.*)\s*$/;
+     if ( $output_type =~ /all/i ) {
+        my $all = join ' ',@generators;
+        $output_type =~ s/all/$all/i;
+     }
+     @output_type = split /(?: |,|;)+/, $output_type;  # have list of outputs
+     while (!$output_type[0]) {shift @output_type};
+     $options->{output_type} = join (' ', @output_type);
+
+     #######
+     # Take care of the case where there is two files
+     #
+     #  @file =>   $file_in $file_out
+     #
+     $options->{file_out} = '' unless( @output_type == 1 && @std == 1);
+
+     my $success = 1;
+     my $gen_success = 1;
+     print( "SoftwareDiamonds.com - Harnessing the power of automation.\n\n" ) if $options->{verbose};
+
+     my ($generator);
+     foreach my $std_in (@std) {
+
+         print( "~~~~\nProcessing $std_in\n" ) if $options->{verbose};
+
+         ########
+         # Create a new blessed TestGen object
+         #
+         $self->{options}=$options;
+         foreach $output_type (@output_type) {
+
+             $output_type = Test::TestUtil->is_driver( $output_type, @generators );
+             $generator = "Test::STDtype::$output_type";
+
+             ######
+             # The driver database is sub database of $self
+             #
+             $self = $generator->new( $self );  
+             last unless $self->load_std( $std_in );
+             next unless defined ($gen_success = $self->generate($output_type));
+             $success &&= $gen_success;
+             next unless $gen_success;
+             $self->print();
+         }
+
+     }
+
+     foreach $output_type (@output_type) {
+         $output_type = Test::TestUtil->is_driver( $output_type, @generators );
+         $self = bless $self, "Test::STDtype::$output_type";
+         $self->post_generate( ) if $self->can( 'post_generate');
+     }
+
+     print( "****\nFinish Processing\n****\n" ) if $options->{verbose};
+
+     return $success;
+}
+
+
+1;
+
+__END__
+
+
+=head1 NAME
+
+Test::STDmaker - generates test scripts, demo scripts and STD program module sections
+
+=head1 SYNOPSIS
+
+ use Test::STDmaker
+
+ $success = Test::STDmaker->fgenerate($std_pm ... $std_pm [\%options])
+
+=head1 DESCRIPTION
+
+The C<fgenerate> method automates the
+generation of Software Test Descriptions (STD)
+Plain Old Documentation (POD), test scripts,
+demonstrations scripts and the execution of the
+generated test scripts and demonstration scripts.
+It will automatically insert the output from the
+demonstration script into the POD I<-headx Demonstration>
+section of the file being tested.
+
+=head2 Capabilities
+
+The C<fgenerate> method provides the following capabilities:
+
+=over 4
+
+=item 1
+
+Automate Perl related programming needed to create a
+test script resulting in reduction of time and cost.
+
+=item 2
+
+Translate a short hand Software Test Description (STD)
+file into a Perl test script that eventually makes use of 
+the L<Test|Test> module.
+
+=item 3
+
+Translate the sort hand STD data file into a Perl test 
+script that demonstrates the features of the 
+the module under test.
+
+=item 4
+
+Provide in a the POD of a STD file information required by
+a Military/Federal Government 
+Software Test Description (L<STD>) document
+that may easily be index and accessed by
+automated Test software. 
+
+=item 5
+
+Automate generation of test information required by
+(L<STD2167A|Docs::US_DOD::STD2167A>) from the STD file
+making it economical to provide this information 
+for even commercial projects.
+The ISO standards and certification are pushing
+commercial projects more and more toward
+using 2167 nomenclature and providing L<STD2167A|Docs::US_DOD::STD2167A> information.
+
+=back
+
+=head2 Generated files
+
+The C<fgenerate> method will read the data 
+from the form database (FormDB) section of a
+Software Test Description program module (STD PM), 
+clean it, and use the cleaned
+data to generate the output file(s)
+specified by the L<C<output option>|/output option>.
+The STD PM is a Perl program module specified using
+the Perl '::' notation. 
+The module must be in one of the directories in the
+@INC array.
+Unless overriden by an L<C<file_out option>|/file_out option>,
+the output file name is as specified in the
+FormDB field for that output. 
+
+In the unlikely event, there is no output file name
+the C<fgenerate> method will enter
+an output file with the same base name
+as the STD PM with the appropriate extension 
+into the FormDB.
+The output file specifications are relative
+to the FormDB database file.
+
+=head2 Options
+
+The C<[%options]> hash provides for the following options:
+
+=over 4
+
+=item output option
+
+Valid values for L<C<output option>|/output option> are
+as follows:
+
+=over 4
+
+=item Verify output
+
+ default extension: .t
+
+The generated file is a test script.
+
+=item Demo output
+
+ default extension: .d
+
+The generated file is a demonstration script.
+
+=item STD output
+
+Generates the Code Section and the POD section
+of the STD PM. The STD PM sections are described
+below.
+
+=back
+
+The C<fgenerate> method will handle multiple values for 
+L<C<output option>|/output option> and substitute 'Verify Demo STD' for 'all'.
+The L<C<output option>|/output option> values are case insensitive. For example,
+'verify Demo' 'Demo STD' are valid
+for the L<C<output option>|/output option>
+
+=item replace option
+
+ replace => 1
+
+run the all demo scripts and use thier output to replace the
+Unit Under Test (UUT)  =headx Demonstration POD section.
+The STD PM  UUT field specified the UUT file.
+
+=item  run option
+
+ run => 1
+
+run all generated test scripts using the L<Test::Harness|Test::Harness>
+
+=item verbose option
+
+ verbose => 1           
+
+use verbose mode when using the L<Test::Harness|Test::Harness>
+
+=item file_out option
+
+  file_out => $file_name
+
+Use C<$file_name> for the output file when only one L<C<output option>|/output option> and
+one C<.std> are provided.
+
+=item fspec_out option
+
+  fspec_out => $fspec_out
+
+Specifies the operating system file specification to use
+in writing out a file names in the STD database.
+
+This directly impacts the following STD PM fields
+
+L<Demo|/Demo field>
+L<Verify|/Verify field>
+
+Valid values are as follows:
+
+MacOS MSWin32 os2 VMS epoc Unix
+
+=item nounlink option
+
+   nounlink => 1
+
+Do not unlink temporary files.
+
+=item STD2167 option
+
+  STD2167 => 1   
+
+Generate a STD2167 STD POD instead of
+a Detail STD POD. 
+A STD2167 STD POD and a Detail STD POD
+are described below.
+
+=back
+
+=head2 STD Program Module Format
+
+The input(s) for the C<fgenerate> method
+are Softare Test Description Program Modules (STM PM).
+
+A STD PM consists of three sections as follows:
+
+=over 4
+
+=item Perl Code Section
+
+The code section contains the following
+Perl scalars: $VERSION, $DATE, and $FILE.
+STDmaker automatically generates this section.
+
+=item STD POD Section
+
+The STD POD section is either a tailored Detail STD format
+or a tailored STD2167 format described below.
+STDmaker automatically generates this section.
+
+=item STD Form Database Section
+
+This section contains a STD Form Database that
+STDmaker uses (only when directed by specifying
+STD as the output option) to generate the
+Perl code section and the STD POD section.
+
+=back
+
+=head2 Detail STD Format
+
+L<490A 3.1.2|Docs::STD_DOD::490A/3.1.2 Coverage of specifications.>
+allows for general/detail separation of requirement for a group
+of configuration items with a set of common requirements.
+Perl program modules qualify as such.
+This avoids repetition of common requirements
+in detail specifications.
+The detail specification and the referenced general specification
+then constitute the total requirements.
+
+In accordance with
+L<490A 3.1.2.2|Docs::STD_DOD::490A/3.1.2.2 Detail specification.>
+detail specifications may take the form of a specification sheet.
+Traditional specification sheets contain many abbreviated legends
+and is more of a form or table variant instead of a formal
+technical document with paragraph numbers and complete English
+sentences and paragraphs.
+
+Following this tradition, the c<fgenerate> method
+detail STD is basically the FormDB described below with some
+POD =headx inserted to provide links to sections of interest.
+
+=head2 STD2167 STD Format
+
+The STD2167 format is a tailored 
+Software Test Description (STD) 
+Data Item Description (DID), L<STD|Docs::US_DOD::STD> 
+that eliminates paragraphs that are not
+applicable for Perl POD modules.
+This greatly improves the
+readability of the document without any loss 
+of information.
+
+The tailoring removes paragraph levels, reducing
+the number of paragraph levels from four to two.
+
+While the tailoring improves the readability
+considerably, all tailoring is reversible 
+for strict, conserative compliance to the DID
+by an appropriate special POD translator.
+
+The tailoring is as follows:
+
+=over 4
+
+=item Paragraph Numbers
+
+The tailoring removed paragraph numbers in the 
+Plain Old Documentation (POD) file.
+Normal POD processing or post-processing of the
+normal POD processing, html html whatever, can
+add the paragraph numbers and other requirements
+that large number of technical communities are
+so fond. POD processing is the proper place
+for such window dressing, not the POD itself.
+
+=item 2. REFERENCE DOCUMENTS
+
+Tailoring renames this section to I<SEE ALSO> and
+moved it to the end of the document.
+This is the customary location for this info
+for the Unix community and where the Unix
+community expects to find this information.
+
+=item 3. TEST PREPARATIONS
+
+The test preparations are the same for all tests.
+The addition of Perl modules is straight forward,
+consistent and the same for all new Perl moduels.
+
+To improve readability with no loss of data provided, 
+the test paragraph level x,
+3.x.1, 3.x.2, 3.x.3, 3.x.4, 
+of the Software Test Description (L<STD|Docs::US_DOD::STD>)
+Data Item Description (DID),
+has been tailored out. 
+
+Similarily sections 4.x.y.5, 4.x.y.6, 4.x.y.7, are
+the same for all tests. The tailoring removes the
+x.y levels and moves this sections to 3.4, 3.5 and
+3.6 respectively.
+
+The tailored Section 3 is as follows:
+
+ 3. TEST PREPARATIONS
+
+ 3.1 Hardware preparation
+
+ 3.2 Software preparation
+
+ 3.3 Other pre-test preparations
+
+ 3.4 Criteria for evaluating results.
+
+ 3.5 Test procedure.
+
+ 3.6 Assumptions and constraints 
+
+=item Section 4. TEST DESCRIPTIONS 
+
+For the addition of Perl program modules and
+scripts the paragraphs
+4.x.y.1, 4.x.y.2, 4.x.y.3 and
+4.x.y.4 are one-liners herein,
+and there is only one test case per test.
+Tailoring removes the confusing level y,
+and replaces the lower level with a
+simple item list.
+
+POD processing has the flexibility of changing
+a item list into a level 3 paragraph.
+
+The tailored Section 4 is as follows:
+ 
+  4. TEST DESCRIPTIONS
+
+  4.1 ${Unique Test ID 1}
+
+   (a) ${Unique Test ID 1} Requirements addressed:
+   (b) ${Unique Test ID 1} Test:
+   (c) ${Unique Test ID 1} Expected test results:
+
+
+  ..
+
+
+  4.x ${Unique Test ID x}
+
+   (a) ${Unique Test ID x} Requirements addressed:
+   (b) ${Unique Test ID x} Test:
+   (c) ${Unique Test ID x} Expected test results:
+
+=back
+
+=head2 STD FormDB format
+
+The C<Test::STDmaker> module uses the
+L<DataCop::FileType::FormDB|DataCop::FileType::FormDB>
+lenient format to access the data in the Data Section.
+
+The requirements of 
+L<DataCop::FileType::FormDB|DataCop::FileType::FormDB>
+lenient format govern in case of a conflict with the description
+herein.
+
+In accordance with 
+L<DataCop::FileType::FormDB|DataCop::FileType::FormDB>,
+STD PM data consists of series
+of I<field name> and I<field data> pairs.
+
+The L<DataCopy::FileType::FormDB|DataCopy::FileType::FormDB>
+format separator strings are as follows:
+
+ End of Field Name:  [^:]:[^:]
+ ENd of Field Data:  [^\^]\^[^\^]
+ End of Record    :  ~-~
+
+In other words, the separator strings 
+have a string format of the following:
+
+ (not_the_char) . (char) . (not_the_char)
+
+The following are valid I<FormDB> fields:
+
+ name: data^
+
+ name:
+ data
+  ..
+ data
+ ^
+
+Separator strings are escaped by added
+an extra chacater.
+For example,
+
+=over 4
+
+=item  DIR:::Module: $data ^
+
+  unescaped field name:  DIR::MOdule
+
+=item  DIR::Module:: : $data ^
+
+  unescaped field name: DIR:Module:
+
+Since the field name ends in a colon
+the format requires a space
+between the field name and 
+the I<end of field name colon>.
+Since the I<FormDB> format ignores
+leading and trailing white space
+for field names, this space is
+not part of the field name.
+space.
+
+=back
+
+This is customary form that 
+all of us have been forced to fill out
+through out our lives with the addition
+of ending field punctuation.
+Since the separator sequences
+are never part of the field name and data,
+the code
+to read it is trivial.
+For being computer friendly it is
+hard to beat. 
+And, altough most of us are adverse to
+forms, it makes good try of being
+people friendly.
+
+An example of a STD FormDB follows:
+
+ File_Spec: Unix^
+ UUT: Test::STDmaker::tg1^
+ Revision: -^
+ End_User: General Public^
+ Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
+ STD2167_Template: ^
+ Detail_Template: ^
+ Classification: None^
+ Demo: STD/t/TestGen1.d^
+ Verify: STD/t/TestGen1.t^
+
+  T: 0^
+
+  C: use Test::t::TestGen1^
+
+  R: L<Test::t::TestGen1/Description> [1]^
+
+  C: 
+     my $x = 2
+     my $y = 3
+ ^
+
+  A: $x + $y^
+ SE: 5^
+
+  N: Two Additions 
+  A: ($x+$y,$y-$x)^
+  E: (5,1)^
+
+  N: Two Requirements^
+
+  R: 
+     L<Test::t::TestGen1/Description> [2]
+     L<Test::t::TestGen1/Description> [3]
+  ^
+
+  A: ($x+4,$x*$y)^
+  E: (6,5)^
+
+  U: ^  Test under development
+  S: 1^
+  A: $x*$y*2^
+  E: 6^
+
+  S: 0^
+  A: $x*$y*2^
+  E: 6^
+
+ See_Also: http://perl.SoftwareDiamonds.com^
+ Copyright: copyright © 2003 Software Diamonds.^
+
+This is a very compact database form. The actual
+test code is Perl snippets that will
+be passed to the appropriate build-in,
+behind the scenes Perl subroutines.
+
+The following database file fields are information
+needed to generate the documentation files
+and not information about the tests themselves:
+
+=over 4
+
+=item File_Spec field
+
+the operating system file specification
+used for the following fields:
+
+ Verify Demo
+
+Valid values are Unix MacOS MSWin32 os2 VMS epoc.
+The scope of this value is very limited.
+It does not apply to any file specification
+used in the test steps nor the files used
+for input to the C<fgenerate> method.
+
+=item UUT field
+
+The Unit Under Test (UUT).
+
+=item  Revision field
+
+Enter the revision for the STD POD.
+Revision numbers, in accordance
+with standard engineering drawing
+practices are letters A .. B AA .. ZZ
+except for the orginal revision which
+is -.
+
+=item  End_User field
+
+The I<prepare for> STD title page
+entry.
+
+=item Author field
+
+The I<prepare for> STD title page
+entry.
+
+=item Classification field
+
+Security classification.
+
+
+=item Detail_Template field
+
+This field contains a template program module
+that the C<fgenerate> method uses to generate
+the STD POD section of the STD PM.
+Normally this field is left blank and
+the C<fgenerate> method uses its
+built-in detail template.
+
+The C<fgenerate> method merges the
+following variables with the template
+in generating the C<STD> file:
+
+Date UUT_PM Revision End_User Author Classification 
+Test_Script SVD Tests STD_PM Test_Descriptions See_Also
+Trace_Requirement_Table Trace_Test_Table Copyright
+
+=item STD2167_Template field
+
+Similar to the Detail_Template field except that
+the template is a tailored STD2167 template.
+
+=item Copyright field
+
+Any copyright and license requirements.
+This is integrated into the Demo Script, Test Script
+and the STD module.
+
+=item See_Also field
+
+This section provides links to other resources.
+
+
+=item Demo field
+
+The file for the L<C<Demo output>|Test::STDmaker/Demo output>
+relative to the STD PM directory.
+
+=item Verify field
+
+The file for the L<C<Verify output>|Test::STDmaker/Verify output>
+relative to the STD PM directory.
+
+=back
+
+The C<fgenerate> method strips
+these fields out and stores them in
+a hash for use in generating the output
+files.
+The C<fgenerate> fucntions converts
+the C<File_Spec> file specification into the
+native operating system file specification.
+
+The rest of the of the fields are
+order sensitive test
+data as follows: 
+
+=over 4
+
+=item T: number_of_tests - todo tests
+
+This field provides the number of tests
+and the number of the todo tests.
+The C<fgenerate> method
+will automatically fill in this field.
+
+=item N: name_data
+
+This field provides a name for the test.
+This is usually the same name as
+the base name for the STD file. 
+
+=item X: comment
+
+This field excludes a test from
+being included in the C<Demo> output
+file. 
+
+=item R: requirement_data
+
+The I<requirement_data> cites a binding requirement
+that is verified by the test.
+The test software uses the I<requirement_data> to automatically generate
+tracebility information that conforms to the
+following:
+
+ L<STD 4.x.y.1 Requirements addressed.|STD/Docs::US_DOD::4.x.y.1 Requirements addressed.> 
+
+Many times the relationship between binding requirements and
+the a test is vague and can even stretch the imagination.
+Perhaps by tracing the binding requirement down to an actual
+test number,
+will help force requirements that have clean cut
+tests in qualitative terms that can verify and/or validate
+a requirement.
+
+=item C: code
+
+The C<code> field data is free form Perl code.
+This field is generally used for the following:
+
+ L<STD 4.x.y.2 Prerequisite conditions.|Docs::US_DOD::STD/4.x.y.2 Prerequisite conditions.> 
+
+=item A: actual-expression 
+
+This is the actual Perl expression under test and used for
+the following:
+
+ L<STD 4.x.y.3 Test inputs.|Docs::US_DOD::STD/4.x.y.3 Test inputs.> 
+
+=item E: expected-expression 
+
+This is the expected results. This should be raw Perl
+values and used for the following:
+
+ L<STD 4.x.y.4 Expected test results.|Docs::US_DOD::STD/4.x.y.4 Expected test results.>
+
+This field triggers processing of the previous fields as a test.
+It must always be the last field of a test.
+On failure, testing continues.
+
+=item EC: code
+
+This field is the same as a C<C: code> field except that
+the code is required for the correct evaluation of
+the L<E: expected-expression|Test::STDmaker/E: expected-expression> and
+the L<S: expression|Test::STDmaker/S: expression>
+field data.
+This field is very necessary for reports,
+such as the L<C<STD output>|Test::STDmaker/STD output>,
+that only evaluates C<E: expected-expression> fields and
+none of the C<E: code> fields.
+
+=item SE: expected-expression
+
+This is the same as L<E: expected-expression|/E: expected-expression>
+except that testing stops on failure.
+
+=item S: expression
+
+The mode C<S: expression> provides means to
+conditionally preform a test. 
+The condition is usually platform dependent.
+In other words, a feature may be provided, say
+for a VMS platform that is not available on a
+Microsoft platform.
+
+=item U: comment
+
+This tags a test as testing a feature or capability
+under development. The test is added to the I<todo>
+list.
+
+=item DO: comment
+
+This field tags all the fields up to the next
+L<C<A: actual-expression>|Test::STDmaker/A: actual-expression>
+for use only in generating a 
+L<Demo output|Test::STDmaker/Demo output>
+
+=item VO: comment
+
+This field tags all the fields up to the next
+L<C<E: expected-expression>|Test::STDmaker/E: expected-expression>
+for use only in generating a 
+L<Verify output|Test::STDmaker/Verify output>
+
+=item ok: test_number
+
+The C<ok: test_number> is a the test number that 
+results from the execution of C<&TEST::ok>
+by the previous C<E: data> or C<SE: data> expression.
+A STD file does not require any C<ok:> fields since
+The C<fgenerate> method will automatically 
+generate the C<ok: test_number> fields.
+
+=back
+
+=head1 REQUIREMENTS
+
+This section establishes the functional requirements for the C<Test::STDmaker>
+module and the C<fgenerate> method.
+All other subroutines in the F<Test::STDmaker> module and modules used
+by the C<Test::STDmaker> module support the C<fgenerate> method.
+Their requirements are of a design nature and not included.
+All design requirements may change at any time without notice to
+improve performance as long as the change does not
+impact the functional requirements and the test results of
+the functional requirements.
+
+Binding functional requirements, 
+in accordance with L<DOD STD 490A|Docs::US_DOD::STD490A/3.2.3.6>,
+are uniquely identified  with the pharse 'shall[dd]' 
+where dd is an unique number for each section.
+The phrases such as I<will, should, and may> do not identified
+binding requirements. 
+They provide clarifications of the requirements and hints
+for the module design.
+
+The general C<Test::STDmaker> Perl module requirements are as follows:
+
+=over 4
+
+=item load [1]
+
+shall[1] load without error and
+
+=item pod check [2] 
+
+shall[2] passed the L<Pod::Checker|Pod::Checker> check
+without error.
+
+=back
+
+=head2 Clean FormDB requirements
+
+Before generating any output from a FormDB read from a STD PM,
+the C<fgenerate> method fill clean the data.
+The requirements for cleaning the data are as follows:
+
+=over 4
+
+=item clean FormDB [1]
+
+The C<fgenerate> method shall[1] ensure there is a test 
+step number field C<ok: $test_number^> 
+after each C< E: $expected ^> and each C<E: $expected^> field.
+The C<$test_number> will apply to all fields preceding the C<ok: $test_number^>
+to the previous C<ok: $test_number^> or <T: $total_tests^> field
+
+=item clean FormDB [2]
+
+The C<fgenerate> method shall[2] ensure all test numbers in 
+the C<ok: test_number^> fields are sequentially 
+numbered.
+
+=item clean FormDB [3]
+
+The C<fgenerate> method shall[3] ensure the first test field is C<T: $total_tests^> 
+where C<$total_tests>
+is the number of C<ok: $test_number^> fields.
+
+=item clean FormDB [4]
+
+The C<fgenerate> method shall[4] include a C<$todo_list> in the C<T: $total_tests - $todo_list^> field
+where each number in the list is the $test_number for a C<U: ^> field.
+If there are no C<U: ^> fields the C<T: ^> format will be C<T: $total_tests^>
+
+=back
+
+The C<fgenerate> method will perform this processing as soon as it reads in the
+STD PM.
+All file generation including the C<Clean> will use the processed, cleaned
+C<.std> internal test data instead of the raw data directly from the
+STD PM.
+
+=head2 Verify output file
+
+When the L<C<output option>|/output option> input list contains C<verify> or C<all>, case insensitive, 
+the C<fgenerate> method, for each input STD PM,
+will produce an verify ouput file. 
+The functional requirements specify the results of executing the
+verify output file.
+The contents of the verify output file are of a design nature
+and function requirements are not applicable.
+
+The requirements for the generated verify output file are as follow:
+
+=over 4
+
+=item verify file [1]
+
+The C<fgenerate> method shall[1] obtained the name for the verify output file
+from the C<Verify> field in the STD PM and assume it is
+a UNIX file specification relative to STD PM
+except when overriden by the L<file_out option|/file_out option [1]>. 
+
+=item verify file [2]
+
+The C<fgenerate> method shall[2] generate a test script that when executed
+will, for each test, execute the C<C: $code> fields and 
+compared the results obtained from the C<A: $actual^> actual expression with the
+results from the C<E: $epected^> expected expression and 
+produce an output compatible with the L<<C<Test::Harness>|Test::Harness> module.
+A test is the fields between the C<ok: $test_number> fields of a cleaned STD PM.
+The generated test script will provide skip test functionality by processing
+the C<S: $skip-condition>, C<DO: comment> and C<U: comment> test fields and producing suitable
+L<<C<Test::Harness>|Test::Harness> output.
+
+
+=item verify file [3]
+
+The C<fgenerate> method shall[3] output the
+C<N: $name^> field data as a L<<C<Test::Harness>|Test::Harness> compatible comment.
+
+=back
+
+The C<fgenerate> method will properly compare complex data structures 
+produce by the C<A: $actual^> and C<E: $epected^> expressions by
+utilizing modules such as L<Data::Dumper|Data::Dumper>.
+
+=head2 Demo output file
+
+When the L<C<output option>|/output option> input list contains C<demo> or C<all>, 
+case insensitive, 
+the C<fgenerate> method, for each input STD PM,
+will produce a demo ouput file. 
+The functional requirements specify the results of executing the
+demo output file.
+The contents of the demo output file are of a design nature
+and function requirements are not applicable.
+
+The requirements for the generated demo output file are as follow:
+
+=over 4
+
+=item demo file [1]
+
+The C<fgenerate> method shall[1] obtained the name for the demo output file
+from the C<Demo> field in the STD PM and assume it is
+a UNIX file specification relative to STD PM
+except when overriden by the L<file_out option|/file_out option [1]>. 
+
+=item demo file [2]
+
+The C<fgenerate> method shall[2] generate the a demo script that when executed
+will produce an output that appears as if the actual C<C: ^> and C<A: ^> where
+typed at a console followed by the results of the execution of the C<A: ^> field.
+The purpose of the demo script is to provide automated, complete examples, of
+the using the Unit Under Test.
+The generated demo script will provide skip test functionality by processing
+the C<S: $skip-condition>, C<VO: comment> and C<U: comment> test fields.
+
+=back
+
+=head2 STD PM POD
+
+When the L<C<output option>|/output option> input list contains C<STD> or C<all>, 
+case insensitive, 
+the C<fgenerate> method, for each input STD PM,
+will generate the code and POD sections of the STD PM from the FormDB section. 
+The requirements for the generated STD output file are as follow:
+
+=over 4
+
+=item STD PM POD [1]
+
+The C<fgenerate> method shall[2] produce the STD output file by taking
+the merging STD template file from either the C<Detail_Template> field
+C<STD2167_Template> field in the STD PM or a built-in template with the 
+
+C<Copyright Revision End_User Author SVD Classification>
+
+fields from the C<.std> and the generated  
+
+C<Date UUT_PM STD_PM Test_Descriptions
+Test_Script Tests Trace_Requirement_Table Trace_Requirement_Table>
+
+fields.
+
+=back
+
+The C<fgenerate> method will generate fields for merging with
+the template file as follows:
+
+=over
+
+=item Date
+
+The current data
+
+=item UUT_PM
+
+The Perl :: module specfication for the UUT field in the C<.std> database
+
+=item STD_PM 
+
+The Perl :: module specification for the C<.std> Unix file specification
+
+=item Test_Script
+
+The the C<Verify> field in the C<.std> database
+
+=item Tests
+
+The number of tests in the C<.std> database
+
+=item Test_Descriptions
+
+A description of a test defined by the fields between
+C<ok:> fields in the C<.std> database.
+The test descriptions will be in a L<STD|Docs::US_DOD::STD> format
+as tailored by L<STDtailor|STD::STDtailor>
+
+=item Trace_Requirement_Table
+
+A table that relates the C<R:> requirement fields to the test number
+in the C<.std> database.
+
+=item Trace_Test_Table
+
+A table that relates the test number in the C<.std> database
+to the C<R:> requirement fields.
+
+=back
+
+The usual template file is the C<STD/STD001.fmt> file. 
+This template is in the L<STD|Docs::US_DOD::STD> format
+as tailored by L<STDtailor|STD::STDtailor>.
+
+=head2 Options requirements
+
+The C<fgenerate> option processing requirements are as follows:
+
+=over 
+
+=item file_out option [1]
+
+When the input L<C<output option>|/output option> has only one value and there is only one C<.std> input
+file, specifying the option
+
+ { file_out => $file_out }
+
+shall[1] cause the C<fgenerate> method to print the ouput to the file C<$file_out>
+instead of the file specified in the STD PM.
+The $file_out specification will be in the UNIX specification relative
+to the STD PM.
+
+=item replace option [2]
+
+Specifying the option
+
+ { replace => 1 }
+
+with the L<C<output option>|/output option> list containg C<Demo>, 
+shall[2] cause the c<fgenerate> method to execute the demo script that it generates
+and replace the C</(\n=head\d\s+Demonstration).*?\n=/i> section in
+the module named by the C<UUT> field in C<.std> with the output from the
+demo script. 
+
+=item run option [3]
+
+Specifying the option
+
+ { run => 1 }
+
+with the L<C<output option>|/output option> list containg C<Verify>, 
+shall[3] cause the c<fgenerate> method to run the
+C<Test::Harness> with the test script in non-verbose mode.
+
+=item verbose option [4]
+
+Specifying the options
+
+ { run => 1, verbose => 1 }
+
+with the L<C<output option>|/output option> list containg C<Verify>, 
+shall[4] cause the C<fgenerate> method to run the
+C<Test::Harness> with the test script in verbose mode.
+
+=item fspec_out option [5]
+
+Specifying the option
+
+ { fspec_out => I<$file_spec> }
+
+shall[5] cause the C<fgenerate> method to translate the
+file names in the C<Clean> file output to the file specification
+I<$file_spec>.
+
+=item fspec_in option [6]
+
+Specifying the option
+
+ { fspec_in => I<$file_spec> }
+
+shall[6] cause the C<fgenerate> method to translate the
+files in the input <.std> files from the file specification
+I<$file_spec>.
+
+=back
+
+=head1 DEMONSTRATION
+
+ ~~~~~~ Demonstration overview ~~~~~
+
+Perl code begins with the prompt
+
+ =>
+
+The selected results from executing the Perl Code 
+follow on the next lines. For example,
+
+ => 2 + 2
+ 4
+
+ ~~~~~~ The demonstration follows ~~~~~
+
+ =>     use vars qw($loaded);
+ =>     use File::Glob ':glob';
+ =>     use File::Copy;
+
+ =>     my $test_results;
+ =>     my $loaded = 0;
+ =>     my @outputs;
+ => my $errors = $T->load_package( 'Test::STDmaker' )
+ => $errors
+ ''
+
+ => $T->fin('tgA0.std')
+ '
+
+ UUT: STD/tg1.pm^
+ Revision: -^
+ End_User: General Public^
+ Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
+ SVD: None^
+ Template: STD/STD001.frm^
+ Classification: None^
+ Clean: tgA1.std^
+ Demo: tgA1.d^
+ STD: tgA1-STD.pm^
+ Verify: tgA1.t^
+
+  T: 0^
+
+  N: Pass test^
+  R: L<STD::t::tg1/capability-A [1]>^
+  C: my $x = 2^
+  C: my $y = 3^
+  A: $x + $y^
+ SE: '5'^
+
+  N: Todo test that passes^
+  U: xy feature^
+  A: ($x+$y,$y-$x)^
+  E: '5','1'^
+
+  R: 
+     L<STD::t::tg1/capability-A [2]>
+     L<STD::t::tg1/Capability-B [1]>
+  ^
+  N: Test that fails^
+  A: ($x+4,$x*$y)^
+  E: '6','5'^
+
+  N: Skipped tests^
+  S: 1^
+  A: $x*$y*2^
+  E: '6'^
+
+  N: Todo Test that Fails^
+  U: zyw feature^
+  S: 0^
+  A: $x*$y*2^
+  E: '6'^
+
+  N: Failed test that skips the rest^
+  R: L<STD::t::tg1/Capability-B [2]>^
+  A: $x + $y^
+ SE: '6'^
+
+  N: A test to skip^
+  A: $x + $y + $x^
+  E: '9'^
+
+  N: A not skip to skip^
+  S: 0^
+  R: L<STD::t::tg1/Capability-B [3]>^
+  A: $x + $y + $x + $y^
+  E: '10'^
+
+  N: A skip to skip^
+  S: 1^
+  R: L<STD::t::tg1/Capability-B [3]>^
+  A: $x + $y + $x + $y + $x^
+  E: '10'^
+
+ See_Also: 
+ http://perl.softwarediamonds.com
+ L<STD::t::tg1>
+ ^
+
+ Copyright: Public Domain^
+
+ '
+
+ => $T->fin('tgB0.std')
+ '
+
+ UUT: STD/tg1.pm^
+ Revision: -^
+ End_User: General Public^
+ Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
+ SVD: None^
+ Template: STD/STD001.frm^
+ Classification: None^
+ Clean: tg1B.std^
+ Demo: tg1B.d^
+ STD: tg1B-STD.pm^
+ Verify: tg1B.t^
+
+  T: 0^
+
+  R: L<STD::t::tg1/capability-A [1]>^
+  C: my $x = 2^
+  C: my $y = 3^
+  A: $x + $y^
+ SE: '5'^
+
+  A: ($x+$y,$y-$x)^
+  E: '5','1'^
+
+ See_Also: 
+ http://perl.softwarediamonds.com
+ L<STD::t::tg1>
+ ^
+
+ Copyright: Public Domain^
+
+ '
+
+ =>     #####
+ =>     # Make sure there is no residue outputs hanging
+ =>     # around from the last test series.
+ =>     #
+ =>     @outputs = bsd_glob( 'tg*1.*' );
+ =>     unlink @outputs;
+ =>     @outputs = bsd_glob( 'tg*1-STD.pm');
+ =>     unlink @outputs;
+ => copy 'tgA0.std', 'tgA1.std'
+ => $T->fin('tgA1.std')
+ '
+
+ UUT: STD/tg1.pm^
+ Revision: -^
+ End_User: General Public^
+ Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
+ SVD: None^
+ Template: STD/STD001.frm^
+ Classification: None^
+ Clean: tgA1.std^
+ Demo: tgA1.d^
+ STD: tgA1-STD.pm^
+ Verify: tgA1.t^
+
+  T: 0^
+
+  N: Pass test^
+  R: L<STD::t::tg1/capability-A [1]>^
+  C: my $x = 2^
+  C: my $y = 3^
+  A: $x + $y^
+ SE: '5'^
+
+  N: Todo test that passes^
+  U: xy feature^
+  A: ($x+$y,$y-$x)^
+  E: '5','1'^
+
+  R: 
+     L<STD::t::tg1/capability-A [2]>
+     L<STD::t::tg1/Capability-B [1]>
+  ^
+  N: Test that fails^
+  A: ($x+4,$x*$y)^
+  E: '6','5'^
+
+  N: Skipped tests^
+  S: 1^
+  A: $x*$y*2^
+  E: '6'^
+
+  N: Todo Test that Fails^
+  U: zyw feature^
+  S: 0^
+  A: $x*$y*2^
+  E: '6'^
+
+  N: Failed test that skips the rest^
+  R: L<STD::t::tg1/Capability-B [2]>^
+  A: $x + $y^
+ SE: '6'^
+
+  N: A test to skip^
+  A: $x + $y + $x^
+  E: '9'^
+
+  N: A not skip to skip^
+  S: 0^
+  R: L<STD::t::tg1/Capability-B [3]>^
+  A: $x + $y + $x + $y^
+  E: '10'^
+
+  N: A skip to skip^
+  S: 1^
+  R: L<STD::t::tg1/Capability-B [3]>^
+  A: $x + $y + $x + $y + $x^
+  E: '10'^
+
+ See_Also: 
+ http://perl.softwarediamonds.com
+ L<STD::t::tg1>
+ ^
+
+ Copyright: Public Domain^
+
+ '
+
+ => copy 'tg0.pm', 'tg1.pm'
+ => $T->fin('tg1.pm')
+ '#!perl
+ #
+ # Documentation, copyright and license is at the end of this file.
+ #
+ package  STD::tg1;
+
+ use 5.001;
+ use strict;
+ use warnings;
+ use warnings::register;
+
+ use vars qw($VERSION);
+
+ $VERSION = '0.01';
+
+ 1
+
+ __END__
+
+ =head1 Requirements
+
+ =head2 Capability-A 
+
+ The requriements are as follows:
+
+ =over 4
+
+ =item capability-A [1]
+
+ This subroutine shall[1] have feature 1. 
+
+ =item capability-A [2]
+
+ This subroutine shall[2] have feature 2.
+
+ =back
+
+ =head2 Capability-B
+
+ =over 4
+
+ =item Capability-B [1]
+
+ This subroutine shall[1] have feature 1.
+
+ =item Capability-B [2]
+
+ This subroutine shall[2] have feature 2.
+
+ =item Capability-B [3]
+
+ This subroutine shall[3] have feature 3.
+
+ =back
+
+ =head1 DEMONSTRATION
+
+ =head1 SEE ALSO
+
+ http://perl.SoftwareDiamonds.com
+
+ '
+
+ => Test::STDmaker->fgenerate('STD/tgA1.std', {fspec_in=>'Unix', output=>'clean all'} )
+ => $T->scrub_file_line($T->fin('tgA1.std'))
+ '
+
+ File_Spec: Unix^
+ UUT: STD/tg1.pm^
+ Revision: -^
+ End_User: General Public^
+ Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
+ SVD: None^
+ Template: STD/STD001.frm^
+ Classification: None^
+ Temp: temp.pl^
+ Clean: tgA1.std^
+ Demo: tgA1.d^
+ STD: tgA1-STD.pm^
+ Verify: tgA1.t^
+
+  T: 9 - 2,5^
+
+  N: Pass test^
+  R: L<STD::t::tg1/capability-A [1]>^
+  C: my $x = 2^
+  C: my $y = 3^
+  A: $x + $y^
+ SE: '5'^
+ ok: 1^
+
+  N: Todo test that passes^
+  U: xy feature^
+  A: ($x+$y,$y-$x)^
+  E: '5','1'^
+ ok: 2^
+
+  R:
+     L<STD::t::tg1/capability-A [2]>
+     L<STD::t::tg1/Capability-B [1]>
+ ^
+
+  N: Test that fails^
+  A: ($x+4,$x*$y)^
+  E: '6','5'^
+ ok: 3^
+
+  N: Skipped tests^
+  S: 1^
+  A: $x*$y*2^
+  E: '6'^
+ ok: 4^
+
+  N: Todo Test that Fails^
+  U: zyw feature^
+  S: 0^
+  A: $x*$y*2^
+  E: '6'^
+ ok: 5^
+
+  N: Failed test that skips the rest^
+  R: L<STD::t::tg1/Capability-B [2]>^
+  A: $x + $y^
+ SE: '6'^
+ ok: 6^
+
+  N: A test to skip^
+  A: $x + $y + $x^
+  E: '9'^
+ ok: 7^
+
+  N: A not skip to skip^
+  S: 0^
+  R: L<STD::t::tg1/Capability-B [3]>^
+  A: $x + $y + $x + $y^
+  E: '10'^
+ ok: 8^
+
+  N: A skip to skip^
+  S: 1^
+  R: L<STD::t::tg1/Capability-B [3]>^
+  A: $x + $y + $x + $y + $x^
+  E: '10'^
+ ok: 9^
+
+ See_Also:
+ http://perl.softwarediamonds.com
+ L<STD::t::tg1>
+ ^
+
+ Copyright: Public Domain^
+
+ ~-~
+ '
+
+ => Test::STDmaker->fgenerate('STD/tgA1.std', {fspec_in=>'Unix', output=>'demo', replace => 1});
+ => $T->fin('tg1.pm')
+ '#!perl
+ #
+ # Documentation, copyright and license is at the end of this file.
+ #
+ package  STD::tg1;
+
+ use 5.001;
+ use strict;
+ use warnings;
+ use warnings::register;
+
+ use vars qw($VERSION);
+
+ $VERSION = '0.01';
+
+ 1
+
+ __END__
+
+ =head1 Requirements
+
+ =head2 Capability-A 
+
+ The requriements are as follows:
+
+ =over 4
+
+ =item capability-A [1]
+
+ This subroutine shall[1] have feature 1. 
+
+ =item capability-A [2]
+
+ This subroutine shall[2] have feature 2.
+
+ =back
+
+ =head2 Capability-B
+
+ =over 4
+
+ =item Capability-B [1]
+
+ This subroutine shall[1] have feature 1.
+
+ =item Capability-B [2]
+
+ This subroutine shall[2] have feature 2.
+
+ =item Capability-B [3]
+
+ This subroutine shall[3] have feature 3.
+
+ =back
+
+ =head1 DEMONSTRATION
+
+  ~~~~~~ Demonstration overview ~~~~~
+
+ Perl code begins with the prompt
+
+  =>
+
+ The selected results from executing the Perl Code 
+ follow on the next lines. For example,
+
+  => 2 + 2
+  4
+
+  ~~~~~~ The demonstration follows ~~~~~
+
+  => my $x = 2
+  => my $y = 3
+  => $x + $y
+  '5'
+
+  => ($x+$y,$y-$x)
+  '5'
+  '1'
+
+  => ($x+4,$x*$y)
+  '6'
+  '6'
+
+  => $x*$y*2
+  '12'
+
+  => $x + $y
+  '5'
+
+  => $x + $y + $x
+  '7'
+
+  => $x + $y + $x + $y
+  '10'
+
+ =head1 SEE ALSO
+
+ http://perl.SoftwareDiamonds.com
+
+ '
+
+ =>     no warnings;
+ =>     open SAVEOUT, ">&STDOUT";
+ =>     use warnings;
+ =>     open STDOUT, ">tgA1.txt";
+ =>     Test::STDmaker->fgenerate('STD/tgA1.std', {fspec_in=>'Unix', output=>'verify', run=>1, verbose=>1});
+ =>     close STDOUT;
+ =>     open STDOUT, ">&SAVEOUT";
+ =>     
+ =>     ######
+ =>     # For some reason, test harness puts in a extra line when running u
+ =>     # under the Active debugger on Win32. So just take it out.
+ =>     # Also the script name is absolute which is site dependent.
+ =>     # Take it out of the comparision.
+ =>     #
+ =>     $test_results = $T->fin('tgA1.txt');
+ =>     $test_results =~ s/.*?1..9/1..9/; 
+ =>     $test_results =~ s/------.*?\n(\s*\()/\n $1/s;
+ =>     $T->fout('tgA1.txt',$test_results);
+ => $T->scrub_file_line($test_results)
+ 'SoftwareDiamonds.com - Harnessing the power of automation.
+
+ ~~~~
+ Processing STD/tgA1.std
+ ~~~~
+ Running Tests
+
+ 1..9 todo 2 5;
+ # Pass test
+ ok 1
+ # Todo test that passes
+ ok 2 # (xxxx.t at line 000 TODO?!)
+ # Test that fails
+ not ok 3
+ # Test 3 got: '$VAR1 = '6';
+ $VAR2 = '6';
+ ' (xxxx.t at line 000)
+ #   Expected: '$VAR1 = '6';
+ $VAR2 = '5';
+ '
+ # Skipped tests
+ ok 4 # skip
+ # Todo Test that Fails
+ not ok 5
+ # Test 5 got: '$VAR1 = '12';
+ ' (xxxx.t at line 000 *TODO*)
+ #   Expected: '$VAR1 = '6';
+ '
+ # Failed test that skips the rest
+ not ok 6
+ # Test 6 got: '$VAR1 = '5';
+ ' (xxxx.t at line 000)
+ #   Expected: '$VAR1 = '6';
+ '
+ # A test to skip
+ # Test invalid because of previous failure.
+ ok 7 # skip
+ # A not skip to skip
+ # Test invalid because of previous failure.
+ ok 8 # skip
+ # A skip to skip
+ # Test invalid because of previous failure.
+ ok 9 # skip
+ FAILED tests 3, 6
+ 	Failed 2/9 tests, 77.78% okay (-4 skipped tests: 3 okay, 33.33%)
+ Failed Test                      Status Wstat Total Fail  Failed  List of Failed
+
+   (1 subtest UNEXPECTEDLY SUCCEEDED), 4 subtests skipped.
+ Failed 1/1 test scripts, 0.00% okay. 2/9 subtests failed, 77.78% okay.
+ ****
+ Finish Processing
+ ****
+ '
+
+ =>     sub __warn__ 
+ =>     { 
+ =>        my ($text) = @_;
+ =>        return $text =~ /STDOUT/;
+ =>        CORE::warn( $text );
+ =>     };
+
+ =>     #####
+ =>     # Make sure there is no residue outputs hanging
+ =>     # around from the last test series.
+ =>     #
+ =>     @outputs = bsd_glob( 'tg*1.*' );
+ =>     unlink @outputs;
+ =>     @outputs = bsd_glob( 'tg*1-STD.pm');
+ =>     unlink @outputs;
+
+=head1 QUALITY ASSURANCE
+
+The file F<STD/t/testgen.std> is the Software
+Test Description file for the C<Test::Testgen>
+module. This file contains all the information
+necessary for this module to verify that
+this module meets its requirements.
+In other words, this module will verify
+itself. This is valid because if something
+is wrong with this module, it will not be
+able to verify itself. And if it cannot
+verify itself, it cannot verify that another
+module meets its requirements.
+
+To generate all the test output files, 
+run the generated test script F<Test/t/Testgen.t>
+and the demonstration script F<Test/t/Testgen.d>,
+execute the following in any directory:
+
+ tg -o="clean all" -verbose -replace -run  STD/t/TestGen.std
+
+Note that F<tg.pl> must be in the execution path C<$ENV{PATH}>.
+A copy F<tg.pl> is at C<STD/t>
+
+=head1 NOTES
+
+=head2 Binding Requirements
+
+In accordance with the License, Software Diamonds
+is not liable for any requirement, binding or otherwise.
+
+=head2 Author
+
+The author, holder of the copyright and maintainer is
+
+E<lt>support@SoftwareDiamonds.comE<gt>
+
+=head2 Copyright
+
+copyright © 2003 SoftwareDiamonds.com
+
+=head2 License
+
+Software Diamonds permits the redistribution
+and use in source and binary forms, with or
+without modification, provided that the 
+following conditions are met: 
+
+=over 4
+
+=item 1
+
+Redistributions of source code, modified or unmodified
+must retain the above copyright notice, this list of
+conditions and the following disclaimer. 
+
+=item 2
+
+Redistributions in binary form must 
+reproduce the above copyright notice,
+this list of conditions and the following 
+disclaimer in the documentation and/or
+other materials provided with the
+distribution.
+
+=back
+
+SOFTWARE DIAMONDS, http://www.SoftwareDiamonds.com,
+PROVIDES THIS SOFTWARE 
+'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES,
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
+SHALL SOFTWARE DIAMONDS BE LIABLE FOR ANY DIRECT,
+INDIRECT, INCIDENTAL, SPECIAL,EXEMPLARY, OR 
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE,DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
+OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING USE OF THIS SOFTWARE, EVEN IF
+ADVISED OF NEGLIGENCE OR OTHERWISE) ARISING IN
+ANY WAY OUT OF THE POSSIBILITY OF SUCH DAMAGE.
+
+=head1 SEE ALSO
+
+ L<Test|Test> 
+ L<Test::Harness|Test::Harness> 
+ L<tg|STD::t::tg>
+ L<STD|Docs::US_DOD::STD>
+ L<SVD|Docs::US_DOD::SVD>
+ L<DOD STD 490A|Docs::US_DOD::STD490A>
+ L<DOD STD 2167A|Docs::US_DOD::STD2167A>
+
+=for html
+<hr>
+<p><br>
+<!-- BLK ID="NOTICE" -->
+<!-- /BLK -->
+<p><br>
+<!-- BLK ID="OPT-IN" -->
+<!-- /BLK -->
+<p><br>
+<!-- BLK ID="EMAIL" -->
+<!-- /BLK -->
+<p><br>
+<!-- BLK ID="LOG_CGI" -->
+<!-- /BLK -->
+<p><br>
+
+=cut
+
+### end of file ###
+

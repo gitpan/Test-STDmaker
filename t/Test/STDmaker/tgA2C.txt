@@ -1,0 +1,66 @@
+SoftwareDiamonds.com - Harnessing the power of automation.
+
+~~~~
+Processing Test::STDmaker::tgA1
+~~~~
+Running Tests
+
+E:\User\SoftwareDiamonds\installation\t\Test\STDmaker\tgA1.1..16 todo 2 5;
+# Pass test
+ok 1
+# Todo test that passes
+ok 2 # (E:\User\SoftwareDiamonds\installation\t\Test\STDmaker\tgA1.t at line 123 TODO?!)
+# Test that fails
+not ok 3
+# Test 3 got: '$VAR1 = '6';
+$VAR2 = '6';
+' (E:\User\SoftwareDiamonds\installation\t\Test\STDmaker\tgA1.t at line 137)
+#   Expected: '$VAR1 = '6';
+$VAR2 = '5';
+'
+# Skipped tests
+ok 4 # skip
+# Todo Test that Fails
+not ok 5
+# Test 5 got: '$VAR1 = '12';
+' (E:\User\SoftwareDiamonds\installation\t\Test\STDmaker\tgA1.t at line 153 *TODO*)
+#   Expected: '$VAR1 = '6';
+'
+# verify only
+ok 6
+# Test loop
+ok 7
+# Test loop
+ok 8
+# Test loop
+ok 9
+# Test loop
+ok 10
+# Test loop
+ok 11
+# Test loop
+ok 12
+# Failed test that skips the rest
+not ok 13
+# Test 13 got: '$VAR1 = '5';
+' (E:\User\SoftwareDiamonds\installation\t\Test\STDmaker\tgA1.t at line 206)
+#    Expected: '$VAR1 = '6';
+'
+# A test to skip
+# Test invalid because of previous failure.
+ok 14 # skip
+# A not skip to skip
+# Test invalid because of previous failure.
+ok 15 # skip
+# A skip to skip
+# Test invalid because of previous failure.
+ok 16 # skip
+FAILED tests 3, 13
+	Failed 2/16 tests, 87.50% okay (-4 skipped tests: 10 okay, 62.50%)
+Failed Test                      Status Wstat Total Fail  Failed  List of Failed
+
+  (1 subtest UNEXPECTEDLY SUCCEEDED), 4 subtests skipped.
+Failed 1/1 test scripts, 0.00% okay. 2/16 subtests failed, 87.50% okay.
+****
+Finish Processing
+****
