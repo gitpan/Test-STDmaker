@@ -7,8 +7,8 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE);
-$VERSION = '0.15';   # automatically generated file
-$DATE = '2004/05/22';
+$VERSION = '0.16';   # automatically generated file
+$DATE = '2004/05/23';
 $FILE = __FILE__;
 
 
@@ -195,7 +195,6 @@ ok(  $Test::STDmaker::VERSION, # actual results
     $success = $tmaker->tmake( 'STD' );
     $diag = (-e 'temp.pl') ? "\n~~~~~~~\ntemp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
     $diag .= (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
-    warn($diag);
 
 
 
@@ -290,6 +289,7 @@ ok(  $s->scrub_probe($s->scrub_file_line($test_results)), # actual results
     $diag = (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
     $diag .= (-e 'tgA1.t') ? "\n~~~~~~~\ntgA1.t\n\n" . $snl->fin('tgA1.t') : 'No tgA1.t';
     $diag .= (-e 'tgA1.d') ? "\n~~~~~~~\ntgA1.d\n\n" . $snl->fin('tgA1.d') : 'No tgA1.d';
+    warn("######\nok: 9\n" . $diag);
 
 
 
@@ -421,6 +421,7 @@ ok(  $s->scrub_probe($s->scrub_file_line($test_results)), # actual results
     }
     $diag = (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
     $diag .= (-e 'tgA1.d') ? "\n~~~~~~~\ntgA1.d\n\n" . $snl->fin('tgA1.d') : 'No tgA1.d';
+    warn("######\nok: 13\n" . $diag);
 
 
 
@@ -460,8 +461,6 @@ ok(  $s->scrub_date_version($snl->fin('tg1.pm')), # actual results
     $test_results =~ s/.*?1..9/1..9/; 
     $test_results =~ s/------.*?\n(\s*\()/\n $1/s;
     $snl->fout('tgA1.txt',$test_results);
-    $diag = (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
-    $diag .= (-e 'tgA1.t') ? "\n~~~~~~~\ntgA1.d\n\n" . $snl->fin('tgA1.t') : 'No tgA1.t';
 
 
 
@@ -480,7 +479,7 @@ ok(  $s->scrub_date_version($snl->fin('tg1.pm')), # actual results
 skip_tests( 1 ) unless
   ok(  $success, # actual results
      1, # expected results
-     "$diag",
+     "",
      "tmake('verify', {pm => 't::Test::STDmaker::tgA1', run => 1, test_verbose => 1})");
 
 #  ok:  15

@@ -10,8 +10,8 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE );
-$VERSION = '0.13';
-$DATE = '2004/05/22';
+$VERSION = '0.14';
+$DATE = '2004/05/23';
 $FILE = __FILE__;
 
 ########
@@ -44,7 +44,7 @@ t::Test::STDmaker::STDmaker - Software Test Description for Test::STDmaker
 
  Version: 
 
- Date: 2004/05/22
+ Date: 2004/05/23
 
  Prepared for: General Public 
 
@@ -180,7 +180,6 @@ L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Databa
      $success = $tmaker->tmake( 'STD' );
      $diag = (-e 'temp.pl') ? "\n~~~~~~~\ntemp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
      $diag .= (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
-     warn($diag);
  ^
  DM: $diag^
   A: $success^
@@ -267,6 +266,7 @@ L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Databa
      $diag = (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
      $diag .= (-e 'tgA1.t') ? "\n~~~~~~~\ntgA1.t\n\n" . $snl->fin('tgA1.t') : 'No tgA1.t';
      $diag .= (-e 'tgA1.d') ? "\n~~~~~~~\ntgA1.d\n\n" . $snl->fin('tgA1.d') : 'No tgA1.d';
+     warn("######\nok: 9\n" . $diag);
  ^
   N: tmake( {pm => 't::Test::STDmaker::tgA1'})^
  DM: $diag^
@@ -404,6 +404,7 @@ L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Databa
      }
      $diag = (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
      $diag .= (-e 'tgA1.d') ? "\n~~~~~~~\ntgA1.d\n\n" . $snl->fin('tgA1.d') : 'No tgA1.d';
+     warn("######\nok: 13\n" . $diag);
  ^
  DM: $diag^
   A: $success^
@@ -450,10 +451,7 @@ L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Databa
      $test_results =~ s/.*?1..9/1..9/; 
      $test_results =~ s/------.*?\n(\s*\()/\n $1/s;
      $snl->fout('tgA1.txt',$test_results);
-     $diag = (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
-     $diag .= (-e 'tgA1.t') ? "\n~~~~~~~\ntgA1.d\n\n" . $snl->fin('tgA1.t') : 'No tgA1.t';
  ^
- DM: $diag^
   A: $success^
  SE: 1^
  ok: 15^
@@ -857,7 +855,6 @@ DO: ^
     $success = $tmaker->tmake( 'STD' );
     $diag = (-e 'temp.pl') ? "\n~~~~~~~\ntemp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
     $diag .= (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
-    warn($diag);
 ^
 
 DM: $diag^
@@ -940,6 +937,7 @@ VO: ^
     $diag = (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
     $diag .= (-e 'tgA1.t') ? "\n~~~~~~~\ntgA1.t\n\n" . $snl->fin('tgA1.t') : 'No tgA1.t';
     $diag .= (-e 'tgA1.d') ? "\n~~~~~~~\ntgA1.d\n\n" . $snl->fin('tgA1.d') : 'No tgA1.d';
+    warn("######\nok: 9\n" . $diag);
 ^
 
  N: tmake( {pm => 't::Test::STDmaker::tgA1'})^
@@ -1082,6 +1080,7 @@ DO: ^
     }
     $diag = (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
     $diag .= (-e 'tgA1.d') ? "\n~~~~~~~\ntgA1.d\n\n" . $snl->fin('tgA1.d') : 'No tgA1.d';
+    warn("######\nok: 13\n" . $diag);
 ^
 
 DM: $diag^
@@ -1127,11 +1126,8 @@ ok: 14^
     $test_results =~ s/.*?1..9/1..9/; 
     $test_results =~ s/------.*?\n(\s*\()/\n $1/s;
     $snl->fout('tgA1.txt',$test_results);
-    $diag = (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
-    $diag .= (-e 'tgA1.t') ? "\n~~~~~~~\ntgA1.d\n\n" . $snl->fin('tgA1.t') : 'No tgA1.t';
 ^
 
-DM: $diag^
  A: $success^
 SE: 1^
 ok: 15^
