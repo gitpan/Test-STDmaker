@@ -44,7 +44,7 @@ t::Test::STDmaker::tgB1 - Software Test Description for Test::STDmaker::tg1
 
  Version: 0.01
 
- Date: 2004/05/19
+ Date: 2004/05/20
 
  Prepared for: General Public 
 

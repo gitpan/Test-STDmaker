@@ -16,8 +16,8 @@ use File::AnySpec;
 use File::SmartNL;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.12';
-$DATE = '2004/05/19';
+$VERSION = '1.13';
+$DATE = '2004/05/20';
 
 
 ########
@@ -286,9 +286,10 @@ sub post_generate
      my $demo = '';
      my $base_demo_script;
      my $demo_script;
+     my $perl = $self->perl_command();
      foreach $demo_script (@{$self->{$module}->{generated_files}}) {
          (undef,undef,$base_demo_script) = File::Spec->splitpath($demo_script);
-         @demo = `perl $demo_script`;
+         @demo = `$perl $demo_script`;
          $demo .= "\n #########\n" .
                  " # perl $base_demo_script\n" .
                  " ###\n\n";

@@ -16,8 +16,8 @@ use vars qw($VERSION $DATE);
 use Cwd;
 use File::AnySpec;
 
-$VERSION = '1.11';
-$DATE = '2004/05/19';
+$VERSION = '1.12';
+$DATE = '2004/05/20';
 
 ########
 # Inherit classes
@@ -292,7 +292,8 @@ sub post_print
 
     my $cwd = cwd();
 
-    my @tests = `perl $self->{$module}->{file_out}`;
+    my $command = $self->perl_command() . ' ' . $self->{$module}->{file_out};
+    my @tests = `$command`;
     return undef unless @tests;
     unlink $self->{$module}->{file_out} unless $self->{options}->{nounlink};
     pop @tests if @tests % 2; # try best if code messes up

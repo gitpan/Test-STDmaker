@@ -16,8 +16,8 @@ use File::Where;
 use Test::Harness 2.42;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.12';
-$DATE = '2004/05/19';
+$VERSION = '1.13';
+$DATE = '2004/05/20';
 
 ########
 # Inherit classes
@@ -537,9 +537,10 @@ sub post_generate
          my $test_script = '';
          my @test_report;
          my $base_test_script;
+         my $perl = $self->perl_command();
          foreach $test_script (@{$self->{$module}->{generated_files}}) {
             (undef,undef,$base_test_script) = File::Spec->splitpath($test_script);
-            @test_report = `perl $test_script`;
+            @test_report = `$perl $test_script`;
             $test_report .= "\n => perl $base_test_script\n\n";
             $test_report .= join '',@test_report;
          };

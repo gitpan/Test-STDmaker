@@ -15,8 +15,8 @@ use File::AnySpec;
 use File::Where;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.15';
-$DATE = '2004/05/19';
+$VERSION = '1.16';
+$DATE = '2004/05/20';
 
 use vars qw(@ISA @EXPORT_OK);
 @ISA = qw();
@@ -25,7 +25,7 @@ use Exporter;
 use File::Maker 0.03;
 use vars qw(@ISA @EXPORT_OK);
 @ISA = qw(File::Maker Exporter);  # inherit the new and make_targets methods
-@EXPORT_OK = qw(find_t_roots);
+@EXPORT_OK = qw(find_t_roots get_date perl_command);
 
 my %targets = (
     all => [ 'check_db' ],
@@ -219,6 +219,26 @@ sub get_date
 }
 
 
+#######
+# When running under some new improved CPAN on some tester setups,
+# the `perl $command` crashes and burns with the following
+# 
+# Perl lib version (v5.8.4) doesn't match executable version (v5.6.1)
+# at /usr/local/perl-5.8.4/lib/5.8.4/sparc-linux/Config.pm line 32.
+#
+# To prevent this, use the return from the below instead of perl
+#
+sub perl_command {
+    my $OS; 
+    unless ($OS = $^O) {   # on some perls $^O is not defined
+	require Config;
+	$OS = $Config::Config{'osname'};
+    }
+    return "MCR $^X"                    if $OS eq 'VMS';
+    return Win32::GetShortPathName($^X) if $OS =~ /^(MS)?Win32$/;
+    $^X;
+}
+
 ######
 # Print the output data
 #
@@ -383,7 +403,6 @@ sub tmake
 }
 
 
-
 1;
 
 __END__
@@ -398,10 +417,11 @@ Test::STDmaker - generate test scripts, demo scripts from a test description sho
  #######
  # Procedural (subroutine) interface
  # 
- use Test::STDmake qw(find_t_roots);
+ use Test::STDmake qw(find_t_roots get_data perl_command);
 
  @t_path = find_t_paths()
  $date = get_date();
+ $myperl = perl_command();
 
  #####
  # Class interface
@@ -409,10 +429,11 @@ Test::STDmaker - generate test scripts, demo scripts from a test description sho
  use Test::STDmaker
 
  $std = new Test::STDmaker( @options ); # From File::Maker
- 
+
  $success = $std->check_db($std_pm);
  @t_path = $std->find_t_paths()
  $date = $std->get_date();
+ $myperl = $std->perl_command();
 
  $std->tmake( @targets, \%options ); 
  $std->tmake( @targets ); 
@@ -553,7 +574,7 @@ structure may look as follows:
      MyTopLevel
        MyUnitUnderTest.pm  # code program module
      Data::xxxx.pm  # test library program modules
- 
+
      File::xxxx.pm  # test library program modules
    t
      MyTopLevel
@@ -627,14 +648,14 @@ C<t::MyTopLevel::MyUnitUNderTest> not to C<temp.pl>
 and repeat the above steps.
 After debugging C<temp.pl>, use the same procedure to
 debug C<MyUnitUnderTest.t>, C<MyUnitUnderTest.d>
- 
+
   perl -d MyUnitUnderTest.t
   perl -d MyUnitUnderTest.d
 
 Again make any correction to the STD program module 
 C<t::MyTopLevel::MyUnitUNderTest> not to C<MyUnitUnderTest.t>
 C<MyUnitUnderTest.d>
- 
+
 Once this is accomplished, develop and debug the UUT using
 the test script as follows:
 
@@ -948,7 +969,7 @@ This is the actual Perl expression under test and used for
 the L<STD 4.x.y.3 Test inputs.|Docs::US_DOD::STD/4.x.y.3 Test inputs.> 
 
 =head2 E
- 
+
  E: expected-expression 
 
 This is the expected results. This should be raw Perl
@@ -1055,7 +1076,7 @@ The test software prints out the msg for each file skipped.
 
  SE: expected-expression
 
-This field is the same as L<E: expected-expression|/E: expected-expression>
+This field is the same as L<E: expected-expression|/E>
 except that testing stops on failure. The test software implements
 the stop by turning on the skip flag. When the skip flag is on,
 every test will be skip.
@@ -1143,7 +1164,7 @@ a directory named I<t> and the I<t> directories are on the same level as
 the last directory of each directory tree specified in I<@INC>.
 If this assumption is not true, this method most likely will not behave
 very well.
-  
+
 =head2 get_date
 
  $date = $std->get_date();
@@ -1298,6 +1319,20 @@ C<$name,$data> pair from the C<@{$std->{std_pm}}> array
 and executes the method C<$name> with C<$name,$data> as arguments.
 The C<$name> variable is the test description short hands C<A> C<E> and so on, 
 L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Database Test Description Fields>.
+
+=head2 perl_command
+
+ $myperl = perl_command();
+
+When running under some CPAN testers setup, the test harness perl executable
+may not be the same as the one for the backtick `perl $command` and crash and
+burn with errors such as 
+
+Perl lib version (v5.8.4) doesn't match executable version (v5.6.1) 
+at /usr/local/perl-5.8.4/lib/5.8.4/sparc-linux/Config.pm line 32.
+
+The C<perl_command> uses C<$^X> to return the current executable Perl
+that may be used in backticks without crashing and burning.
 
 =head2 print
 
