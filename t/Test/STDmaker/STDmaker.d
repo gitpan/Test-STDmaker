@@ -7,7 +7,7 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE);
-$VERSION = '0.08';   # automatically generated file
+$VERSION = '0.09';   # automatically generated file
 $DATE = '2004/04/09';
 
 
@@ -40,7 +40,7 @@ use vars qw($__restore_dir__ @__restore_inc__ );
 BEGIN {
     use Cwd;
     use File::Spec;
-    use FindBIN;
+    use FindBin;
     use Test::Tech qw(tech_config plan demo skip_tests);
 
     ########

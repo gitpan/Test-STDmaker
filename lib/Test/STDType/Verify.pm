@@ -15,7 +15,7 @@ use File::AnySpec;
 use Test::Harness;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.08';
+$VERSION = '1.09';
 $DATE = '2004/04/09';
 
 ########
@@ -164,7 +164,7 @@ $FILE = __FILE__;
 #
 BEGIN { 
 
-   use FindBIN;
+   use FindBin;
    use File::Spec;
    use Cwd;
 

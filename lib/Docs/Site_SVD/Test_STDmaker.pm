@@ -10,45 +10,47 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE );
-$VERSION = '0.07';
+$VERSION = '0.08';
 $DATE = '2004/04/09';
 $FILE = __FILE__;
 
 use vars qw(%INVENTORY);
 %INVENTORY = (
-    'lib/Docs/Site_SVD/Test_STDmaker.pm' => [qw(0.07 2004/04/09), 'revised 0.06'],
-    'MANIFEST' => [qw(0.07 2004/04/09), 'generated, replaces 0.06'],
-    'Makefile.PL' => [qw(0.07 2004/04/09), 'generated, replaces 0.06'],
-    'README' => [qw(0.07 2004/04/09), 'generated, replaces 0.06'],
-    'lib/Test/STDmaker.pm' => [qw(1.1 2004/04/09), 'revised 1.09'],
-    'lib/Test/STDType/Demo.pm' => [qw(1.08 2004/04/09), 'revised 1.07'],
-    'lib/Test/STDType/STD.pm' => [qw(1.08 2004/04/09), 'revised 1.07'],
-    'lib/Test/STDType/Verify.pm' => [qw(1.08 2004/04/09), 'revised 1.07'],
-    'lib/Test/STD/Check.pm' => [qw(1.08 2004/04/09), 'revised 1.07'],
-    'lib/Test/STD/FileGen.pm' => [qw(1.07 2004/04/09), 'revised 1.06'],
-    'lib/Test/STD/STD2167.pm' => [qw(1.05 2004/04/09), 'revised 1.04'],
-    'lib/Test/STD/STDgen.pm' => [qw(1.05 2004/04/09), 'revised 1.04'],
-    't/Test/STDmaker/STDmaker.d' => [qw(0.08 2004/04/09), 'revised 0.07'],
-    't/Test/STDmaker/STDmaker.pm' => [qw(0.07 2004/04/09), 'revised 0.06'],
-    't/Test/STDmaker/STDmaker.t' => [qw(0.08 2004/04/09), 'revised 0.07'],
-    't/Test/STDmaker/tg0.pm' => [qw(0.03 2004/04/09), 'revised 0.02'],
-    't/Test/STDmaker/tg2.pm' => [qw(0.02 2004/04/09), 'new'],
-    't/Test/STDmaker/tgA0.pm' => [qw(0.03 2004/04/09), 'revised 0.02'],
-    't/Test/STDmaker/tgA2.pm' => [qw(0.03 2004/04/09), 'revised 0.02'],
-    't/Test/STDmaker/tgA2A.txt' => [qw(0.07 2004/04/09), 'new'],
-    't/Test/STDmaker/tgA2B.txt' => [qw(0.06 2004/04/09), 'revised 0.05'],
-    't/Test/STDmaker/tgA2C.txt' => [qw(0.07 2004/04/09), 'revised 0.06'],
+    'lib/Docs/Site_SVD/Test_STDmaker.pm' => [qw(0.08 2004/04/09), 'revised 0.07'],
+    'MANIFEST' => [qw(0.08 2004/04/09), 'generated, replaces 0.07'],
+    'Makefile.PL' => [qw(0.08 2004/04/09), 'generated, replaces 0.07'],
+    'README' => [qw(0.08 2004/04/09), 'generated, replaces 0.07'],
+    'lib/Test/STDmaker.pm' => [qw(1.11 2004/04/09), 'revised 1.1'],
+    'lib/Test/STDType/Demo.pm' => [qw(1.09 2004/04/09), 'revised 1.08'],
+    'lib/Test/STDType/STD.pm' => [qw(1.08 2004/04/09), 'unchanged'],
+    'lib/Test/STDType/Verify.pm' => [qw(1.09 2004/04/09), 'revised 1.08'],
+    'lib/Test/STD/Check.pm' => [qw(1.09 2004/04/09), 'revised 1.08'],
+    'lib/Test/STD/FileGen.pm' => [qw(1.07 2004/04/09), 'unchanged'],
+    'lib/Test/STD/STD2167.pm' => [qw(1.05 2004/04/09), 'unchanged'],
+    'lib/Test/STD/STDgen.pm' => [qw(1.05 2004/04/09), 'unchanged'],
+    't/Test/STDmaker/STDmaker.d' => [qw(0.09 2004/04/09), 'revised 0.08'],
+    't/Test/STDmaker/STDmaker.pm' => [qw(0.01 2004/04/09), 'unchanged'],
+    't/Test/STDmaker/STDmaker.t' => [qw(0.09 2004/04/09), 'revised 0.08'],
+    't/Test/STDmaker/tg0.pm' => [qw(0.03 2004/04/09), 'unchanged'],
+    't/Test/STDmaker/tg2.pm' => [qw(0.02 2004/04/09), 'unchanged'],
+    't/Test/STDmaker/tgA0.pm' => [qw(0.03 2004/04/09), 'unchanged'],
+    't/Test/STDmaker/tgA1.pm' => [qw(0.03 2004/04/09), 'new'],
+    't/Test/STDmaker/tgA2.pm' => [qw(0.03 2004/04/09), 'unchanged'],
+    't/Test/STDmaker/tgA2A.txt' => [qw(0.07 2004/04/09), 'unchanged'],
+    't/Test/STDmaker/tgA2B.txt' => [qw(0.06 2004/04/09), 'unchanged'],
+    't/Test/STDmaker/tgA2C.txt' => [qw(0.07 2004/04/09), 'unchanged'],
     't/Test/STDmaker/tgA2D.txt' => [qw(0.03 2003/08/01), 'unchanged'],
-    't/Test/STDmaker/tgB0.pm' => [qw(0.01 2004/04/09), 'new'],
-    't/Test/STDmaker/tgB2.pm' => [qw(0.01 2004/04/09), 'new'],
-    't/Test/STDmaker/tgB2.txt' => [qw(0.07 2004/04/09), 'new'],
-    't/Test/STDmaker/tgC0.pm' => [qw(0.03 2004/04/09), 'revised 0.02'],
-    't/Test/STDmaker/tgC2.pm' => [qw(0.03 2004/04/09), 'revised 0.02'],
+    't/Test/STDmaker/tgB0.pm' => [qw(0.01 2004/04/09), 'unchanged'],
+    't/Test/STDmaker/tgB1.pm' => [qw(0.01 2004/04/09), 'new'],
+    't/Test/STDmaker/tgB2.pm' => [qw(0.01 2004/04/09), 'unchanged'],
+    't/Test/STDmaker/tgB2.txt' => [qw(0.07 2004/04/09), 'unchanged'],
+    't/Test/STDmaker/tgC0.pm' => [qw(0.03 2004/04/09), 'unchanged'],
+    't/Test/STDmaker/tgC1.pm' => [qw(0.01 2004/04/09), 'new'],
+    't/Test/STDmaker/tgC2.pm' => [qw(0.03 2004/04/09), 'unchanged'],
     'bin/tmake.pl' => [qw(1.05 2003/08/01), 'unchanged'],
-    't/Test/STDmaker/Text/Scrub.pm' => [qw(1.11 2004/04/09), 'new'],
-    't/Test/STDmaker/Test/Tech.pm' => [qw(1.17 2004/04/09), 'new'],
-    't/Test/STDmaker/Data/Secs2.pm' => [qw(1.15 2004/04/09), 'new'],
-    't/Test/STDmaker/File/TestPath.pm' => [qw(1.11 2004/04/09), 'new'],
+    't/Test/STDmaker/Text/Scrub.pm' => [qw(1.11 2004/04/09), 'unchanged'],
+    't/Test/STDmaker/Test/Tech.pm' => [qw(1.17 2004/04/09), 'unchanged'],
+    't/Test/STDmaker/Data/Secs2.pm' => [qw(1.15 2004/04/09), 'unchanged'],
 
 );
 
@@ -75,9 +77,9 @@ use vars qw(%INVENTORY);
 
  Test::STDmaker - Test Scripts, Demo Scripts and Software Test Description (STD) Automation
 
- Revision: F
+ Revision: G
 
- Version: 0.07
+ Version: 0.08
 
  Date: 2004/04/09
 
@@ -208,7 +210,7 @@ The dependency of the program modules in the US DOD STD2167A bundle is as follow
 
 =head2 1.3 Document overview.
 
-This document releases Test::STDmaker version 0.07
+This document releases Test::STDmaker version 0.08
 providing description of the inventory, installation
 instructions and other information necessary to
 utilize and track this release.
@@ -223,7 +225,7 @@ system file specification.
 
 This document releases the file 
 
- Test-STDmaker-0.07.tar.gz
+ Test-STDmaker-0.08.tar.gz
 
 found at the following repository(s):
 
@@ -304,39 +306,41 @@ consists of the following files:
 
  file                                                         version date       comment
  ------------------------------------------------------------ ------- ---------- ------------------------
- lib/Docs/Site_SVD/Test_STDmaker.pm                           0.07    2004/04/09 revised 0.06
- MANIFEST                                                     0.07    2004/04/09 generated, replaces 0.06
- Makefile.PL                                                  0.07    2004/04/09 generated, replaces 0.06
- README                                                       0.07    2004/04/09 generated, replaces 0.06
- lib/Test/STDmaker.pm                                         1.1     2004/04/09 revised 1.09
- lib/Test/STDType/Demo.pm                                     1.08    2004/04/09 revised 1.07
- lib/Test/STDType/STD.pm                                      1.08    2004/04/09 revised 1.07
- lib/Test/STDType/Verify.pm                                   1.08    2004/04/09 revised 1.07
- lib/Test/STD/Check.pm                                        1.08    2004/04/09 revised 1.07
- lib/Test/STD/FileGen.pm                                      1.07    2004/04/09 revised 1.06
- lib/Test/STD/STD2167.pm                                      1.05    2004/04/09 revised 1.04
- lib/Test/STD/STDgen.pm                                       1.05    2004/04/09 revised 1.04
- t/Test/STDmaker/STDmaker.d                                   0.08    2004/04/09 revised 0.07
- t/Test/STDmaker/STDmaker.pm                                  0.07    2004/04/09 revised 0.06
- t/Test/STDmaker/STDmaker.t                                   0.08    2004/04/09 revised 0.07
- t/Test/STDmaker/tg0.pm                                       0.03    2004/04/09 revised 0.02
- t/Test/STDmaker/tg2.pm                                       0.02    2004/04/09 new
- t/Test/STDmaker/tgA0.pm                                      0.03    2004/04/09 revised 0.02
- t/Test/STDmaker/tgA2.pm                                      0.03    2004/04/09 revised 0.02
- t/Test/STDmaker/tgA2A.txt                                    0.07    2004/04/09 new
- t/Test/STDmaker/tgA2B.txt                                    0.06    2004/04/09 revised 0.05
- t/Test/STDmaker/tgA2C.txt                                    0.07    2004/04/09 revised 0.06
+ lib/Docs/Site_SVD/Test_STDmaker.pm                           0.08    2004/04/09 revised 0.07
+ MANIFEST                                                     0.08    2004/04/09 generated, replaces 0.07
+ Makefile.PL                                                  0.08    2004/04/09 generated, replaces 0.07
+ README                                                       0.08    2004/04/09 generated, replaces 0.07
+ lib/Test/STDmaker.pm                                         1.11    2004/04/09 revised 1.1
+ lib/Test/STDType/Demo.pm                                     1.09    2004/04/09 revised 1.08
+ lib/Test/STDType/STD.pm                                      1.08    2004/04/09 unchanged
+ lib/Test/STDType/Verify.pm                                   1.09    2004/04/09 revised 1.08
+ lib/Test/STD/Check.pm                                        1.09    2004/04/09 revised 1.08
+ lib/Test/STD/FileGen.pm                                      1.07    2004/04/09 unchanged
+ lib/Test/STD/STD2167.pm                                      1.05    2004/04/09 unchanged
+ lib/Test/STD/STDgen.pm                                       1.05    2004/04/09 unchanged
+ t/Test/STDmaker/STDmaker.d                                   0.09    2004/04/09 revised 0.08
+ t/Test/STDmaker/STDmaker.pm                                  0.01    2004/04/09 unchanged
+ t/Test/STDmaker/STDmaker.t                                   0.09    2004/04/09 revised 0.08
+ t/Test/STDmaker/tg0.pm                                       0.03    2004/04/09 unchanged
+ t/Test/STDmaker/tg2.pm                                       0.02    2004/04/09 unchanged
+ t/Test/STDmaker/tgA0.pm                                      0.03    2004/04/09 unchanged
+ t/Test/STDmaker/tgA1.pm                                      0.03    2004/04/09 new
+ t/Test/STDmaker/tgA2.pm                                      0.03    2004/04/09 unchanged
+ t/Test/STDmaker/tgA2A.txt                                    0.07    2004/04/09 unchanged
+ t/Test/STDmaker/tgA2B.txt                                    0.06    2004/04/09 unchanged
+ t/Test/STDmaker/tgA2C.txt                                    0.07    2004/04/09 unchanged
  t/Test/STDmaker/tgA2D.txt                                    0.03    2003/08/01 unchanged
- t/Test/STDmaker/tgB0.pm                                      0.01    2004/04/09 new
- t/Test/STDmaker/tgB2.pm                                      0.01    2004/04/09 new
- t/Test/STDmaker/tgB2.txt                                     0.07    2004/04/09 new
- t/Test/STDmaker/tgC0.pm                                      0.03    2004/04/09 revised 0.02
- t/Test/STDmaker/tgC2.pm                                      0.03    2004/04/09 revised 0.02
+ t/Test/STDmaker/tgB0.pm                                      0.01    2004/04/09 unchanged
+ t/Test/STDmaker/tgB1.pm                                      0.01    2004/04/09 new
+ t/Test/STDmaker/tgB2.pm                                      0.01    2004/04/09 unchanged
+ t/Test/STDmaker/tgB2.txt                                     0.07    2004/04/09 unchanged
+ t/Test/STDmaker/tgC0.pm                                      0.03    2004/04/09 unchanged
+ t/Test/STDmaker/tgC1.pm                                      0.01    2004/04/09 new
+ t/Test/STDmaker/tgC2.pm                                      0.03    2004/04/09 unchanged
  bin/tmake.pl                                                 1.05    2003/08/01 unchanged
- t/Test/STDmaker/Text/Scrub.pm                                1.11    2004/04/09 new
- t/Test/STDmaker/Test/Tech.pm                                 1.17    2004/04/09 new
- t/Test/STDmaker/Data/Secs2.pm                                1.15    2004/04/09 new
- t/Test/STDmaker/File/TestPath.pm                             1.11    2004/04/09 new
+ t/Test/STDmaker/Text/Scrub.pm                                1.11    2004/04/09 unchanged
+ t/Test/STDmaker/Test/Tech.pm                                 1.17    2004/04/09 unchanged
+ t/Test/STDmaker/Data/Secs2.pm                                1.15    2004/04/09 unchanged
 
 
 =head2 3.3 Changes
@@ -457,6 +461,25 @@ strings on some Perl and numbers on others.
 If something is broken, replace it with a fixed version in order to
 pass the tests for the Test::STDmaker program module.
 
+=item Test-STDmaker-0.08
+
+ Subject: FAIL Test-Tech-0.18 i586-linux 2.4.22-4tr 
+ From: cpansmoke@alternation.net 
+ Date: Thu,  8 Apr 2004 15:09:35 -0300 (ADT) 
+
+ PERL_DL_NONLAZY=1 /usr/bin/perl5.8.0 "-MExtUtils::Command::MM" "-e" "test_harness(0, 'blib/lib', 'blib/arch')" t/Test/Tech/Tech.t
+ t/Test/Tech/Tech....Can't locate FindBIN.pm
+
+ Summary of my perl5 (revision 5.0 version 8 subversion 0) configuration:
+   Platform:
+     osname=linux, osvers=2.4.22-4tr, archname=i586-linux
+
+This is capitalization problem. The program module name is 'FindBin' not 'FindBIN' which
+is part of Perl. Microsoft does not care about capitalization differences while linux
+does. This error is in the test script automatically generated by C<Test::STDmaker>
+and was just introduced when moved test script libraries from C<tlib> to the directory
+of the test script. Repaired C<Test::STDmaker> and regenerated the distribution.
+
 =back
 
 =head2 3.4 Adaptation data.
@@ -495,13 +518,13 @@ Enter one of the following repositories in a web browser:
   http://www.softwarediamonds/packages/
   http://www.perl.com/CPAN-local/authors/id/S/SO/SOFTDIA/
 
-Right click on 'Test-STDmaker-0.07.tar.gz' and download to a temporary
+Right click on 'Test-STDmaker-0.08.tar.gz' and download to a temporary
 installation directory.
 Enter the following where $make is 'nmake' for microsoft
 windows; otherwise 'make'.
 
- gunzip Test-STDmaker-0.07.tar.gz
- tar -xf Test-STDmaker-0.07.tar
+ gunzip Test-STDmaker-0.08.tar.gz
+ tar -xf Test-STDmaker-0.08.tar
  perl Makefile.PL
  $make test
  $make install
@@ -764,10 +787,10 @@ __DATA__
 DISTNAME: Test-STDmaker^
 REPOSITORY_DIR: packages^
 
-VERSION : 0.07^
+VERSION : 0.08^
 FREEZE: 1^
-PREVIOUS_RELEASE: 0.06^
-REVISION: F^
+PREVIOUS_RELEASE: 0.07^
+REVISION: G^
 
 PREVIOUS_DISTNAME:  ^
 AUTHOR  : SoftwareDiamonds.com E<lt>support@SoftwareDiamonds.comE<gt>^
@@ -811,7 +834,6 @@ bin/tmake.pl
 lib/Text/Scrub.pm => t/Test/STDmaker/Text/Scrub.pm
 lib/Test/Tech.pm => t/Test/STDmaker/Test/Tech.pm
 lib/Data/Secs2.pm => t/Test/STDmaker/Data/Secs2.pm
-lib/File/TestPath.pm => t/Test/STDmaker/File/TestPath.pm
 ^
 
 PREREQ_PM:
@@ -1054,6 +1076,25 @@ Eliminated detecting broken Perl where Data::Dumper treats arrays of number as
 strings on some Perl and numbers on others. 
 If something is broken, replace it with a fixed version in order to
 pass the tests for the Test::STDmaker program module.
+
+\=item Test-STDmaker-0.08
+
+ Subject: FAIL Test-Tech-0.18 i586-linux 2.4.22-4tr 
+ From: cpansmoke@alternation.net 
+ Date: Thu,  8 Apr 2004 15:09:35 -0300 (ADT) 
+
+ PERL_DL_NONLAZY=1 /usr/bin/perl5.8.0 "-MExtUtils::Command::MM" "-e" "test_harness(0, 'blib/lib', 'blib/arch')" t/Test/Tech/Tech.t
+ t/Test/Tech/Tech....Can't locate FindBIN.pm
+
+ Summary of my perl5 (revision 5.0 version 8 subversion 0) configuration:
+   Platform:
+     osname=linux, osvers=2.4.22-4tr, archname=i586-linux
+
+This is capitalization problem. The program module name is 'FindBin' not 'FindBIN' which
+is part of Perl. Microsoft does not care about capitalization differences while linux
+does. This error is in the test script automatically generated by C<Test::STDmaker>
+and was just introduced when moved test script libraries from C<tlib> to the directory
+of the test script. Repaired C<Test::STDmaker> and regenerated the distribution.
 
 \=back
 

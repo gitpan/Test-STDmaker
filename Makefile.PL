@@ -23,7 +23,7 @@ my @exe = unix2os('bin/tmake.pl');
 WriteMakefile(
     NAME => 'Test::STDmaker',
     DISTNAME => 'Test-STDmaker',
-    VERSION  => '0.07',
+    VERSION  => '0.08',
     dist     => {COMPRESS => 'gzip',
                 'gz' => 'gz'},
     test     => {TESTS => $tests},

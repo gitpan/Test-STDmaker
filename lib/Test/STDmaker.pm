@@ -17,7 +17,7 @@ use File::SubPM;
 use File::Where;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.1';
+$VERSION = '1.11';
 $DATE = '2004/04/09';
 
 use DataPort::Maker;
@@ -185,55 +185,136 @@ It will automatically insert the output from the
 demonstration script into the POD I<-headx Demonstration>
 section of the file being tested.
 
-The input to "L<Test::STDmaker|Test::STDmaker>" is the __DATA__
+The input to "L<Test::STDmaker|Test::STDmaker>" is the C<__DATA__>
 section of Software Test Description (STD)
 program module.
-The __DATA__ section must contain STD
+The __DATA__ section must contain a STD
 forms text database in the
 L<DataPort::FileType::DataDB|DataPort::FileType::DataDB> format.
-The STD program modules should reside in a 't' subtree whose root
-is the same as the 'lib' subtree.
+The STD program modules should reside in a C<'t'> subtree whose root
+is the same as the C<'lib'> subtree.
+For the host site development and debug, 
+the C<lib> directory is most convenient for test program modules.
+However, for when building the distribution
+file for installation on a target site, test library program
+modules should be placed at the same level as the test script.
 
-For example,
- 
- root_dir   
+For example, while debugging and development the directory
+structure may look as follows:
+
+ development_dir   
    lib
      MyTopLevel
-       MyUnitUnderTest.pm  # code module
+       MyUnitUnderTest.pm  # code program module
+     Data::xxxx.pm  # test library program modules
+ 
+     File::xxxx.pm  # test library program modules
    t
      MyTopLevel
-       MyUnitUnderTest.pm  # std module
+       MyUnitUnderTest.pm  # STD program module
+
+ # @INC contains the absolute path for development_dir
+
+while a target site distribution directory for
+the C<MyUnitUnderTest> would be as follows:
+
+ devlopment_dir 
+   release_dir
+     MyUnitUnderTest_dir
+       lib
+         MyTopLevel
+           MyUnitUnderTest.pm  # code program module
+       t
+         MyTopLevel
+           MyUnitUnderTest.pm  # STD program module
+
+           Data::xxxx.pm  # test library program modules
+
+           File::xxxx.pm  # test library program modules
+
+ # @INC contains the absolute path for MyUnitUnderTest_dir 
+ # and does not contain the absolute path for devlopment_dir
 
 When "Test::STDmaker" searches for a STD program module,
-it looks for it first under all the subtrees in @INC
-with the last directory removed.
-This means the package name must start with "t::".
+it looks for it first under all the directories in @INC
+This means the STD program module name must start with C<"t::">.
 Thus the program module name for the Unit Under
-Test (UUT) and the UUT STD program module
+Test (UUT), C<MyTopLevel::MyUnitUNderTest>,
+and the UUT STD program module, C<t::MyTopLevel::MyUnitUNderTest>,
 are always different.
 
-Use the "tmake.pl" (test generate) cover script for 
-L<Test::STDmaker|Test::STDmaker> to process a STD database
-module as follows:
+Use the C<tmake.pl> (test make), found in the distribution file,
+cover script for  L<Test::STDmaker|Test::STDmaker> to process a STD database
+module to generate a test script for debug and development as follows:
 
-  tmake -pm=t::MyTopLevel::MyUnitUnderTest
-  perl -d root_dir/t/MyTopLevel/MyUnitUnderTest.t
-  perl -d root_dir/t/MyTopLevel/MyUnitUnderTest.d
+  tmake -verbose -nounlink -pm=t::MyTopLevel::MyUnitUnderTest
 
+The C<tmake> script creates a C<$std> object and runs the C<tmake> method
 
+ my $std = new Test::STDmaker(\%options);
+ $std->tmake(@ARGV);
 
-The "Test::STDmaker" is part of the "STD2167A" bundle that contains,
-for starters, the following files:
+which replaces the POD in C<t::MyTopLevel::MyUnitUNderTest> STD program
+module and creates the following files
 
-   Text::Scrub File::Package File::TestPath File::SmartNL
+ development_dir
+   t
+     MyTopLevel
+       MyUnitUNderTest.t  # test script
+       MyUnitUNderTest.d  # demo script
+       temp.pl            # calculates test steps and so forth
 
-     Test::Tech 
+The names for these three files are determined by fields
+in the C<__DATA__> section of the C<t::MyTopLevel::MyUnitUNderTest> 
+STD program module. All geneated scripts will contain Perl
+code to change the working directory to the same directory
+as the test script and add this directory to C<@INC> so
+the Perl can find any test library program modules placed
+in the same directory as the test script.
 
-        DataPort::FileType::FormDB DataPort::DataFile Text::Replace Text::Column
-        File::AnySpec File::Data File::Where File::SubPM
+The first step is to debug temp.pl in the C<development_dir>
 
-            Test::STDmaker ExtUtils::SVDmaker
+ perl -d temp.pl
 
+Make any correction to the STD program module 
+C<t::MyTopLevel::MyUnitUNderTest> not to C<temp.pl>
+and repeat the above steps.
+After debugging C<temp.pl>, use the same procedure to
+debug C<MyUnitUnderTest.t>, C<MyUnitUnderTest.d>
+ 
+  perl -d MyUnitUnderTest.t
+  perl -d MyUnitUnderTest.d
+
+Again make any correction to the STD program module 
+C<t::MyTopLevel::MyUnitUNderTest> not to C<MyUnitUnderTest.t>
+C<MyUnitUnderTest.d>
+ 
+Once this is accomplished, develop and degug the UUT using
+the test script as follows:
+
+ perl -d MyUnitUnderTest.t
+
+Finally, when the C<MyTopLevel::MyUnitUNderTest> is working
+replace the C<=head1 DEMONSTRATION> in the C<MyTopLevel::MyUnitUNderTest>
+with the output from C<MyUnitUnderTest.d> and run the 
+C<MyUnitUnderTest.t> under C<Test::Harness> with the following:
+
+ tmake -verbose -test_verbose -replace -run -pm=t::MyTopLevel::MyUnitUnderTest
+
+Since there is no C<-unlink> option, C<tmake>
+removes the C<temp.pl> file.
+
+Keep the C<t> subtree under the C<development library> for regression testing of
+the development library.
+
+Use L<ExtUtils::SVDmaker|> to automatically build a release
+directory from the development directory,
+run the test script using only the files in the release directory,
+bump revisions for files that changed since the
+last distribution,
+and package the UUT program module, test script and
+test library program modules and other
+files for distrubtion.
 
 =head2 Capabilities
 
@@ -1294,8 +1375,8 @@ follow on the next lines. For example,
  use warnings::register;
 
  use vars qw($VERSION $DATE $FILE );
- $VERSION = '0.02';
- $DATE = '2003/06/21';
+ $VERSION = '0.03';
+ $DATE = '2004/04/09';
  $FILE = __FILE__;
 
  __DATA__
@@ -1855,7 +1936,7 @@ follow on the next lines. For example,
 
  use vars qw($VERSION $DATE $FILE );
  $VERSION = '0.01';
- $DATE = '2003/06/21';
+ $DATE = '2004/04/09';
  $FILE = __FILE__;
 
  ########
@@ -2186,7 +2267,7 @@ follow on the next lines. For example,
 
  use vars qw($VERSION);
 
- $VERSION = '0.02';
+ $VERSION = '0.03';
 
  1
 
@@ -2463,8 +2544,8 @@ follow on the next lines. For example,
  use warnings::register;
 
  use vars qw($VERSION $DATE $FILE );
- $VERSION = '0.02';
- $DATE = '2003/06/21';
+ $VERSION = '0.03';
+ $DATE = '2004/04/09';
  $FILE = __FILE__;
 
  ########

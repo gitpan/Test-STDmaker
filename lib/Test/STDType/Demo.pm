@@ -16,7 +16,7 @@ use File::AnySpec;
 use File::SmartNL;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.08';
+$VERSION = '1.09';
 $DATE = '2004/04/09';
 
 
@@ -94,7 +94,7 @@ use vars qw($__restore_dir__ \@__restore_inc__ );
 BEGIN {
     use Cwd;
     use File::Spec;
-    use FindBIN;
+    use FindBin;
     use Test::Tech qw(tech_config plan demo skip_tests);
 
     ########

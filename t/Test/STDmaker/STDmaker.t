@@ -7,7 +7,7 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE);
-$VERSION = '0.08';   # automatically generated file
+$VERSION = '0.09';   # automatically generated file
 $DATE = '2004/04/09';
 $FILE = __FILE__;
 
@@ -40,7 +40,7 @@ $FILE = __FILE__;
 #
 BEGIN { 
 
-   use FindBIN;
+   use FindBin;
    use File::Spec;
    use Cwd;
 
