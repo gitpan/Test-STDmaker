@@ -14,7 +14,7 @@ ok 1 - Quiet Code
 ok 2 - Pass test 
 ok 3 - Todo test that passes  # (tgA1.t at line 149 TODO?!)
 not ok 4 - Test that fails 
-# Test 4 got: '6' (tgA1.t at line 164)
+# Test 4 got: "6" (tgA1.t at line 164)
 #   Expected: '7'
 ok 5 - Skipped tests  # skip
 not ok 6 - Todo Test that Fails 

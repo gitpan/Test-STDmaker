@@ -10,8 +10,8 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE);
-$VERSION = '1.15';
-$DATE = '2004/05/23';
+$VERSION = '1.16';
+$DATE = '2004/05/24';
 $FILE = __FILE__;
 
 use vars qw(@ISA @EXPORT_OK);
@@ -20,9 +20,9 @@ require Exporter;
 @EXPORT_OK = qw(scrub_architect scrub_date scrub_date_ticket scrub_date_version 
                 scrub_file_line scrub_probe scrub_test_file);
 
-# use SelfLoader;
-# 1
-# __DATA__
+use SelfLoader;
+1
+__DATA__
 
 #######
 # Blank out the Verion, Date for comparision
@@ -154,6 +154,14 @@ sub scrub_file_line
     # Blank out version and date for comparasion
     #
     $text =~ s/\(.*?at line \d+/(xxxx.t at line 000/ig;
+
+    ######
+    # Most Perls return single quotes around numbers; however,
+    # darwin-thread-multi-2level 7.0, and probably others
+    # return double quotes
+    #
+    $text =~ s/\"(\d+)\"/'$1'/g;
+
     $text
 
 }

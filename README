@@ -2858,9 +2858,9 @@ Title Page
 
      Docs::Site_SVD::Test_STDmaker - generate test scripts, demo scripts from a test description short hand
 
-     Revision: T
+     Revision: U
 
-     Version: 0.22
+     Version: 0.23
 
      Date: 2004/05/24
 
@@ -2921,7 +2921,7 @@ Title Page
 
   1.3 Document overview.
 
-    This document releases Test::STDmaker version 0.22 providing description
+    This document releases Test::STDmaker version 0.23 providing description
     of the inventory, installation instructions and other information
     necessary to utilize and track this release.
 
@@ -2933,7 +2933,7 @@ Title Page
 
     This document releases the file
 
-     Test-STDmaker-0.22.tar.gz
+     Test-STDmaker-0.23.tar.gz
 
     found at the following repository(s):
 
@@ -2990,22 +2990,22 @@ Title Page
 
      file                                                         version date       comment
      ------------------------------------------------------------ ------- ---------- ------------------------
-     lib/Docs/Site_SVD/Test_STDmaker.pm                           0.22    2004/05/24 revised 0.21
-     MANIFEST                                                     0.22    2004/05/24 generated, replaces 0.21
-     Makefile.PL                                                  0.22    2004/05/24 generated, replaces 0.21
-     README                                                       0.22    2004/05/24 generated, replaces 0.21
-     lib/Test/STDmaker.pm                                         1.21    2004/05/24 revised 1.2
+     lib/Docs/Site_SVD/Test_STDmaker.pm                           0.23    2004/05/24 revised 0.22
+     MANIFEST                                                     0.23    2004/05/24 generated, replaces 0.22
+     Makefile.PL                                                  0.23    2004/05/24 generated, replaces 0.22
+     README                                                       0.23    2004/05/24 generated, replaces 0.22
+     lib/Test/STDmaker.pm                                         1.21    2004/05/24 unchanged
      lib/Test/STDmaker/Check.pm                                   1.15    2004/05/23 unchanged
      lib/Test/STDmaker/Demo.pm                                    1.14    2004/05/21 unchanged
      lib/Test/STDmaker/STD.pm                                     1.12    2004/05/23 unchanged
      lib/Test/STDmaker/Verify.pm                                  1.15    2004/05/22 unchanged
      lib/Test/STD/PerlSTD.pm                                      1.08    2004/05/19 unchanged
-     t/Test/STDmaker/advance.d                                    0.01    2004/05/24 new
-     t/Test/STDmaker/advance.pm                                   0.01    2004/05/24 new
-     t/Test/STDmaker/advance.t                                    0.01    2004/05/24 new
-     t/Test/STDmaker/basic.d                                      0.01    2004/05/24 new
-     t/Test/STDmaker/basic.pm                                     0.01    2004/05/24 new
-     t/Test/STDmaker/basic.t                                      0.01    2004/05/24 new
+     t/Test/STDmaker/advance.d                                    0.01    2004/05/24 unchanged
+     t/Test/STDmaker/advance.pm                                   0.01    2004/05/24 unchanged
+     t/Test/STDmaker/advance.t                                    0.01    2004/05/24 unchanged
+     t/Test/STDmaker/basic.d                                      0.01    2004/05/24 unchanged
+     t/Test/STDmaker/basic.pm                                     0.01    2004/05/24 unchanged
+     t/Test/STDmaker/basic.t                                      0.01    2004/05/24 unchanged
      t/Test/STDmaker/tg0.pm                                       0.03    2004/04/09 unchanged
      t/Test/STDmaker/tg2A.pm                                      0.06    2004/05/23 unchanged
      t/Test/STDmaker/tg2B.pm                                      0.07    2004/05/23 unchanged
@@ -3013,7 +3013,7 @@ Title Page
      t/Test/STDmaker/tgA2.pm                                      0.09    2004/05/23 unchanged
      t/Test/STDmaker/tgA2A2.txt                                   0.13    2004/05/23 unchanged
      t/Test/STDmaker/tgA2A3.txt                                   0.13    2004/05/23 unchanged
-     t/Test/STDmaker/tgA2B.txt                                    0.09    2004/05/22 unchanged
+     t/Test/STDmaker/tgA2B.txt                                    0.1     2004/05/24 revised 0.09
      t/Test/STDmaker/tgA2C.txt                                    0.1     2004/05/22 unchanged
      t/Test/STDmaker/tgB0.pm                                      0.02    2004/05/18 unchanged
      t/Test/STDmaker/tgB2.pm                                      0.04    2004/05/23 unchanged
@@ -3022,7 +3022,7 @@ Title Page
      t/Test/STDmaker/tgC2.pm                                      0.06    2004/05/23 unchanged
      t/Test/STDmaker/tgD0.pm                                      0.06    2004/05/22 unchanged
      t/Test/STDmaker/tmake.pl                                     1.06    2004/05/24 unchanged
-     t/Test/STDmaker/Text/Scrub.pm                                1.15    2004/05/24 unchanged
+     t/Test/STDmaker/Text/Scrub.pm                                1.16    2004/05/24 revised 1.15
      t/Test/STDmaker/Test/Tech.pm                                 1.26    2004/05/24 unchanged
      t/Test/STDmaker/Data/Secs2.pm                                1.26    2004/05/24 unchanged
      t/Test/STDmaker/Data/Str2Num.pm                              0.08    2004/05/24 unchanged
@@ -3265,8 +3265,9 @@ Title Page
 
         Backed out test descriptions that producde curly brackets except for
         "BEGIN" and "END" blocks of generated scripts. The backed test
-        descriptions can be added as another test once get some green
-        PASSES.
+        descriptions are added to the "advance.t" test script that will not
+        be distributed until get some green PASSES for the "basic.t" test
+        script.
 
     Test-STDmaker-0.19 - Test-STDmaker-0.21
         Test Failure:
@@ -3277,22 +3278,20 @@ Title Page
          "my" variable $expected1 masks earlier declaration in same scope at tgA1.d line 203.
          "my" variable $x masks earlier declaration in same scope at tgA1.d line 228.
          "my" variable $y masks earlier declaration in same scope at tgA1.d line 233.
-         "my" variable $expected1 masks earlier declaration in same scope at tgA1.t line 240.
-         "my" variable $x masks earlier declaration in same scope at tgA1.t line 252.
-         "my" variable $y masks earlier declaration in same scope at tgA1.t line 257.
 
         Analysis:
 
-        Opening a new "tmaker" for test 9, involked "File::Maker" methods a
-        second time for the same program module "__DATA__" section. While
-        these work under Windows, they are completely messed up under Unix.
+        Opening a new "tmaker" for test 9, involked "File::Maker" load
+        methods a second time for the same program module "__DATA__"
+        section. While these work under Windows, they are completely messed
+        up under Unix.
 
         Corrective Action:
 
-        Changed the order of the test script "tmaker" never created with the
-        "new" subroutine for the same file object. Add making "File::Maker"
-        work with loading the "__DATA__" twice after loading the program
-        module on the todo list.
+        Changed the order of the test script so "tmaker" never created with
+        the "new" subroutine for the same file object. Add making
+        "File::Maker" work with loading the "__DATA__" twice after loading
+        the program module on the todo list.
 
     Test-STDmaker-0.22
          Subject: FAIL Test-STDmaker-0.21 sparc-linux 2.4.21-pre7 
@@ -3304,7 +3303,7 @@ Title Page
 
         No error stack output yet failing tests. There are only 21 tests.
 
-        Corective Action
+        Corrective Action
 
         Found where main test script redirecting STDERR output to STDOUT.
         Removed it. This is needed for the test case scripts that are ran by
@@ -3313,7 +3312,37 @@ Title Page
 
         Split the test script into "basic.t" and "advance.t" and moved the
         last three tests to the advance.t test script. The focus will be to
-        baseline with the "basic.t" test script only.
+        baseline with the "basic.t" test script only. Once have a baseline
+        with some Passes, work on getting the "advance.t" to pass on
+        multi-platforms.
+
+    Test-STDmaker-0.23
+        Some passes, a Failure:
+
+        From: mhoyt@houston.rr.com Subject: FAIL Test-STDmaker-0.22
+        darwin-thread-multi-2level 7.0
+
+        t/Test/STDmaker/basic....# Test 9 got: "1..11 todo 3 6; ok 1 - Quiet
+        Code ok 2 - Pass test ok 3 - Todo test that passes # (xxxx.t at line
+        000 TODO?!) not ok 4 - Test that fails # Test 4 got: \"6\" (xxxx.t
+        at line 000) # Expected: \"7\"\nok 5 - Skipped tests # skip not ok 6
+        - Todo Test that Fails
+
+        "1..11 todo 3 6; ok 1 - Quiet Code ok 2 - Pass test ok 3 - Todo test
+        that passes # (xxxx.t at line 000 TODO?!) not ok 4 - Test that fails
+        # Test 4 got: '6' (xxxx.t at line 000) # Expected: '7'\nok 5 -
+        Skipped tests # skip not ok 6 - Todo Test that Fails
+
+        Analysis:
+
+        Most Perls return single quotes around numbers; however,
+        darwin-thread-multi-2level 7.0, and probably others return double
+        quotes. This could be a function of the "Test" module version.
+
+        Corrective Action:
+
+        Added code to "&Test::Scrub::scrub_file_line" to change double
+        quotes around numbers to single quotes
 
   3.4 Adaptation data.
 
@@ -3348,12 +3377,12 @@ Title Page
           http://www.softwarediamonds/packages/
           http://www.perl.com/CPAN/authors/id/S/SO/SOFTDIA/
 
-        Right click on 'Test-STDmaker-0.22.tar.gz' and download to a
+        Right click on 'Test-STDmaker-0.23.tar.gz' and download to a
         temporary installation directory. Enter the following where $make is
         'nmake' for microsoft windows; otherwise 'make'.
 
-         gunzip Test-STDmaker-0.22.tar.gz
-         tar -xf Test-STDmaker-0.22.tar
+         gunzip Test-STDmaker-0.23.tar.gz
+         tar -xf Test-STDmaker-0.23.tar
          perl Makefile.PL
          $make test
          $make install
@@ -3401,9 +3430,8 @@ Title Page
 
   3.7 Possible problems and known errors
 
-    1   Establish all the requirements.
-
-    2   Get pass on with the "advance.t" test script on Unix type machines.
+    1   Introduce the "advance.t" test script and get it to pass on Unix
+        type machines.
 
 4.0 NOTES
     The following are useful acronyms:
