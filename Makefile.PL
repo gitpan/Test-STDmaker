@@ -17,13 +17,13 @@
 
 use ExtUtils::MakeMaker;
 
-my $tests = join ' ',unix2os('t/Test/STDmaker/STDmaker.t');
+my $tests = join ' ',unix2os('t/Test/STDmaker/basic.t');
 
 
 WriteMakefile(
     NAME => 'Test::STDmaker',
     DISTNAME => 'Test-STDmaker',
-    VERSION  => '0.21',
+    VERSION  => '0.22',
     dist     => {COMPRESS => 'gzip',
                 'gz' => 'gz'},
     test     => {TESTS => $tests},

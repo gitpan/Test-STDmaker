@@ -15,8 +15,8 @@ use File::AnySpec;
 use File::Where;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.2';
-$DATE = '2004/05/23';
+$VERSION = '1.21';
+$DATE = '2004/05/24';
 
 use vars qw(@ISA @EXPORT_OK);
 @ISA = qw();
@@ -1661,7 +1661,7 @@ I<$file_spec> for the files in the STD PM database.
 =head1 DEMONSTRATION
 
  #########
- # perl STDmaker.d
+ # perl basic.d
  ###
 
 ~~~~~~ Demonstration overview ~~~~~
@@ -1680,12 +1680,6 @@ follow on the next lines as comments. For example,
      use File::Package;
      use File::SmartNL;
      use Text::Scrub;
-
-     #########
-     # For "TEST" 1.24 or greater that have separate std err output,
-     # redirect the TESTERR to STDOUT
-     #
-     my $restore_testerr = tech_config( 'Test.TESTERR', \*STDOUT );   
 
      my $fp = 'File::Package';
      my $snl = 'File::SmartNL';
@@ -1708,12 +1702,12 @@ follow on the next lines as comments. For example,
  #
 
  ##################
- # Test::STDmaker Version 1.19
+ # Test::STDmaker Version 1.2
  # 
 
  $Test::STDmaker::VERSION
 
- # '1.19'
+ # '1.2'
  #
  $snl->fin('tgA0.pm')
 
@@ -2992,8 +2986,8 @@ follow on the next lines as comments. For example,
  #E:\User\SoftwareDiamonds\installation\t\Test\STDmaker\tgA1....1..11 todo 3 6;
  ## Running under perl version 5.006001 for MSWin32
  ## Win32::BuildNumber 635
- ## Current time local: Sun May 23 20:28:47 2004
- ## Current time GMT:   Mon May 24 00:28:47 2004
+ ## Current time local: Mon May 24 00:44:23 2004
+ ## Current time GMT:   Mon May 24 04:44:23 2004
  ## Using Test.pm version 1.24
  ## Test::Tech     : 1.26
  ## Data::Secs2    : 1.26
@@ -3395,345 +3389,6 @@ follow on the next lines as comments. For example,
  ## Passed : 1/2 50%
  #'
  #
-
- ##################
- # tmake('STD', {pm => 't::Test::STDmaker::tgC1', fspec_out=>'os2'})
- # 
-
- $snl->fin('tgC0.pm')
-
- # '#!perl
- ##
- ## The copyright notice and plain old documentation (POD)
- ## are at the end of this file.
- ##
- #package  t::Test::STDmaker::tgC1;
-
- #use strict;
- #use warnings;
- #use warnings::register;
-
- #use vars qw($VERSION $DATE $FILE );
- #$VERSION = '0.04';
- #$DATE = '2004/05/18';
- #$FILE = __FILE__;
-
- #########
- ## The Test::STDmaker module uses the data after the __DATA__ 
- ## token to automatically generate the this file.
- ##
- ## Don't edit anything before __DATA_. Edit instead
- ## the data after the __DATA__ token.
- ##
- ## ANY CHANGES MADE BEFORE the  __DATA__ token WILL BE LOST
- ##
- ## the next time Test::STDmaker generates this file.
- ##
- ##
-
- #__DATA__
-
- #Name: t::Test::STDmaker::tgC1^
- #File_Spec: Unix^
- #UUT: Test::STDmaker::tg1^
- #Revision: -^
- #End_User: General Public^
- #Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
- #Detail_Template: ^
- #STD2167_Template: ^
- #Version: 0.01^
- #Classification: None^
- #Temp: xx/temp.pl^
- #Demo: yy/zz/tg1B.d^
- #Verify: ccc/tg1B.t^
-
- # T: 2^
-
- # R: L<Test::STDmaker::tg1/capability-A [1]>^
- # C: my $x = 2^
- # C: my $y = 3^
- # A: $x + $y^
- #SE: 5^
- #ok: 1^
-
- # A: $y-$x^
- # E: 1^
- #ok: 2^
-
- #See_Also: L<Test::STDmaker::tg1>^
- #Copyright: This STD is public domain^
-
- #HTML:
- #<hr>
- #<!-- /BLK -->
- #<p><br>
- #<!-- BLK ID="NOTICE" -->
- #<!-- /BLK -->
- #<p><br>
- #<!-- BLK ID="OPT-IN" -->
- #<!-- /BLK -->
- #<p><br>
- #<!-- BLK ID="LOG_CGI" -->
- #<!-- /BLK -->
- #<p><br>
- #^
-
- #~-~
- #'
- #
-
- ##################
- # tmake('STD', {pm => 't::Test::STDmaker::tgC1', fspec_out=>'os2'})
- # 
-
-     skip_tests(0);
-     copy 'tgC0.pm', 'tgC1.pm';
-     $success = $tmaker->tmake('STD', { pm => 't::Test::STDmaker::tgC1', fspec_out=>'os2'});
- $success
-
- # 1
- #
-
- ##################
- # Change File Spec
- # 
-
- $s->scrub_date_version($snl->fin('tgC1.pm'))
-
- # '#!perl
- ##
- ## The copyright notice and plain old documentation (POD)
- ## are at the end of this file.
- ##
- #package  t::Test::STDmaker::tgC1;
-
- #use strict;
- #use warnings;
- #use warnings::register;
-
- #use vars qw($VERSION $DATE $FILE );
- #$VERSION = '0.00';
- #$DATE = 'Feb 6, 1969';
- #$FILE = __FILE__;
-
- #########
- ## The Test::STDmaker module uses the data after the __DATA__ 
- ## token to automatically generate the this file.
- ##
- ## Do not edit anything before __DATA_. Edit instead
- ## the data after the __DATA__ token.
- ##
- ## ANY CHANGES MADE BEFORE the  __DATA__ token WILL BE LOST
- ##
- ## the next time Test::STDmaker generates this file.
- ##
- ##
-
- #=head1 NAME
-
- #t::Test::STDmaker::tgC1 - Software Test Description for Test::STDmaker::tg1
-
- #=head1 TITLE PAGE
-
- # Detailed Software Test Description (STD)
-
- # for
-
- # Perl Test::STDmaker::tg1 Program Module
-
- # Revision: -
-
- # Version: 0.01
-
- # $DATE: Feb 6, 1969
-
- # Prepared for: General Public 
-
- # Prepared by:  http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com
-
- # Classification: None
-
- ########
- ##  
- ##  1. SCOPE
- ##
- ##
- #=head1 SCOPE
-
- #This detail STD and the 
- #L<General Perl Program Module (PM) STD|Test::STD::PerlSTD>
- #establishes the tests to verify the
- #requirements of Perl Program Module (PM) L<Test::STDmaker::tg1|Test::STDmaker::tg1>
- #The format of this STD is a tailored L<2167A STD DID|Docs::US_DOD::STD>.
-
- ########
- ##  
- ##  3. TEST PREPARATIONS
- ##
- ##
- #=head1 TEST PREPARATIONS
-
- #Test preparations are establishes by the L<General STD|Test::STD::PerlSTD>.
-
- ########
- ##  
- ##  4. TEST DESCRIPTIONS
- ##
- ##
- #=head1 TEST DESCRIPTIONS
-
- #The test descriptions uses a legend to
- #identify different aspects of a test description
- #in accordance with
- #L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Database Test Description Fields>.
-
- #=head2 Test Plan
-
- # T: 2^
-
- #=head2 ok: 1
-
- #  R: L<Test::STDmaker::tg1/capability-A [1]>^
- #  C: my $x = 2^
- #  C: my $y = 3^
- #  A: $x + $y^
- # SE: 5^
- # ok: 1^
-
- #=head2 ok: 2
-
- #  A: $y-$x^
- #  E: 1^
- # ok: 2^
-
- ########
- ##  
- ##  5. REQUIREMENTS TRACEABILITY
- ##
- ##
-
- #=head1 REQUIREMENTS TRACEABILITY
-
- #  Requirement                                                      Test
- # ---------------------------------------------------------------- ----------------------------------------------------------------
- # L<Test::STDmaker::tg1/capability-A [1]>                          L<t::Test::STDmaker::tgC1/ok: 1>
-
- #  Test                                                             Requirement
- # ---------------------------------------------------------------- ----------------------------------------------------------------
- # L<t::Test::STDmaker::tgC1/ok: 1>                                 L<Test::STDmaker::tg1/capability-A [1]>
-
- #=cut
-
- ########
- ##  
- ##  6. NOTES
- ##
- ##
-
- #=head1 NOTES
-
- #This STD is public domain
-
- ########
- ##
- ##  2. REFERENCED DOCUMENTS
- ##
- ##
- ##
-
- #=head1 SEE ALSO
-
- #L<Test::STDmaker::tg1>
-
- #=back
-
- #=for html
- #<hr>
- #<!-- /BLK -->
- #<p><br>
- #<!-- BLK ID="NOTICE" -->
- #<!-- /BLK -->
- #<p><br>
- #<!-- BLK ID="OPT-IN" -->
- #<!-- /BLK -->
- #<p><br>
- #<!-- BLK ID="LOG_CGI" -->
- #<!-- /BLK -->
- #<p><br>
-
- #=cut
-
- #__DATA__
-
- #Name: t::Test::STDmaker::tgC1^
- #File_Spec: os2^
- #UUT: Test::STDmaker::tg1^
- #Revision: -^
- #Version: 0.01^
- #End_User: General Public^
- #Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
- #STD2167_Template: ^
- #Detail_Template: ^
- #Classification: None^
- #Temp: xx\temp.pl^
- #Demo: yy\zz\tg1B.d^
- #Verify: ccc\tg1B.t^
-
- # T: 2^
-
- # R: L<Test::STDmaker::tg1/capability-A [1]>^
- # C: my $x = 2^
- # C: my $y = 3^
- # A: $x + $y^
- #SE: 5^
- #ok: 1^
-
- # A: $y-$x^
- # E: 1^
- #ok: 2^
-
- #See_Also: L<Test::STDmaker::tg1>^
- #Copyright: This STD is public domain^
-
- #HTML:
- #<hr>
- #<!-- /BLK -->
- #<p><br>
- #<!-- BLK ID="NOTICE" -->
- #<!-- /BLK -->
- #<p><br>
- #<!-- BLK ID="OPT-IN" -->
- #<!-- /BLK -->
- #<p><br>
- #<!-- BLK ID="LOG_CGI" -->
- #<!-- /BLK -->
- #<p><br>
- #^
-
- #~-~
- #'
- #
-
- ##################
- # find_t_roots
- # 
-
-    my $OS = $^O;  # Need to escape the form delimiting char ^
-    unless ($OS) {   # on some perls $^O is not defined
-      require Config;
-      $OS = $Config::Config{'osname'};
-    } 
-    my($vol, $dir) = File::Spec->splitpath(cwd(),'nofile');
-    my @dirs = File::Spec->splitdir($dir);
-    pop @dirs; # pop STDmaker
-    pop @dirs; # pop Test
-    pop @dirs; # pop t
-    $dir = File::Spec->catdir($vol,@dirs);
-    my @t_path = $tmaker->find_t_roots();
- $t_path[0]
-
- # 'E:\User\SoftwareDiamonds\installation'
- #
      #####
      # Make sure there is no residue outputs hanging
      # around from the last test series.
@@ -3743,7 +3398,6 @@ follow on the next lines as comments. For example,
      unlink 'tgA1.pm';
      unlink 'tgB1.pm';
      unlink 'tgC1.pm';
-     tech_config( 'Test.TESTERR', $restore_testerr);   
 
      #####
      # Suppress some annoying warnings

@@ -7,23 +7,23 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE);
-$VERSION = '0.18';   # automatically generated file
-$DATE = '2004/05/23';
+$VERSION = '0.01';   # automatically generated file
+$DATE = '2004/05/24';
 
 
 ##### Demonstration Script ####
 #
-# Name: STDmaker.d
+# Name: basic.d
 #
 # UUT: Test::STDmaker
 #
 # The module Test::STDmaker generated this demo script from the contents of
 #
-# t::Test::STDmaker::STDmaker 
+# t::Test::STDmaker::basic 
 #
 # Don't edit this test script file, edit instead
 #
-# t::Test::STDmaker::STDmaker
+# t::Test::STDmaker::basic
 #
 #	ANY CHANGES MADE HERE TO THIS SCRIPT FILE WILL BE LOST
 #
@@ -112,12 +112,6 @@ demo( "\ \ \ \ use\ vars\ qw\(\$loaded\)\;\
 \ \ \ \ use\ File\:\:SmartNL\;\
 \ \ \ \ use\ Text\:\:Scrub\;\
 \ \
-\ \ \ \ \#\#\#\#\#\#\#\#\#\
-\ \ \ \ \#\ For\ \"TEST\"\ 1\.24\ or\ greater\ that\ have\ separate\ std\ err\ output\,\
-\ \ \ \ \#\ redirect\ the\ TESTERR\ to\ STDOUT\
-\ \ \ \ \#\
-\ \ \ \ my\ \$restore_testerr\ \=\ tech_config\(\ \'Test\.TESTERR\'\,\ \\\*STDOUT\ \)\;\ \ \ \
-\
 \ \ \ \ my\ \$fp\ \=\ \'File\:\:Package\'\;\
 \ \ \ \ my\ \$snl\ \=\ \'File\:\:SmartNL\'\;\
 \ \ \ \ my\ \$s\ \=\ \'Text\:\:Scrub\'\;\
@@ -134,12 +128,6 @@ demo( "\ \ \ \ use\ vars\ qw\(\$loaded\)\;\
     use File::SmartNL;
     use Text::Scrub;
  
-    #########
-    # For "TEST" 1.24 or greater that have separate std err output,
-    # redirect the TESTERR to STDOUT
-    #
-    my $restore_testerr = tech_config( 'Test.TESTERR', \*STDOUT );   
-
     my $fp = 'File::Package';
     my $snl = 'File::SmartNL';
     my $s = 'Text::Scrub';
@@ -540,90 +528,6 @@ demo( "\$s\-\>scrub_probe\(\$s\-\>scrub_file_line\(\$test_results\)\)", # typed 
       $s->scrub_probe($s->scrub_file_line($test_results))); # execution
 
 
-print << "EOF";
-
- ##################
- # tmake('STD', {pm => 't::Test::STDmaker::tgC1', fspec_out=>'os2'})
- # 
- 
-EOF
-
-demo( "\$snl\-\>fin\(\'tgC0\.pm\'\)", # typed in command           
-      $snl->fin('tgC0.pm')); # execution
-
-
-print << "EOF";
-
- ##################
- # tmake('STD', {pm => 't::Test::STDmaker::tgC1', fspec_out=>'os2'})
- # 
- 
-EOF
-
-demo( "\ \ \ \ skip_tests\(0\)\;\
-\ \ \ \ copy\ \'tgC0\.pm\'\,\ \'tgC1\.pm\'\;\
-\ \ \ \ \$success\ \=\ \$tmaker\-\>tmake\(\'STD\'\,\ \{\ pm\ \=\>\ \'t\:\:Test\:\:STDmaker\:\:tgC1\'\,\ fspec_out\=\>\'os2\'\}\)\;"); # typed in command           
-          skip_tests(0);
-    copy 'tgC0.pm', 'tgC1.pm';
-    $success = $tmaker->tmake('STD', { pm => 't::Test::STDmaker::tgC1', fspec_out=>'os2'}); # execution
-
-
-
-demo( "\$success", # typed in command           
-      $success); # execution
-
-
-print << "EOF";
-
- ##################
- # Change File Spec
- # 
- 
-EOF
-
-demo( "\$s\-\>scrub_date_version\(\$snl\-\>fin\(\'tgC1\.pm\'\)\)", # typed in command           
-      $s->scrub_date_version($snl->fin('tgC1.pm'))); # execution
-
-
-print << "EOF";
-
- ##################
- # find_t_roots
- # 
- 
-EOF
-
-demo( "\ \ \ my\ \$OS\ \=\ \$\^O\;\ \ \#\ Need\ to\ escape\ the\ form\ delimiting\ char\ \^\
-\ \ \ unless\ \(\$OS\)\ \{\ \ \ \#\ on\ some\ perls\ \$\^O\ is\ not\ defined\
-\ \ \ \ \ require\ Config\;\
-\ \ \ \ \ \$OS\ \=\ \$Config\:\:Config\{\'osname\'\}\;\
-\ \ \ \}\ \
-\ \ \ my\(\$vol\,\ \$dir\)\ \=\ File\:\:Spec\-\>splitpath\(cwd\(\)\,\'nofile\'\)\;\
-\ \ \ my\ \@dirs\ \=\ File\:\:Spec\-\>splitdir\(\$dir\)\;\
-\ \ \ pop\ \@dirs\;\ \#\ pop\ STDmaker\
-\ \ \ pop\ \@dirs\;\ \#\ pop\ Test\
-\ \ \ pop\ \@dirs\;\ \#\ pop\ t\
-\ \ \ \$dir\ \=\ File\:\:Spec\-\>catdir\(\$vol\,\@dirs\)\;\
-\ \ \ my\ \@t_path\ \=\ \$tmaker\-\>find_t_roots\(\)\;"); # typed in command           
-         my $OS = $^O;  # Need to escape the form delimiting char ^
-   unless ($OS) {   # on some perls $^O is not defined
-     require Config;
-     $OS = $Config::Config{'osname'};
-   } 
-   my($vol, $dir) = File::Spec->splitpath(cwd(),'nofile');
-   my @dirs = File::Spec->splitdir($dir);
-   pop @dirs; # pop STDmaker
-   pop @dirs; # pop Test
-   pop @dirs; # pop t
-   $dir = File::Spec->catdir($vol,@dirs);
-   my @t_path = $tmaker->find_t_roots(); # execution
-
-
-
-demo( "\$t_path\[0\]", # typed in command           
-      $t_path[0]); # execution
-
-
 demo( "\ \ \ \ \#\#\#\#\#\
 \ \ \ \ \#\ Make\ sure\ there\ is\ no\ residue\ outputs\ hanging\
 \ \ \ \ \#\ around\ from\ the\ last\ test\ series\.\
@@ -633,7 +537,6 @@ demo( "\ \ \ \ \#\#\#\#\#\
 \ \ \ \ unlink\ \'tgA1\.pm\'\;\
 \ \ \ \ unlink\ \'tgB1\.pm\'\;\
 \ \ \ \ unlink\ \'tgC1\.pm\'\;\
-\ \ \ \ tech_config\(\ \'Test\.TESTERR\'\,\ \$restore_testerr\)\;\ \ \ \
 \
 \ \ \ \ \#\#\#\#\#\
 \ \ \ \ \#\ Suppress\ some\ annoying\ warnings\
@@ -653,7 +556,6 @@ demo( "\ \ \ \ \#\#\#\#\#\
     unlink 'tgA1.pm';
     unlink 'tgB1.pm';
     unlink 'tgC1.pm';
-    tech_config( 'Test.TESTERR', $restore_testerr);   
 
     #####
     # Suppress some annoying warnings
@@ -670,11 +572,11 @@ demo( "\ \ \ \ \#\#\#\#\#\
 
 =head1 NAME
 
-STDmaker.d - demostration script for Test::STDmaker
+basic.d - demostration script for Test::STDmaker
 
 =head1 SYNOPSIS
 
- STDmaker.d
+ basic.d
 
 =head1 OPTIONS
 

@@ -10,49 +10,49 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE );
-$VERSION = '0.21';
-$DATE = '2004/05/23';
+$VERSION = '0.22';
+$DATE = '2004/05/24';
 $FILE = __FILE__;
 
 use vars qw(%INVENTORY);
 %INVENTORY = (
-    'lib/Docs/Site_SVD/Test_STDmaker.pm' => [qw(0.21 2004/05/23), 'revised 0.20'],
-    'MANIFEST' => [qw(0.21 2004/05/23), 'generated, replaces 0.20'],
-    'Makefile.PL' => [qw(0.21 2004/05/23), 'generated, replaces 0.20'],
-    'README' => [qw(0.21 2004/05/23), 'generated, replaces 0.20'],
-    'lib/Test/STDmaker.pm' => [qw(1.2 2004/05/23), 'revised 1.19'],
+    'lib/Docs/Site_SVD/Test_STDmaker.pm' => [qw(0.22 2004/05/24), 'revised 0.21'],
+    'MANIFEST' => [qw(0.22 2004/05/24), 'generated, replaces 0.21'],
+    'Makefile.PL' => [qw(0.22 2004/05/24), 'generated, replaces 0.21'],
+    'README' => [qw(0.22 2004/05/24), 'generated, replaces 0.21'],
+    'lib/Test/STDmaker.pm' => [qw(1.21 2004/05/24), 'revised 1.2'],
     'lib/Test/STDmaker/Check.pm' => [qw(1.15 2004/05/23), 'unchanged'],
     'lib/Test/STDmaker/Demo.pm' => [qw(1.14 2004/05/21), 'unchanged'],
     'lib/Test/STDmaker/STD.pm' => [qw(1.12 2004/05/23), 'unchanged'],
     'lib/Test/STDmaker/Verify.pm' => [qw(1.15 2004/05/22), 'unchanged'],
     'lib/Test/STD/PerlSTD.pm' => [qw(1.08 2004/05/19), 'unchanged'],
-    't/Test/STDmaker/STDmaker.d' => [qw(0.18 2004/05/23), 'revised 0.17'],
-    't/Test/STDmaker/STDmaker.pm' => [qw(0.16 2004/05/23), 'revised 0.15'],
-    't/Test/STDmaker/STDmaker.t' => [qw(0.18 2004/05/23), 'revised 0.17'],
+    't/Test/STDmaker/advance.d' => [qw(0.01 2004/05/24), 'new'],
+    't/Test/STDmaker/advance.pm' => [qw(0.01 2004/05/24), 'new'],
+    't/Test/STDmaker/advance.t' => [qw(0.01 2004/05/24), 'new'],
+    't/Test/STDmaker/basic.d' => [qw(0.01 2004/05/24), 'new'],
+    't/Test/STDmaker/basic.pm' => [qw(0.01 2004/05/24), 'new'],
+    't/Test/STDmaker/basic.t' => [qw(0.01 2004/05/24), 'new'],
     't/Test/STDmaker/tg0.pm' => [qw(0.03 2004/04/09), 'unchanged'],
     't/Test/STDmaker/tg2A.pm' => [qw(0.06 2004/05/23), 'unchanged'],
     't/Test/STDmaker/tg2B.pm' => [qw(0.07 2004/05/23), 'unchanged'],
     't/Test/STDmaker/tgA0.pm' => [qw(0.08 2004/05/23), 'unchanged'],
-    't/Test/STDmaker/tgA1.pm' => [qw(0.08 2004/05/23), 'unchanged'],
     't/Test/STDmaker/tgA2.pm' => [qw(0.09 2004/05/23), 'unchanged'],
     't/Test/STDmaker/tgA2A2.txt' => [qw(0.13 2004/05/23), 'unchanged'],
     't/Test/STDmaker/tgA2A3.txt' => [qw(0.13 2004/05/23), 'unchanged'],
     't/Test/STDmaker/tgA2B.txt' => [qw(0.09 2004/05/22), 'unchanged'],
     't/Test/STDmaker/tgA2C.txt' => [qw(0.1 2004/05/22), 'unchanged'],
     't/Test/STDmaker/tgB0.pm' => [qw(0.02 2004/05/18), 'unchanged'],
-    't/Test/STDmaker/tgB1.pm' => [qw(0.02 2004/05/23), 'unchanged'],
     't/Test/STDmaker/tgB2.pm' => [qw(0.04 2004/05/23), 'unchanged'],
     't/Test/STDmaker/tgB2.txt' => [qw(0.1 2004/05/23), 'unchanged'],
     't/Test/STDmaker/tgC0.pm' => [qw(0.04 2004/05/18), 'unchanged'],
-    't/Test/STDmaker/tgC1.pm' => [qw(0.02 2004/05/23), 'unchanged'],
     't/Test/STDmaker/tgC2.pm' => [qw(0.06 2004/05/23), 'unchanged'],
     't/Test/STDmaker/tgD0.pm' => [qw(0.06 2004/05/22), 'unchanged'],
-    't/Test/STDmaker/tmake.pl' => [qw(1.06 2004/05/23), 'unchanged'],
-    't/Test/STDmaker/Text/Scrub.pm' => [qw(1.15 2004/05/23), 'unchanged'],
-    't/Test/STDmaker/Test/Tech.pm' => [qw(1.26 2004/05/23), 'unchanged'],
-    't/Test/STDmaker/Data/Secs2.pm' => [qw(1.26 2004/05/23), 'unchanged'],
-    't/Test/STDmaker/Data/Str2Num.pm' => [qw(0.08 2004/05/23), 'unchanged'],
-    't/Test/STDmaker/Data/Startup.pm' => [qw(0.07 2004/05/23), 'unchanged'],
+    't/Test/STDmaker/tmake.pl' => [qw(1.06 2004/05/24), 'unchanged'],
+    't/Test/STDmaker/Text/Scrub.pm' => [qw(1.15 2004/05/24), 'unchanged'],
+    't/Test/STDmaker/Test/Tech.pm' => [qw(1.26 2004/05/24), 'unchanged'],
+    't/Test/STDmaker/Data/Secs2.pm' => [qw(1.26 2004/05/24), 'unchanged'],
+    't/Test/STDmaker/Data/Str2Num.pm' => [qw(0.08 2004/05/24), 'unchanged'],
+    't/Test/STDmaker/Data/Startup.pm' => [qw(0.07 2004/05/24), 'unchanged'],
 
 );
 
@@ -83,11 +83,11 @@ Docs::Site_SVD::Test_STDmaker - generate test scripts, demo scripts from a test 
 
  Docs::Site_SVD::Test_STDmaker - generate test scripts, demo scripts from a test description short hand
 
- Revision: R
+ Revision: T
 
- Version: 0.21
+ Version: 0.22
 
- Date: 2004/05/23
+ Date: 2004/05/24
 
  Prepared for: General Public 
 
@@ -176,7 +176,7 @@ further detail on the text database fields and the processing.
 
 =head2 1.3 Document overview.
 
-This document releases Test::STDmaker version 0.21
+This document releases Test::STDmaker version 0.22
 providing description of the inventory, installation
 instructions and other information necessary to
 utilize and track this release.
@@ -191,7 +191,7 @@ system file specification.
 
 This document releases the file 
 
- Test-STDmaker-0.21.tar.gz
+ Test-STDmaker-0.22.tar.gz
 
 found at the following repository(s):
 
@@ -278,43 +278,43 @@ consists of the following files:
 
  file                                                         version date       comment
  ------------------------------------------------------------ ------- ---------- ------------------------
- lib/Docs/Site_SVD/Test_STDmaker.pm                           0.21    2004/05/23 revised 0.20
- MANIFEST                                                     0.21    2004/05/23 generated, replaces 0.20
- Makefile.PL                                                  0.21    2004/05/23 generated, replaces 0.20
- README                                                       0.21    2004/05/23 generated, replaces 0.20
- lib/Test/STDmaker.pm                                         1.2     2004/05/23 revised 1.19
+ lib/Docs/Site_SVD/Test_STDmaker.pm                           0.22    2004/05/24 revised 0.21
+ MANIFEST                                                     0.22    2004/05/24 generated, replaces 0.21
+ Makefile.PL                                                  0.22    2004/05/24 generated, replaces 0.21
+ README                                                       0.22    2004/05/24 generated, replaces 0.21
+ lib/Test/STDmaker.pm                                         1.21    2004/05/24 revised 1.2
  lib/Test/STDmaker/Check.pm                                   1.15    2004/05/23 unchanged
  lib/Test/STDmaker/Demo.pm                                    1.14    2004/05/21 unchanged
  lib/Test/STDmaker/STD.pm                                     1.12    2004/05/23 unchanged
  lib/Test/STDmaker/Verify.pm                                  1.15    2004/05/22 unchanged
  lib/Test/STD/PerlSTD.pm                                      1.08    2004/05/19 unchanged
- t/Test/STDmaker/STDmaker.d                                   0.18    2004/05/23 revised 0.17
- t/Test/STDmaker/STDmaker.pm                                  0.16    2004/05/23 revised 0.15
- t/Test/STDmaker/STDmaker.t                                   0.18    2004/05/23 revised 0.17
+ t/Test/STDmaker/advance.d                                    0.01    2004/05/24 new
+ t/Test/STDmaker/advance.pm                                   0.01    2004/05/24 new
+ t/Test/STDmaker/advance.t                                    0.01    2004/05/24 new
+ t/Test/STDmaker/basic.d                                      0.01    2004/05/24 new
+ t/Test/STDmaker/basic.pm                                     0.01    2004/05/24 new
+ t/Test/STDmaker/basic.t                                      0.01    2004/05/24 new
  t/Test/STDmaker/tg0.pm                                       0.03    2004/04/09 unchanged
  t/Test/STDmaker/tg2A.pm                                      0.06    2004/05/23 unchanged
  t/Test/STDmaker/tg2B.pm                                      0.07    2004/05/23 unchanged
  t/Test/STDmaker/tgA0.pm                                      0.08    2004/05/23 unchanged
- t/Test/STDmaker/tgA1.pm                                      0.08    2004/05/23 unchanged
  t/Test/STDmaker/tgA2.pm                                      0.09    2004/05/23 unchanged
  t/Test/STDmaker/tgA2A2.txt                                   0.13    2004/05/23 unchanged
  t/Test/STDmaker/tgA2A3.txt                                   0.13    2004/05/23 unchanged
  t/Test/STDmaker/tgA2B.txt                                    0.09    2004/05/22 unchanged
  t/Test/STDmaker/tgA2C.txt                                    0.1     2004/05/22 unchanged
  t/Test/STDmaker/tgB0.pm                                      0.02    2004/05/18 unchanged
- t/Test/STDmaker/tgB1.pm                                      0.02    2004/05/23 unchanged
  t/Test/STDmaker/tgB2.pm                                      0.04    2004/05/23 unchanged
  t/Test/STDmaker/tgB2.txt                                     0.1     2004/05/23 unchanged
  t/Test/STDmaker/tgC0.pm                                      0.04    2004/05/18 unchanged
- t/Test/STDmaker/tgC1.pm                                      0.02    2004/05/23 unchanged
  t/Test/STDmaker/tgC2.pm                                      0.06    2004/05/23 unchanged
  t/Test/STDmaker/tgD0.pm                                      0.06    2004/05/22 unchanged
- t/Test/STDmaker/tmake.pl                                     1.06    2004/05/23 unchanged
- t/Test/STDmaker/Text/Scrub.pm                                1.15    2004/05/23 unchanged
- t/Test/STDmaker/Test/Tech.pm                                 1.26    2004/05/23 unchanged
- t/Test/STDmaker/Data/Secs2.pm                                1.26    2004/05/23 unchanged
- t/Test/STDmaker/Data/Str2Num.pm                              0.08    2004/05/23 unchanged
- t/Test/STDmaker/Data/Startup.pm                              0.07    2004/05/23 unchanged
+ t/Test/STDmaker/tmake.pl                                     1.06    2004/05/24 unchanged
+ t/Test/STDmaker/Text/Scrub.pm                                1.15    2004/05/24 unchanged
+ t/Test/STDmaker/Test/Tech.pm                                 1.26    2004/05/24 unchanged
+ t/Test/STDmaker/Data/Secs2.pm                                1.26    2004/05/24 unchanged
+ t/Test/STDmaker/Data/Str2Num.pm                              0.08    2004/05/24 unchanged
+ t/Test/STDmaker/Data/Startup.pm                              0.07    2004/05/24 unchanged
 
 
 =head2 3.3 Changes
@@ -606,6 +606,27 @@ for the same file object.
 Add making C<File::Maker> work with loading the C<__DATA__> twice after loading the program
 module on the todo list. 
 
+=item Test-STDmaker-0.22
+
+ Subject: FAIL Test-STDmaker-0.21 sparc-linux 2.4.21-pre7 
+ From: alian@cpan.org (alian) 
+
+ t/Test/STDmaker/STDmaker....FAILED tests 20, 22-24
+
+Analysis:
+
+No error stack output yet failing tests. There are only 21 tests.
+
+Corective Action
+
+Found where main test script redirecting STDERR output to STDOUT. Removed
+it. This is needed for the test case scripts that are ran by the main scripts
+in order to grab STDERR output to compare with expected results. 
+
+Split the test script into C<basic.t> and C<advance.t> and moved the last three tests
+to the advance.t test script. The focus will be to baseline with the C<basic.t>
+test script only.
+
 =back
 
 =head2 3.4 Adaptation data.
@@ -644,13 +665,13 @@ Enter one of the following repositories in a web browser:
   http://www.softwarediamonds/packages/
   http://www.perl.com/CPAN/authors/id/S/SO/SOFTDIA/
 
-Right click on 'Test-STDmaker-0.21.tar.gz' and download to a temporary
+Right click on 'Test-STDmaker-0.22.tar.gz' and download to a temporary
 installation directory.
 Enter the following where $make is 'nmake' for microsoft
 windows; otherwise 'make'.
 
- gunzip Test-STDmaker-0.21.tar.gz
- tar -xf Test-STDmaker-0.21.tar
+ gunzip Test-STDmaker-0.22.tar.gz
+ tar -xf Test-STDmaker-0.22.tar
  perl Makefile.PL
  $make test
  $make install
@@ -694,7 +715,7 @@ None.
 Most Perl installation software will run the following test script(s)
 as part of the installation:
 
- t/Test/STDmaker/STDmaker.t
+ t/Test/STDmaker/basic.t
 
 =item Installation support.
 
@@ -707,7 +728,18 @@ contact
 
 =head2 3.7 Possible problems and known errors
 
+=over 4
+
+=item 1
+
 Establish all the requirements.
+
+=item 2
+
+Get pass on with the C<advance.t> test script on
+Unix type machines.
+
+=back
 
 =head1 4.0 NOTES
 
@@ -792,10 +824,10 @@ __DATA__
 DISTNAME: Test-STDmaker^
 REPOSITORY_DIR: packages^
 
-VERSION : 0.21^
+VERSION : 0.22^
 FREEZE: 1^
-PREVIOUS_RELEASE: 0.20^
-REVISION: R^
+PREVIOUS_RELEASE: 0.21^
+REVISION: T^
 
 PREVIOUS_DISTNAME:  ^
 AUTHOR  : SoftwareDiamonds.com E<lt>support@SoftwareDiamonds.comE<gt>^
@@ -851,7 +883,7 @@ PREREQ_PM:
 ^
 
 README_PODS: lib/Test/STDmaker.pm^
-TESTS: t/Test/STDmaker/STDmaker.t^
+TESTS: t/Test/STDmaker/basic.t^
 EXE_FILES:  ^
 
 CAPABILITIES:
@@ -1208,12 +1240,46 @@ for the same file object.
 Add making C<File::Maker> work with loading the C<__DATA__> twice after loading the program
 module on the todo list. 
 
+\=item Test-STDmaker-0.22
+
+ Subject: FAIL Test-STDmaker-0.21 sparc-linux 2.4.21-pre7 
+ From: alian@cpan.org (alian) 
+
+ t/Test/STDmaker/STDmaker....FAILED tests 20, 22-24
+
+Analysis:
+
+No error stack output yet failing tests. There are only 21 tests.
+
+Corective Action
+
+Found where main test script redirecting STDERR output to STDOUT. Removed
+it. This is needed for the test case scripts that are ran by the main scripts
+in order to grab STDERR output to compare with expected results. 
+
+Split the test script into C<basic.t> and C<advance.t> and moved the last three tests
+to the advance.t test script. The focus will be to baseline with the C<basic.t>
+test script only.
+
 \=back
 
 ^
 
 PROBLEMS: 
+
+\=over 4
+
+\=item 1
+
 Establish all the requirements.
+
+\=item 2
+
+Get pass on with the C<advance.t> test script on
+Unix type machines.
+
+\=back
+
 ^
 
 DOCUMENT_OVERVIEW:
@@ -1405,6 +1471,10 @@ SEE_ALSO:
 
 HTML: ^
 ~-~
+
+
+
+
 
 
 

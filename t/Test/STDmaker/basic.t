@@ -7,24 +7,24 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE);
-$VERSION = '0.18';   # automatically generated file
-$DATE = '2004/05/23';
+$VERSION = '0.01';   # automatically generated file
+$DATE = '2004/05/24';
 $FILE = __FILE__;
 
 
 ##### Test Script ####
 #
-# Name: STDmaker.t
+# Name: basic.t
 #
 # UUT: Test::STDmaker
 #
 # The module Test::STDmaker generated this test script from the contents of
 #
-# t::Test::STDmaker::STDmaker;
+# t::Test::STDmaker::basic;
 #
 # Don't edit this test script file, edit instead
 #
-# t::Test::STDmaker::STDmaker;
+# t::Test::STDmaker::basic;
 #
 #	ANY CHANGES MADE HERE TO THIS SCRIPT FILE WILL BE LOST
 #
@@ -80,7 +80,7 @@ BEGIN {
    require Test::Tech;
    Test::Tech->import( qw(finish is_skip ok ok_sub plan skip 
                           skip_sub skip_tests tech_config) );
-   plan(tests => 21);
+   plan(tests => 18);
 
 }
 
@@ -105,12 +105,6 @@ END {
     use File::SmartNL;
     use Text::Scrub;
  
-    #########
-    # For "TEST" 1.24 or greater that have separate std err output,
-    # redirect the TESTERR to STDOUT
-    #
-    my $restore_testerr = tech_config( 'Test.TESTERR', \*STDOUT );   
-
     my $fp = 'File::Package';
     my $snl = 'File::SmartNL';
     my $s = 'Text::Scrub';
@@ -550,58 +544,6 @@ ok(  $s->scrub_probe($s->scrub_file_line($test_results)), # actual results
 #  ok:  18
 
    # Perl code from C:
-    skip_tests(0);
-    copy 'tgC0.pm', 'tgC1.pm';
-    $success = $tmaker->tmake('STD', { pm => 't::Test::STDmaker::tgC1', fspec_out=>'os2'});
-
-
-
-skip_tests( 1 ) unless
-  ok(  $success, # actual results
-     1, # expected results
-     "",
-     "tmake('STD', {pm => 't::Test::STDmaker::tgC1', fspec_out=>'os2'})");
-
-#  ok:  19
-
-
-####
-# verifies requirement(s):
-# L<Test::STDmaker/fspec_out option [6]>
-# 
-
-#####
-ok(  $s->scrub_date_version($snl->fin('tgC1.pm')), # actual results
-     $s->scrub_date_version($snl->fin('tgC2.pm')), # expected results
-     "",
-     "Change File Spec");
-
-#  ok:  20
-
-   # Perl code from C:
-   my $OS = $^O;  # Need to escape the form delimiting char ^
-   unless ($OS) {   # on some perls $^O is not defined
-     require Config;
-     $OS = $Config::Config{'osname'};
-   } 
-   my($vol, $dir) = File::Spec->splitpath(cwd(),'nofile');
-   my @dirs = File::Spec->splitdir($dir);
-   pop @dirs; # pop STDmaker
-   pop @dirs; # pop Test
-   pop @dirs; # pop t
-   $dir = File::Spec->catdir($vol,@dirs);
-   my @t_path = $tmaker->find_t_roots();
-
-
-
-ok(  $t_path[0], # actual results
-     $dir, # expected results
-     "",
-     "find_t_roots");
-
-#  ok:  21
-
-   # Perl code from C:
     #####
     # Make sure there is no residue outputs hanging
     # around from the last test series.
@@ -611,7 +553,6 @@ ok(  $t_path[0], # actual results
     unlink 'tgA1.pm';
     unlink 'tgB1.pm';
     unlink 'tgC1.pm';
-    tech_config( 'Test.TESTERR', $restore_testerr);   
 
     #####
     # Suppress some annoying warnings
@@ -632,11 +573,11 @@ __END__
 
 =head1 NAME
 
-STDmaker.t - test script for Test::STDmaker
+basic.t - test script for Test::STDmaker
 
 =head1 SYNOPSIS
 
- STDmaker.t -log=I<string>
+ basic.t -log=I<string>
 
 =head1 OPTIONS
 
@@ -647,7 +588,7 @@ to distinguish it from the other options.
 
 =item C<-log>
 
-STDmaker.t uses this option to redirect the test results 
+basic.t uses this option to redirect the test results 
 from the standard output to a log file.
 
 =back

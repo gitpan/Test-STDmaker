@@ -3,15 +3,15 @@
 # The copyright notice and plain old documentation (POD)
 # are at the end of this file.
 #
-package  t::Test::STDmaker::STDmaker;
+package  t::Test::STDmaker::basic;
 
 use strict;
 use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE );
-$VERSION = '0.16';
-$DATE = '2004/05/23';
+$VERSION = '0.01';
+$DATE = '2004/05/24';
 $FILE = __FILE__;
 
 ########
@@ -30,7 +30,7 @@ $FILE = __FILE__;
 
 =head1 NAME
 
-t::Test::STDmaker::STDmaker - Software Test Description for Test::STDmaker
+t::Test::STDmaker::basic - Software Test Description for Test::STDmaker
 
 =head1 TITLE PAGE
 
@@ -44,7 +44,7 @@ t::Test::STDmaker::STDmaker - Software Test Description for Test::STDmaker
 
  Version: 
 
- Date: 2004/05/23
+ Date: 2004/05/24
 
  Prepared for: General Public 
 
@@ -89,7 +89,7 @@ L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Databa
 
 =head2 Test Plan
 
- T: 21^
+ T: 18^
 
 =head2 ok: 1
 
@@ -102,11 +102,6 @@ L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Databa
      use File::SmartNL;
      use Text::Scrub;
   
-     #########
-     # For "TEST" 1.24 or greater that have separate std err output,
-     # redirect the TESTERR to STDOUT
-     #
-     my $restore_testerr = tech_config( 'Test.TESTERR', \*STDOUT );   
      my $fp = 'File::Package';
      my $snl = 'File::SmartNL';
      my $s = 'Text::Scrub';
@@ -515,53 +510,6 @@ VO: ^
   E: $s->scrub_probe($s->scrub_file_line($snl->fin('tgB2.txt')))^
  ok: 18^
 
-=head2 ok: 19
-
- DO: ^
-  N: tmake('STD', {pm => 't::Test::STDmaker::tgC1', fspec_out=>'os2'})^
-  A: $snl->fin('tgC0.pm')^
-
- N: tmake('STD', {pm => 't::Test::STDmaker::tgC1', fspec_out=>'os2'})^
-
-  C:
-     skip_tests(0);
-     copy 'tgC0.pm', 'tgC1.pm';
-     $success = $tmaker->tmake('STD', { pm => 't::Test::STDmaker::tgC1', fspec_out=>'os2'});
- ^
-  A: $success^
- SE: 1^
- ok: 19^
-
-=head2 ok: 20
-
-  N: Change File Spec^
-  R: L<Test::STDmaker/fspec_out option [6]>^
-  A: $s->scrub_date_version($snl->fin('tgC1.pm'))^
-  E: $s->scrub_date_version($snl->fin('tgC2.pm'))^
- ok: 20^
-
-=head2 ok: 21
-
-  N: find_t_roots^
-
-  C:
-    my $OS = $^^O;  # Need to escape the form delimiting char ^^
-    unless ($OS) {   # on some perls $^^O is not defined
-      require Config;
-      $OS = $Config::Config{'osname'};
-    } 
-    my($vol, $dir) = File::Spec->splitpath(cwd(),'nofile');
-    my @dirs = File::Spec->splitdir($dir);
-    pop @dirs; # pop STDmaker
-    pop @dirs; # pop Test
-    pop @dirs; # pop t
-    $dir = File::Spec->catdir($vol,@dirs);
-    my @t_path = $tmaker->find_t_roots();
- ^
-  A: $t_path[0]^
-  E: $dir^
- ok: 21^
-
 
 
 #######
@@ -574,74 +522,72 @@ VO: ^
 
   Requirement                                                      Test
  ---------------------------------------------------------------- ----------------------------------------------------------------
- L<Test::STDmaker/STD PM POD [1]>                                 L<t::Test::STDmaker::STDmaker/ok: 7>
- L<Test::STDmaker/clean FormDB [1]>                               L<t::Test::STDmaker::STDmaker/ok: 17>
- L<Test::STDmaker/clean FormDB [1]>                               L<t::Test::STDmaker::STDmaker/ok: 5>
- L<Test::STDmaker/clean FormDB [1]>                               L<t::Test::STDmaker::STDmaker/ok: 7>
- L<Test::STDmaker/clean FormDB [2]>                               L<t::Test::STDmaker::STDmaker/ok: 17>
- L<Test::STDmaker/clean FormDB [2]>                               L<t::Test::STDmaker::STDmaker/ok: 5>
- L<Test::STDmaker/clean FormDB [2]>                               L<t::Test::STDmaker::STDmaker/ok: 7>
- L<Test::STDmaker/clean FormDB [3]>                               L<t::Test::STDmaker::STDmaker/ok: 17>
- L<Test::STDmaker/clean FormDB [3]>                               L<t::Test::STDmaker::STDmaker/ok: 5>
- L<Test::STDmaker/clean FormDB [3]>                               L<t::Test::STDmaker::STDmaker/ok: 7>
- L<Test::STDmaker/clean FormDB [4]>                               L<t::Test::STDmaker::STDmaker/ok: 17>
- L<Test::STDmaker/clean FormDB [4]>                               L<t::Test::STDmaker::STDmaker/ok: 5>
- L<Test::STDmaker/clean FormDB [4]>                               L<t::Test::STDmaker::STDmaker/ok: 7>
- L<Test::STDmaker/demo file [1]>                                  L<t::Test::STDmaker::STDmaker/ok: 8>
- L<Test::STDmaker/demo file [2]>                                  L<t::Test::STDmaker::STDmaker/ok: 8>
- L<Test::STDmaker/execute [3]>                                    L<t::Test::STDmaker::STDmaker/ok: 12>
- L<Test::STDmaker/execute [3]>                                    L<t::Test::STDmaker::STDmaker/ok: 14>
- L<Test::STDmaker/execute [4]>                                    L<t::Test::STDmaker::STDmaker/ok: 12>
- L<Test::STDmaker/file_out option [1]>                            L<t::Test::STDmaker::STDmaker/ok: 17>
- L<Test::STDmaker/file_out option [1]>                            L<t::Test::STDmaker::STDmaker/ok: 5>
- L<Test::STDmaker/fspec_out option [6]>                           L<t::Test::STDmaker::STDmaker/ok: 20>
- L<Test::STDmaker/load [1]>                                       L<t::Test::STDmaker::STDmaker/ok: 2>
- L<Test::STDmaker/verify file [1]>                                L<t::Test::STDmaker::STDmaker/ok: 12>
- L<Test::STDmaker/verify file [1]>                                L<t::Test::STDmaker::STDmaker/ok: 14>
- L<Test::STDmaker/verify file [1]>                                L<t::Test::STDmaker::STDmaker/ok: 9>
- L<Test::STDmaker/verify file [2]>                                L<t::Test::STDmaker::STDmaker/ok: 12>
- L<Test::STDmaker/verify file [2]>                                L<t::Test::STDmaker::STDmaker/ok: 14>
- L<Test::STDmaker/verify file [2]>                                L<t::Test::STDmaker::STDmaker/ok: 9>
- L<Test::STDmaker/verify file [3]>                                L<t::Test::STDmaker::STDmaker/ok: 12>
- L<Test::STDmaker/verify file [3]>                                L<t::Test::STDmaker::STDmaker/ok: 14>
- L<Test::STDmaker/verify file [3]>                                L<t::Test::STDmaker::STDmaker/ok: 9>
- L<Test::STDmaker/verify file [4]>                                L<t::Test::STDmaker::STDmaker/ok: 12>
+ L<Test::STDmaker/STD PM POD [1]>                                 L<t::Test::STDmaker::basic/ok: 7>
+ L<Test::STDmaker/clean FormDB [1]>                               L<t::Test::STDmaker::basic/ok: 17>
+ L<Test::STDmaker/clean FormDB [1]>                               L<t::Test::STDmaker::basic/ok: 5>
+ L<Test::STDmaker/clean FormDB [1]>                               L<t::Test::STDmaker::basic/ok: 7>
+ L<Test::STDmaker/clean FormDB [2]>                               L<t::Test::STDmaker::basic/ok: 17>
+ L<Test::STDmaker/clean FormDB [2]>                               L<t::Test::STDmaker::basic/ok: 5>
+ L<Test::STDmaker/clean FormDB [2]>                               L<t::Test::STDmaker::basic/ok: 7>
+ L<Test::STDmaker/clean FormDB [3]>                               L<t::Test::STDmaker::basic/ok: 17>
+ L<Test::STDmaker/clean FormDB [3]>                               L<t::Test::STDmaker::basic/ok: 5>
+ L<Test::STDmaker/clean FormDB [3]>                               L<t::Test::STDmaker::basic/ok: 7>
+ L<Test::STDmaker/clean FormDB [4]>                               L<t::Test::STDmaker::basic/ok: 17>
+ L<Test::STDmaker/clean FormDB [4]>                               L<t::Test::STDmaker::basic/ok: 5>
+ L<Test::STDmaker/clean FormDB [4]>                               L<t::Test::STDmaker::basic/ok: 7>
+ L<Test::STDmaker/demo file [1]>                                  L<t::Test::STDmaker::basic/ok: 8>
+ L<Test::STDmaker/demo file [2]>                                  L<t::Test::STDmaker::basic/ok: 8>
+ L<Test::STDmaker/execute [3]>                                    L<t::Test::STDmaker::basic/ok: 12>
+ L<Test::STDmaker/execute [3]>                                    L<t::Test::STDmaker::basic/ok: 14>
+ L<Test::STDmaker/execute [4]>                                    L<t::Test::STDmaker::basic/ok: 12>
+ L<Test::STDmaker/file_out option [1]>                            L<t::Test::STDmaker::basic/ok: 17>
+ L<Test::STDmaker/file_out option [1]>                            L<t::Test::STDmaker::basic/ok: 5>
+ L<Test::STDmaker/load [1]>                                       L<t::Test::STDmaker::basic/ok: 2>
+ L<Test::STDmaker/verify file [1]>                                L<t::Test::STDmaker::basic/ok: 12>
+ L<Test::STDmaker/verify file [1]>                                L<t::Test::STDmaker::basic/ok: 14>
+ L<Test::STDmaker/verify file [1]>                                L<t::Test::STDmaker::basic/ok: 9>
+ L<Test::STDmaker/verify file [2]>                                L<t::Test::STDmaker::basic/ok: 12>
+ L<Test::STDmaker/verify file [2]>                                L<t::Test::STDmaker::basic/ok: 14>
+ L<Test::STDmaker/verify file [2]>                                L<t::Test::STDmaker::basic/ok: 9>
+ L<Test::STDmaker/verify file [3]>                                L<t::Test::STDmaker::basic/ok: 12>
+ L<Test::STDmaker/verify file [3]>                                L<t::Test::STDmaker::basic/ok: 14>
+ L<Test::STDmaker/verify file [3]>                                L<t::Test::STDmaker::basic/ok: 9>
+ L<Test::STDmaker/verify file [4]>                                L<t::Test::STDmaker::basic/ok: 12>
 
 
   Test                                                             Requirement
  ---------------------------------------------------------------- ----------------------------------------------------------------
- L<t::Test::STDmaker::STDmaker/ok: 12>                            L<Test::STDmaker/execute [3]>
- L<t::Test::STDmaker::STDmaker/ok: 12>                            L<Test::STDmaker/execute [4]>
- L<t::Test::STDmaker::STDmaker/ok: 12>                            L<Test::STDmaker/verify file [1]>
- L<t::Test::STDmaker::STDmaker/ok: 12>                            L<Test::STDmaker/verify file [2]>
- L<t::Test::STDmaker::STDmaker/ok: 12>                            L<Test::STDmaker/verify file [3]>
- L<t::Test::STDmaker::STDmaker/ok: 12>                            L<Test::STDmaker/verify file [4]>
- L<t::Test::STDmaker::STDmaker/ok: 14>                            L<Test::STDmaker/execute [3]>
- L<t::Test::STDmaker::STDmaker/ok: 14>                            L<Test::STDmaker/verify file [1]>
- L<t::Test::STDmaker::STDmaker/ok: 14>                            L<Test::STDmaker/verify file [2]>
- L<t::Test::STDmaker::STDmaker/ok: 14>                            L<Test::STDmaker/verify file [3]>
- L<t::Test::STDmaker::STDmaker/ok: 17>                            L<Test::STDmaker/clean FormDB [1]>
- L<t::Test::STDmaker::STDmaker/ok: 17>                            L<Test::STDmaker/clean FormDB [2]>
- L<t::Test::STDmaker::STDmaker/ok: 17>                            L<Test::STDmaker/clean FormDB [3]>
- L<t::Test::STDmaker::STDmaker/ok: 17>                            L<Test::STDmaker/clean FormDB [4]>
- L<t::Test::STDmaker::STDmaker/ok: 17>                            L<Test::STDmaker/file_out option [1]>
- L<t::Test::STDmaker::STDmaker/ok: 20>                            L<Test::STDmaker/fspec_out option [6]>
- L<t::Test::STDmaker::STDmaker/ok: 2>                             L<Test::STDmaker/load [1]>
- L<t::Test::STDmaker::STDmaker/ok: 5>                             L<Test::STDmaker/clean FormDB [1]>
- L<t::Test::STDmaker::STDmaker/ok: 5>                             L<Test::STDmaker/clean FormDB [2]>
- L<t::Test::STDmaker::STDmaker/ok: 5>                             L<Test::STDmaker/clean FormDB [3]>
- L<t::Test::STDmaker::STDmaker/ok: 5>                             L<Test::STDmaker/clean FormDB [4]>
- L<t::Test::STDmaker::STDmaker/ok: 5>                             L<Test::STDmaker/file_out option [1]>
- L<t::Test::STDmaker::STDmaker/ok: 7>                             L<Test::STDmaker/STD PM POD [1]>
- L<t::Test::STDmaker::STDmaker/ok: 7>                             L<Test::STDmaker/clean FormDB [1]>
- L<t::Test::STDmaker::STDmaker/ok: 7>                             L<Test::STDmaker/clean FormDB [2]>
- L<t::Test::STDmaker::STDmaker/ok: 7>                             L<Test::STDmaker/clean FormDB [3]>
- L<t::Test::STDmaker::STDmaker/ok: 7>                             L<Test::STDmaker/clean FormDB [4]>
- L<t::Test::STDmaker::STDmaker/ok: 8>                             L<Test::STDmaker/demo file [1]>
- L<t::Test::STDmaker::STDmaker/ok: 8>                             L<Test::STDmaker/demo file [2]>
- L<t::Test::STDmaker::STDmaker/ok: 9>                             L<Test::STDmaker/verify file [1]>
- L<t::Test::STDmaker::STDmaker/ok: 9>                             L<Test::STDmaker/verify file [2]>
- L<t::Test::STDmaker::STDmaker/ok: 9>                             L<Test::STDmaker/verify file [3]>
+ L<t::Test::STDmaker::basic/ok: 12>                               L<Test::STDmaker/execute [3]>
+ L<t::Test::STDmaker::basic/ok: 12>                               L<Test::STDmaker/execute [4]>
+ L<t::Test::STDmaker::basic/ok: 12>                               L<Test::STDmaker/verify file [1]>
+ L<t::Test::STDmaker::basic/ok: 12>                               L<Test::STDmaker/verify file [2]>
+ L<t::Test::STDmaker::basic/ok: 12>                               L<Test::STDmaker/verify file [3]>
+ L<t::Test::STDmaker::basic/ok: 12>                               L<Test::STDmaker/verify file [4]>
+ L<t::Test::STDmaker::basic/ok: 14>                               L<Test::STDmaker/execute [3]>
+ L<t::Test::STDmaker::basic/ok: 14>                               L<Test::STDmaker/verify file [1]>
+ L<t::Test::STDmaker::basic/ok: 14>                               L<Test::STDmaker/verify file [2]>
+ L<t::Test::STDmaker::basic/ok: 14>                               L<Test::STDmaker/verify file [3]>
+ L<t::Test::STDmaker::basic/ok: 17>                               L<Test::STDmaker/clean FormDB [1]>
+ L<t::Test::STDmaker::basic/ok: 17>                               L<Test::STDmaker/clean FormDB [2]>
+ L<t::Test::STDmaker::basic/ok: 17>                               L<Test::STDmaker/clean FormDB [3]>
+ L<t::Test::STDmaker::basic/ok: 17>                               L<Test::STDmaker/clean FormDB [4]>
+ L<t::Test::STDmaker::basic/ok: 17>                               L<Test::STDmaker/file_out option [1]>
+ L<t::Test::STDmaker::basic/ok: 2>                                L<Test::STDmaker/load [1]>
+ L<t::Test::STDmaker::basic/ok: 5>                                L<Test::STDmaker/clean FormDB [1]>
+ L<t::Test::STDmaker::basic/ok: 5>                                L<Test::STDmaker/clean FormDB [2]>
+ L<t::Test::STDmaker::basic/ok: 5>                                L<Test::STDmaker/clean FormDB [3]>
+ L<t::Test::STDmaker::basic/ok: 5>                                L<Test::STDmaker/clean FormDB [4]>
+ L<t::Test::STDmaker::basic/ok: 5>                                L<Test::STDmaker/file_out option [1]>
+ L<t::Test::STDmaker::basic/ok: 7>                                L<Test::STDmaker/STD PM POD [1]>
+ L<t::Test::STDmaker::basic/ok: 7>                                L<Test::STDmaker/clean FormDB [1]>
+ L<t::Test::STDmaker::basic/ok: 7>                                L<Test::STDmaker/clean FormDB [2]>
+ L<t::Test::STDmaker::basic/ok: 7>                                L<Test::STDmaker/clean FormDB [3]>
+ L<t::Test::STDmaker::basic/ok: 7>                                L<Test::STDmaker/clean FormDB [4]>
+ L<t::Test::STDmaker::basic/ok: 8>                                L<Test::STDmaker/demo file [1]>
+ L<t::Test::STDmaker::basic/ok: 8>                                L<Test::STDmaker/demo file [2]>
+ L<t::Test::STDmaker::basic/ok: 9>                                L<Test::STDmaker/verify file [1]>
+ L<t::Test::STDmaker::basic/ok: 9>                                L<Test::STDmaker/verify file [2]>
+ L<t::Test::STDmaker::basic/ok: 9>                                L<Test::STDmaker/verify file [3]>
 
 
 =cut
@@ -743,26 +689,13 @@ ANY WAY OUT OF THE POSSIBILITY OF SUCH DAMAGE.
 =back
 
 =for html
-<hr>
-<p><br>
-<!-- BLK ID="NOTICE" -->
-<!-- /BLK -->
-<p><br>
-<!-- BLK ID="OPT-IN" -->
-<!-- /BLK -->
-<p><br>
-<!-- BLK ID="EMAIL" -->
-<!-- /BLK -->
-<p><br>
-<!-- BLK ID="LOG_CGI" -->
-<!-- /BLK -->
-<p><br>
+
 
 =cut
 
 __DATA__
 
-Name: t::Test::STDmaker::STDmaker^
+Name: t::Test::STDmaker::basic^
 File_Spec: Unix^
 UUT: Test::STDmaker^
 Revision: -^
@@ -773,11 +706,11 @@ STD2167_Template: ^
 Detail_Template: ^
 Classification: None^
 Temp: temp.pl^
-Demo: STDmaker.d^
-Verify: STDmaker.t^
+Demo: basic.d^
+Verify: basic.t^
 
 
- T: 21^
+ T: 18^
 
 
  C:
@@ -788,12 +721,6 @@ Verify: STDmaker.t^
     use File::SmartNL;
     use Text::Scrub;
  
-    #########
-    # For "TEST" 1.24 or greater that have separate std err output,
-    # redirect the TESTERR to STDOUT
-    #
-    my $restore_testerr = tech_config( 'Test.TESTERR', \*STDOUT );   
-
     my $fp = 'File::Package';
     my $snl = 'File::SmartNL';
     my $s = 'Text::Scrub';
@@ -1200,49 +1127,6 @@ ok: 17^
  E: $s->scrub_probe($s->scrub_file_line($snl->fin('tgB2.txt')))^
 ok: 18^
 
-DO: ^
- N: tmake('STD', {pm => 't::Test::STDmaker::tgC1', fspec_out=>'os2'})^
- A: $snl->fin('tgC0.pm')^
-
- N: tmake('STD', {pm => 't::Test::STDmaker::tgC1', fspec_out=>'os2'})^
-
- C:
-    skip_tests(0);
-    copy 'tgC0.pm', 'tgC1.pm';
-    $success = $tmaker->tmake('STD', { pm => 't::Test::STDmaker::tgC1', fspec_out=>'os2'});
-^
-
- A: $success^
-SE: 1^
-ok: 19^
-
- N: Change File Spec^
- R: L<Test::STDmaker/fspec_out option [6]>^
- A: $s->scrub_date_version($snl->fin('tgC1.pm'))^
- E: $s->scrub_date_version($snl->fin('tgC2.pm'))^
-ok: 20^
-
- N: find_t_roots^
-
- C:
-   my $OS = $^^O;  # Need to escape the form delimiting char ^^
-   unless ($OS) {   # on some perls $^^O is not defined
-     require Config;
-     $OS = $Config::Config{'osname'};
-   } 
-   my($vol, $dir) = File::Spec->splitpath(cwd(),'nofile');
-   my @dirs = File::Spec->splitdir($dir);
-   pop @dirs; # pop STDmaker
-   pop @dirs; # pop Test
-   pop @dirs; # pop t
-   $dir = File::Spec->catdir($vol,@dirs);
-   my @t_path = $tmaker->find_t_roots();
-^
-
- A: $t_path[0]^
- E: $dir^
-ok: 21^
-
 
  C:
     #####
@@ -1254,7 +1138,6 @@ ok: 21^
     unlink 'tgA1.pm';
     unlink 'tgB1.pm';
     unlink 'tgC1.pm';
-    tech_config( 'Test.TESTERR', $restore_testerr);   
 
     #####
     # Suppress some annoying warnings
@@ -1351,24 +1234,7 @@ ADVISED OF NEGLIGENCE OR OTHERWISE) ARISING IN
 ANY WAY OUT OF THE POSSIBILITY OF SUCH DAMAGE.
 ^
 
-
-HTML:
-<hr>
-<p><br>
-<!-- BLK ID="NOTICE" -->
-<!-- /BLK -->
-<p><br>
-<!-- BLK ID="OPT-IN" -->
-<!-- /BLK -->
-<p><br>
-<!-- BLK ID="EMAIL" -->
-<!-- /BLK -->
-<p><br>
-<!-- BLK ID="LOG_CGI" -->
-<!-- /BLK -->
-<p><br>
-^
-
+HTML: ^
 
 
 ~-~
