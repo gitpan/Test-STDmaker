@@ -16,8 +16,8 @@ use vars qw($VERSION $DATE);
 use Cwd;
 use File::AnySpec;
 
-$VERSION = '1.14';
-$DATE = '2004/05/22';
+$VERSION = '1.15';
+$DATE = '2004/05/23';
 
 ########
 # Inherit classes
@@ -26,10 +26,16 @@ use Test::STDmaker;
 use vars qw(@ISA);
 @ISA = qw(Test::STDmaker);
 
-use vars qw(@required_data_base); 
+use vars qw(@required_data_base);
+
+#######
+# The order of the required fields is the order printed out in the STD.
+# Do not change them.
+#
 @required_data_base = qw(
-   Author Classification Copyright Detail_Template  End_User File_Spec 
-   HTML Name  Revision See_Also STD2167_Template Temp UUT Version);
+   Name File_Spec UUT Revision Version End_User Author 
+   STD2167_Template Detail_Template Classification Temp  
+   Copyright HTML See_Also );
 
 #############################################################################
 #  
@@ -91,7 +97,7 @@ sub DO
     my $module = ref($self);
     push @{$self->{$module}->{test_db}}, ($command, $data);
     $self->{$module}->{demo_only} = "    $data";
-   ''
+    ''
 }
 
 

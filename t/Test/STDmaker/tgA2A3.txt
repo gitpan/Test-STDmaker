@@ -77,11 +77,6 @@ follow on the next lines as comments. For example,
  #
 
  ##################
- # verify only
- # 
- 
-
- ##################
  # Failed test that skips the rest
  # 
  

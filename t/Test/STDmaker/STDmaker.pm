@@ -10,7 +10,7 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE );
-$VERSION = '0.14';
+$VERSION = '0.15';
 $DATE = '2004/05/23';
 $FILE = __FILE__;
 
@@ -172,13 +172,16 @@ L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Databa
 
  DO: ^
   A: $snl->fin('tgA0.pm')^
-  N: tmake('STD', {pm => 't::Test::STDmaker::tgA1'})^
+
+ N: tmake('STD', {pm => 't::Test::STDmaker::tgA1'})^
 
   C:
      copy 'tgA0.pm', 'tgA1.pm';
      my $tmaker = new Test::STDmaker(pm =>'t::Test::STDmaker::tgA1', nounlink => 1);
      $success = $tmaker->tmake( 'STD' );
-     $diag = (-e 'temp.pl') ? "\n~~~~~~~\ntemp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
+     $diag = "\n~~~~~~~\nFormDB\n\n" . join "\n", @{$tmaker->{FormDB}};
+     $diag .= "\n~~~~~~~\nstd_db\n\n" . join "\n", @{$tmaker->{std_db}};
+     $diag .= (-e 'temp.pl') ? "\n~~~~~~~\ntemp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
      $diag .= (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
  ^
  DM: $diag^
@@ -206,11 +209,14 @@ L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Databa
  DO: ^
   A: $snl->fin('tgB0.pm')^
 
+
   C:
      skip_tests(0);
      copy 'tgB0.pm', 'tgB1.pm';
      $success = $tmaker->tmake('STD', 'verify', {pm => 't::Test::STDmaker::tgB1', nounlink => 1} );
-     $diag = (-e 'temp.pl') ? "\n~~~~~~~\ntemp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
+     $diag = "\n~~~~~~~\nFormDB\n\n" . join "\n", @{$tmaker->{FormDB}};
+     $diag .= "\n~~~~~~~\nstd_db\n\n" . join "\n", @{$tmaker->{std_db}};
+     $diag .= (-e 'temp.pl') ? "\n~~~~~~~\ntemp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
      $diag .= (-e 'tgB1.pm') ? "\n~~~~~~~\ntgB1.pm\n\n" . $snl->fin('tgB1.pm') : 'No tgB1.pm';
      $diag .= (-e 'tgB1.t') ? "\n~~~~~~~\ntgB1.t\n\n" . $snl->fin('tgB1.t') : 'No tgB1.t';
  ^
@@ -251,6 +257,7 @@ L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Databa
 =head2 ok: 9
 
  VO: ^
+  N: tmake( {pm => 't::Test::STDmaker::tgA1'})^
 
   C:
      skip_tests(0);
@@ -263,12 +270,14 @@ L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Databa
      copy 'tgA0.pm', 'tgA1.pm';
      $tmaker = new Test::STDmaker( {pm => 't::Test::STDmaker::tgA1'} );
      $success = $tmaker->tmake();
-     $diag = (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
-     $diag .= (-e 'tgA1.t') ? "\n~~~~~~~\ntgA1.t\n\n" . $snl->fin('tgA1.t') : 'No tgA1.t';
-     $diag .= (-e 'tgA1.d') ? "\n~~~~~~~\ntgA1.d\n\n" . $snl->fin('tgA1.d') : 'No tgA1.d';
-     warn("######\nok: 9\n" . $diag);
+     $diag = "\n~~~~~~~\nFormDB\n\n" . join "\n", @{$tmaker->{FormDB}};
+     $diag .= "\n~~~~~~~\nstd_db\n\n" . join "\n", @{$tmaker->{std_db}};
+     $diag .= (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
+ #    $diag .= (-e 'tgA1.t') ? "\n~~~~~~~\ntgA1.t\n\n" . $snl->fin('tgA1.t') : 'No tgA1.t';
+ #    $diag .= (-e 'tgA1.d') ? "\n~~~~~~~\ntgA1.d\n\n" . $snl->fin('tgA1.d') : 'No tgA1.d';
+     warn("####\ntest: 9\n\t$success=$success\n");
+     warn($diag);
  ^
-  N: tmake( {pm => 't::Test::STDmaker::tgA1'})^
  DM: $diag^
   A: $success^
  SE: 1^
@@ -285,6 +294,7 @@ L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Databa
      L<Test::STDmaker/clean FormDB [4]>
      L<Test::STDmaker/STD PM POD [1]>
  ^
+  C: ^
   A: $s->scrub_date_version($snl->fin('tgA1.pm'))^
   E: $s->scrub_date_version($snl->fin('tgA2.pm'))^
  ok: 10^
@@ -308,8 +318,8 @@ L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Databa
      my $expected_results;
  ^
   A: $internal_storage^
-  E: $internal_storage^
- VO: ^
+
+VO: ^
   N: Demonstration script^
 
   R:
@@ -369,8 +379,10 @@ L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Databa
 =head2 ok: 13
 
  DO: ^
-  A: $snl->fin( 'tg0.pm'  )^
   N: tmake('demo', {pm => 't::Test::STDmaker::tgA1', demo => 1})^
+  A: $snl->fin( 'tg0.pm'  )^
+
+ N: tmake('demo', {pm => 't::Test::STDmaker::tgA1', demo => 1})^
 
   C:
      #########
@@ -402,9 +414,10 @@ L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Databa
      else {
          $expected_results = 'tg2A.pm';
      }
-     $diag = (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
+     $diag = "\n~~~~~~~\nFormDB\n\n" . join "\n", @{$tmaker->{FormDB}};
+     $diag .= "\n~~~~~~~\nstd_db\n\n" . join "\n", @{$tmaker->{std_db}};
+     $diag .= (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
      $diag .= (-e 'tgA1.d') ? "\n~~~~~~~\ntgA1.d\n\n" . $snl->fin('tgA1.d') : 'No tgA1.d';
-     warn("######\nok: 13\n" . $diag);
  ^
  DM: $diag^
   A: $success^
@@ -466,6 +479,7 @@ L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Databa
 =head2 ok: 17
 
  VO: ^
+  N: tmake('verify', {pm => 't::Test::STDmaker::tgA1', run => 1})^
 
   R:
      L<Test::STDmaker/verify file [1]>
@@ -473,7 +487,6 @@ L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Databa
      L<Test::STDmaker/verify file [3]>
      L<Test::STDmaker/execute [3]>
  ^
-  N: tmake('verify', {pm => 't::Test::STDmaker::tgA1', run => 1})^
 
   C:
      skip_tests(0);
@@ -509,8 +522,10 @@ L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Databa
 =head2 ok: 19
 
  DO: ^
-  A: $snl->fin('tgC0.pm')^
   N: tmake('STD', {pm => 't::Test::STDmaker::tgC1', fspec_out=>'os2'})^
+  A: $snl->fin('tgC0.pm')^
+
+ N: tmake('STD', {pm => 't::Test::STDmaker::tgC1', fspec_out=>'os2'})^
 
   C:
      skip_tests(0);
@@ -751,17 +766,17 @@ ANY WAY OUT OF THE POSSIBILITY OF SUCH DAMAGE.
 
 __DATA__
 
-Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
-Classification: None^
-Detail_Template: ^
-End_User: General Public^
-File_Spec: Unix^
 Name: t::Test::STDmaker::STDmaker^
-Revision: -^
-STD2167_Template: ^
-Temp: temp.pl^
+File_Spec: Unix^
 UUT: Test::STDmaker^
+Revision: -^
 Version: ^
+End_User: General Public^
+Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
+STD2167_Template: ^
+Detail_Template: ^
+Classification: None^
+Temp: temp.pl^
 Demo: STDmaker.d^
 Verify: STDmaker.t^
 
@@ -847,13 +862,16 @@ ok: 3^
 
 DO: ^
  A: $snl->fin('tgA0.pm')^
+
  N: tmake('STD', {pm => 't::Test::STDmaker::tgA1'})^
 
  C:
     copy 'tgA0.pm', 'tgA1.pm';
     my $tmaker = new Test::STDmaker(pm =>'t::Test::STDmaker::tgA1', nounlink => 1);
     $success = $tmaker->tmake( 'STD' );
-    $diag = (-e 'temp.pl') ? "\n~~~~~~~\ntemp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
+    $diag = "\n~~~~~~~\nFormDB\n\n" . join "\n", @{$tmaker->{FormDB}};
+    $diag .= "\n~~~~~~~\nstd_db\n\n" . join "\n", @{$tmaker->{std_db}};
+    $diag .= (-e 'temp.pl') ? "\n~~~~~~~\ntemp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
     $diag .= (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
 ^
 
@@ -879,11 +897,14 @@ ok: 5^
 DO: ^
  A: $snl->fin('tgB0.pm')^
 
+
  C:
     skip_tests(0);
     copy 'tgB0.pm', 'tgB1.pm';
     $success = $tmaker->tmake('STD', 'verify', {pm => 't::Test::STDmaker::tgB1', nounlink => 1} );
-    $diag = (-e 'temp.pl') ? "\n~~~~~~~\ntemp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
+    $diag = "\n~~~~~~~\nFormDB\n\n" . join "\n", @{$tmaker->{FormDB}};
+    $diag .= "\n~~~~~~~\nstd_db\n\n" . join "\n", @{$tmaker->{std_db}};
+    $diag .= (-e 'temp.pl') ? "\n~~~~~~~\ntemp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
     $diag .= (-e 'tgB1.pm') ? "\n~~~~~~~\ntgB1.pm\n\n" . $snl->fin('tgB1.pm') : 'No tgB1.pm';
     $diag .= (-e 'tgB1.t') ? "\n~~~~~~~\ntgB1.t\n\n" . $snl->fin('tgB1.t') : 'No tgB1.t';
 ^
@@ -921,6 +942,7 @@ ok: 7^
 ok: 8^
 
 VO: ^
+ N: tmake( {pm => 't::Test::STDmaker::tgA1'})^
 
  C:
     skip_tests(0);
@@ -934,13 +956,15 @@ VO: ^
     copy 'tgA0.pm', 'tgA1.pm';
     $tmaker = new Test::STDmaker( {pm => 't::Test::STDmaker::tgA1'} );
     $success = $tmaker->tmake();
-    $diag = (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
-    $diag .= (-e 'tgA1.t') ? "\n~~~~~~~\ntgA1.t\n\n" . $snl->fin('tgA1.t') : 'No tgA1.t';
-    $diag .= (-e 'tgA1.d') ? "\n~~~~~~~\ntgA1.d\n\n" . $snl->fin('tgA1.d') : 'No tgA1.d';
-    warn("######\nok: 9\n" . $diag);
+    $diag = "\n~~~~~~~\nFormDB\n\n" . join "\n", @{$tmaker->{FormDB}};
+    $diag .= "\n~~~~~~~\nstd_db\n\n" . join "\n", @{$tmaker->{std_db}};
+    $diag .= (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
+#    $diag .= (-e 'tgA1.t') ? "\n~~~~~~~\ntgA1.t\n\n" . $snl->fin('tgA1.t') : 'No tgA1.t';
+#    $diag .= (-e 'tgA1.d') ? "\n~~~~~~~\ntgA1.d\n\n" . $snl->fin('tgA1.d') : 'No tgA1.d';
+    warn("####\ntest: 9\n\t\$success=$success\n");
+    warn($diag);
 ^
 
- N: tmake( {pm => 't::Test::STDmaker::tgA1'})^
 DM: $diag^
  A: $success^
 SE: 1^
@@ -956,6 +980,7 @@ ok: 9^
     L<Test::STDmaker/STD PM POD [1]>
 ^
 
+ C: ^
  A: $s->scrub_date_version($snl->fin('tgA1.pm'))^
  E: $s->scrub_date_version($snl->fin('tgA2.pm'))^
 ok: 10^
@@ -979,7 +1004,7 @@ DO: ^
 ^
 
  A: $internal_storage^
- E: $internal_storage^
+
 VO: ^
  N: Demonstration script^
 
@@ -1042,7 +1067,9 @@ VO: ^
 ok: 12^
 
 DO: ^
+ N: tmake('demo', {pm => 't::Test::STDmaker::tgA1', demo => 1})^
  A: $snl->fin( 'tg0.pm'  )^
+
  N: tmake('demo', {pm => 't::Test::STDmaker::tgA1', demo => 1})^
 
  C:
@@ -1078,9 +1105,10 @@ DO: ^
     else {
         $expected_results = 'tg2A.pm';
     }
-    $diag = (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
+    $diag = "\n~~~~~~~\nFormDB\n\n" . join "\n", @{$tmaker->{FormDB}};
+    $diag .= "\n~~~~~~~\nstd_db\n\n" . join "\n", @{$tmaker->{std_db}};
+    $diag .= (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
     $diag .= (-e 'tgA1.d') ? "\n~~~~~~~\ntgA1.d\n\n" . $snl->fin('tgA1.d') : 'No tgA1.d';
-    warn("######\nok: 13\n" . $diag);
 ^
 
 DM: $diag^
@@ -1138,6 +1166,7 @@ ok: 15^
 ok: 16^
 
 VO: ^
+ N: tmake('verify', {pm => 't::Test::STDmaker::tgA1', run => 1})^
 
  R:
     L<Test::STDmaker/verify file [1]>
@@ -1146,7 +1175,6 @@ VO: ^
     L<Test::STDmaker/execute [3]>
 ^
 
- N: tmake('verify', {pm => 't::Test::STDmaker::tgA1', run => 1})^
 
  C:
     skip_tests(0);
@@ -1181,7 +1209,9 @@ ok: 17^
 ok: 18^
 
 DO: ^
+ N: tmake('STD', {pm => 't::Test::STDmaker::tgC1', fspec_out=>'os2'})^
  A: $snl->fin('tgC0.pm')^
+
  N: tmake('STD', {pm => 't::Test::STDmaker::tgC1', fspec_out=>'os2'})^
 
  C:

@@ -10,8 +10,8 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE );
-$VERSION = '0.05';
-$DATE = '2004/05/21';
+$VERSION = '0.06';
+$DATE = '2004/05/23';
 $FILE = __FILE__;
 
 ########
@@ -44,7 +44,7 @@ t::Test::STDmaker::tgC1 - Software Test Description for Test::STDmaker::tg1
 
  Version: 0.01
 
- Date: 2004/05/16
+ Date: 2004/05/23
 
  Prepared for: General Public 
 
@@ -169,17 +169,17 @@ L<Test::STDmaker::tg1>
 
 __DATA__
 
-Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
-Classification: None^
-Detail_Template: ^
-End_User: General Public^
-File_Spec: os2^
 Name: t::Test::STDmaker::tgC1^
-Revision: -^
-STD2167_Template: ^
-Temp: xx\temp.pl^
+File_Spec: os2^
 UUT: Test::STDmaker::tg1^
+Revision: -^
 Version: 0.01^
+End_User: General Public^
+Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
+STD2167_Template: ^
+Detail_Template: ^
+Classification: None^
+Temp: xx\temp.pl^
 Demo: yy\zz\tg1B.d^
 Verify: ccc\tg1B.t^
 

@@ -18,8 +18,8 @@ use File::Package;
 use Tie::Form;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.11';
-$DATE = '2004/05/21';
+$VERSION = '1.12';
+$DATE = '2004/05/23';
 
 ########
 # Inherit classes
@@ -34,6 +34,32 @@ use vars qw(@ISA);
 #                           TEST DESCRIPTION METHODS
 #
 #
+sub  A 
+{ 
+    my ($self, $command, $data) = @_;
+    $self->format( $command, $data );
+    my $module = ref($self);
+    if($self->{$module}->{demo_only}) {
+        $self->{$module}->{demo_only} = '';
+        $self->{$module}->{fields} .= "\n";
+        $self->{$module}->{test} .= "\n";
+    }
+    ''
+}
+
+
+#######
+# These are test sections. Add to the test array,
+#
+sub DO
+{ 
+    my ($self, $command,$data) = @_;
+    my $module = ref($self);
+    $self->{$module}->{demo_only} = "    $data";
+    $self->format( $command, $data );
+    ''
+}
+
 
 sub N
 {
@@ -483,6 +509,10 @@ data hash:
 
 =over 4
 
+=item $demo_only
+
+flags that the test description is for demo only
+
 =item $fields
 
 cumulative fields for the C<__DATA__> form section
@@ -523,6 +553,28 @@ C<__DATA__> form database.
 =back
 
 =head1 TEST DESCRIPTION METHODS
+
+=head2 A
+
+ $file_data = A($command, $actual-expression );
+
+The C<A> subroutine formats C<$command,$actual-expression> in
+the L<Tie::Form> format and adds it to both the
+C<$test> and C<$fields> object data.
+
+If C<demo_only> exists,
+the C<A> subroutine resets the C<demo_only> flag
+and adds a new line to both the C<$test> and C<$fields> object data.
+
+=head2 DO
+
+ $file_data = DO($command, $comment);
+
+The C<DO> subroutine formats C<$command,$actual-expression> in
+the L<Tie::Form> format and adds it to both the
+C<$test> and C<$fields> object data.
+
+The subroutine sets the C<$demo_only> flag.
 
 =head2 ok
 

@@ -10,8 +10,8 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE );
-$VERSION = '0.08';
-$DATE = '2004/05/22';
+$VERSION = '0.09';
+$DATE = '2004/05/23';
 $FILE = __FILE__;
 
 ########
@@ -44,7 +44,7 @@ t::Test::STDmaker::tgA1 - Software Test Description for Test::STDmaker::tg1
 
  Version: 0.01
 
- Date: 2004/05/22
+ Date: 2004/05/23
 
  Prepared for: General Public 
 
@@ -127,12 +127,12 @@ L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Databa
 
 =head2 ok: 4
 
+  N: Test that fails^
 
   R:
      L<Test::STDmaker::tg1/capability-A [2]>
      L<Test::STDmaker::tg1/capability-B [1]>
  ^
-  N: Test that fails^
   A: $x+4^
   E: 7^
  ok: 4^
@@ -156,12 +156,12 @@ L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Databa
 
 =head2 ok: 7
 
-  N: demo only^
  DO: ^
+  N: demo only^
   A: $x^
-  E: $y^
+
+VO: ^
   N: verify only^
- VO: ^
   A: $x^
   E: $x^
  ok: 7^
@@ -261,17 +261,17 @@ L<Test::STDmaker::tg1>
 
 __DATA__
 
-Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
-Classification: None^
-Detail_Template: ^
-End_User: General Public^
-File_Spec: Unix^
 Name: t::Test::STDmaker::tgA1^
-Revision: -^
-STD2167_Template: ^
-Temp: temp.pl^
+File_Spec: Unix^
 UUT: Test::STDmaker::tg1^
+Revision: -^
 Version: 0.01^
+End_User: General Public^
+Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
+STD2167_Template: ^
+Detail_Template: ^
+Classification: None^
+Temp: temp.pl^
 Demo: tgA1.d^
 Verify: tgA1.t^
 
@@ -307,13 +307,13 @@ ok: 2^
  E: 1^
 ok: 3^
 
+ N: Test that fails^
 
  R:
     L<Test::STDmaker::tg1/capability-A [2]>
     L<Test::STDmaker::tg1/capability-B [1]>
 ^
 
- N: Test that fails^
  A: $x+4^
  E: 7^
 ok: 4^
@@ -331,12 +331,12 @@ ok: 5^
  E: 6^
 ok: 6^
 
- N: demo only^
 DO: ^
+ N: demo only^
  A: $x^
- E: $y^
- N: verify only^
+
 VO: ^
+ N: verify only^
  A: $x^
  E: $x^
 ok: 7^

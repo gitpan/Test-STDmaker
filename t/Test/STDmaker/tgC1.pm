@@ -169,17 +169,17 @@ L<Test::STDmaker::tg1>
 
 __DATA__
 
-Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
-Classification: None^
-Detail_Template: ^
-End_User: General Public^
-File_Spec: os2^
 Name: t::Test::STDmaker::tgC1^
-Revision: -^
-STD2167_Template: ^
-Temp: xx\temp.pl^
+File_Spec: os2^
 UUT: Test::STDmaker::tg1^
+Revision: -^
 Version: 0.01^
+End_User: General Public^
+Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
+STD2167_Template: ^
+Detail_Template: ^
+Classification: None^
+Temp: xx\temp.pl^
 Demo: yy\zz\tg1B.d^
 Verify: ccc\tg1B.t^
 

@@ -10,8 +10,8 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE );
-$VERSION = '0.07';
-$DATE = '2004/05/22';
+$VERSION = '0.08';
+$DATE = '2004/05/23';
 $FILE = __FILE__;
 
 __DATA__
@@ -57,11 +57,11 @@ SE: 5^
  A: $y-$x^
  E: 1^
 
+ N: Test that fails^
  R: 
     L<Test::STDmaker::tg1/capability-A [2]>
     L<Test::STDmaker::tg1/capability-B [1]>
  ^
- N: Test that fails^
  A: $x+4^
  E: 7^
 
@@ -76,13 +76,12 @@ SE: 5^
  A: $x*$y*2^
  E: 6^
 
- N: demo only^
 DO: ^
+ N: demo only^
  A: $x^
- E: $y^
 
- N: verify only^
 VO: ^
+ N: verify only^
  A: $x^
  E: $x^
 

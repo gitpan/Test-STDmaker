@@ -11,7 +11,7 @@ use warnings::register;
 
 use vars qw($VERSION);
 
-$VERSION = '0.05';
+$VERSION = '0.06';
 
 1
 
@@ -134,10 +134,6 @@ follow on the next lines as comments. For example,
 
  # 2
  #
-
- ##################
- # verify only
- # 
 
  ##################
  # Failed test that skips the rest
