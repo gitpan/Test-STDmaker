@@ -11,7 +11,7 @@ use warnings::register;
 
 use vars qw($VERSION $DATE $FILE );
 $VERSION = '0.01';
-$DATE = '2003/06/21';
+$DATE = '2004/04/09';
 $FILE = __FILE__;
 
 ########
@@ -62,7 +62,7 @@ SE: 5^
 ok: 1^
 
  A: [($x+$y,$y-$x)]^
- E: ['5,2']^
+ E: [5,2]^
 ok: 2^
 
 

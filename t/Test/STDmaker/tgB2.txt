@@ -1,0 +1,25 @@
+1..2
+# OS            : MSWin32
+# Perl          : 5.008 Win32 Build 806
+# Local Time    : Fri Apr  9 03:56:06 2004
+# GMT Time      : Fri Apr  9 07:56:06 2004
+# Test          : 1.20
+# Test::Tech    : 1.17
+# Data::Secs2   : 1.15
+# =cut 
+ok 1
+not ok 2
+# Test 2 got: 'L[4]
+  A[0] 
+  A[5] ARRAY
+  A[1] 5
+  A[1] 1
+' (tgB1.t at line 124)
+#   Expected: 'L[4]
+  A[0] 
+  A[5] ARRAY
+  A[1] 5
+  A[1] 2
+'
+# Failed : 2
+# Passed : 1/2 50%

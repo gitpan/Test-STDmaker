@@ -11,7 +11,7 @@ use warnings::register;
 
 use vars qw($VERSION $DATE $FILE );
 $VERSION = '0.01';
-$DATE = '2003/06/07';
+$DATE = '2004/04/09';
 $FILE = __FILE__;
 
 ########
@@ -40,7 +40,7 @@ $FILE = __FILE__;
 
  Version: 0.01
 
- Date: 2003/07/05
+ Date: 2004/04/09
 
  Prepared for: General Public 
 
@@ -102,7 +102,7 @@ L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description 
 =head2 ok: 2
 
   A: [($x+$y,$y-$x)]^
-  E: ['\'5\',\'2\'']^
+  E: [5,2]^
  ok: 2^
 
 
@@ -201,7 +201,7 @@ SE: 5^
 ok: 1^
 
  A: [($x+$y,$y-$x)]^
- E: ['\'5\',\'2\'']^
+ E: [5,2]^
 ok: 2^
 
 

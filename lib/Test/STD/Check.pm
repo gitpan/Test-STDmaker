@@ -16,8 +16,8 @@ use vars qw($VERSION $DATE);
 use Cwd;
 use File::AnySpec;
 
-$VERSION = '1.06';
-$DATE = '2003/07/04';
+$VERSION = '1.08';
+$DATE = '2004/04/09';
 
 ########
 # Inherit STD::FileGen
@@ -63,38 +63,46 @@ sub start
 BEGIN { 
 
     use Cwd;
-    use Test::Tech qw(plan ok skip skip_tests tech_config);
+    use FindBIN;
     use File::Spec;
-    use File::TestPath;
+    use Test::Tech qw(plan ok skip skip_tests tech_config finish);
     use vars qw(%__tests__ $__test__ $__restore_dir__);
     
-
     $__test__ = 0;
     %__tests__ = ();
 
     ########
-    # Working directory is that of the script file
+    # The working directory for this script file is the directory where
+    # the test script resides. Thus, any relative files written or read
+    # by this test script are located relative to this test script.
     #
     $__restore_dir__ = cwd();
-    my ($vol, $dirs, undef) = File::Spec->splitpath( \$0 );
+    my ($vol, $dirs) = File::Spec->splitpath(\$FindBin::Bin,'nofile');
     chdir $vol if $vol;
     chdir $dirs if $dirs;
 
     #######
-    # Add the library of the unit under test (UUT) to \@INC
+    # Pick up any testing program modules off this test script.
     #
-    \@__restore_inc__ = File::TestPath->test_lib2inc();
-
-    unshift \@INC, File::Spec->catdir( cwd(), 'lib' ); 
+    # When testing on a target site before installation, place any test
+    # program modules that should not be installed in the same directory
+    # as this test script. Likewise, when testing on a host with a \@INC
+    # restricted to just raw Perl distribution, place any test program
+    # modules in the same directory as this test script.
+    #
+    use lib \$FindBin::Bin;
 }
 
 END {
 
+   finish( );
+
    #########
    # Restore working directory and \@INC back to when enter script
    #
-   \@INC = \@__restore_inc__;
+   \@INC = \@lib::ORIG_INC;
    chdir $__restore_dir__;
+
 }
 
 EOF
@@ -200,6 +208,7 @@ sub finish
       print "$__test__\n$__tests__{$__test__}\n";
    }
 
+
 EOF
 }   
 
@@ -242,6 +251,7 @@ sub  A
 sub VO { R(@_) }
 sub  N { R(@_) }
 sub  S { R(@_) }
+sub DM { R(@_) }
 sub  R
 { 
     my ($self, $command, $data) = @_;
@@ -340,6 +350,7 @@ sub post_print
     my @tests = `perl $self->{$module}->{file_out}`;
     return undef unless @tests;
     unlink $self->{$module}->{file_out} unless $self->{options}->{nounlink};
+    pop @tests if @tests % 2; # try best if code messes up
     foreach my $test (@tests) {
          chomp $test;
     }

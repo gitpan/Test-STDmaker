@@ -1,57 +1,49 @@
 ~~~~
 Running Tests
 
-E:\User\SoftwareDiamonds\installation\t\Test\STDmaker\tgA1.1..16 todo 2 5;
-# Running under perl version 5.006001 for MSWin32
-# Win32::BuildNumber 631
-# Current time local: Mon Jun 23 20:36:40 2003
-# Current time GMT:   Tue Jun 24 00:36:40 2003
-# Using Test.pm version 1.24
-# Number Storage: string
-# Test::Tech    : 1.08
-# Data::Dumper  : 2.102
+E:\User\SoftwareDiamonds\installation\t\Test\STDmaker\tgA1....1..16 todo 2 5;
+# OS            : MSWin32
+# Perl          : 5.008 Win32 Build 806
+# Local Time    : Fri Apr  9 04:11:40 2004
+# GMT Time      : Fri Apr  9 08:11:40 2004
+# Test          : 1.20
+# Test::Tech    : 1.17
+# Data::Secs2   : 1.15
 # =cut 
-# Pass test
-ok 1
-# Todo test that passes
-ok 2 # (E:\User\SoftwareDiamonds\installation\t\Test\STDmaker\tgA1.t at line 123 TODO?!)
-# Test that fails
-not ok 3
-# Test 3 got: '6' (E:\User\SoftwareDiamonds\installation\t\Test\STDmaker\tgA1.t at line 138)
+ok 1 - Pass test 
+ok 2 - Todo test that passes  # (E:\User\SoftwareDiamonds\installation\t\Test\STDmaker\tgA1.t at line 127 TODO?!)
+not ok 3 - Test that fails 
+# Test 3 got: '6' (E:\User\SoftwareDiamonds\installation\t\Test\STDmaker\tgA1.t at line 142)
 #   Expected: '7'
-# Skipped tests
-ok 4 # skip
-# Todo Test that Fails
-not ok 5
-# Test 5 got: '12' (E:\User\SoftwareDiamonds\installation\t\Test\STDmaker\tgA1.t at line 156 *TODO*)
+ok 4 - Skipped tests  # skip
+not ok 5 - Todo Test that Fails 
+# Test 5 got: '12' (E:\User\SoftwareDiamonds\installation\t\Test\STDmaker\tgA1.t at line 160 *TODO*)
 #   Expected: '6'
-# verify only
-ok 6
-# Test loop
-ok 7
+ok 6 - verify only 
+ok 7 - Test loop 
 ok 8
-# Test loop
-ok 9
+ok 9 - Test loop 
 ok 10
-# Test loop
-ok 11
+ok 11 - Test loop 
 ok 12
-# Failed test that skips the rest
-not ok 13
-# Test 13 got: '5' (E:\User\SoftwareDiamonds\installation\t\Test\STDmaker\tgA1.t at line 213)
+not ok 13 - Failed test that skips the rest 
+# Test 13 got: '5' (E:\User\SoftwareDiamonds\installation\t\Test\STDmaker\tgA1.t at line 217)
 #    Expected: '6'
-# A test to skip
-# Test invalid because of previous failure.
-ok 14 # skip
-# A not skip to skip
-# Test invalid because of previous failure.
-ok 15 # skip
-# A skip to skip
-# Test invalid because of previous failure.
-ok 16 # skip
+ok 14 - A test to skip  # skip
+# Test 14 got:
+# Expected: (Test not performed because of previous failure.)
+ok 15 - A not skip to skip  # skip
+# Test 15 got:
+# Expected: (Test not performed because of previous failure.)
+ok 16 - A skip to skip  # skip
+# Test 16 got:
+# Expected: (Test not performed because of previous failure.)
+# Skipped: 4 14 15 16
+# Failed : 3 5 13
+# Passed : 9/12 75%
 FAILED tests 3, 13
-	Failed 2/16 tests, 87.50% okay (-4 skipped tests: 10 okay, 62.50%)
-Failed Test                      Status Wstat Total Fail  Failed  List of Failed
+	Failed 2/16 tests, 87.50% okay (less 4 skipped tests: 10 okay, 62.50%)
+Failed Test                       Stat Wstat Total Fail  Failed  List of Failed
 
   (1 subtest UNEXPECTEDLY SUCCEEDED), 4 subtests skipped.
 Failed 1/1 test scripts, 0.00% okay. 2/16 subtests failed, 87.50% okay.

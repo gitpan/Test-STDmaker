@@ -12,8 +12,8 @@ use Test::STDmaker;
 use Pod::Usage;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.04';
-$DATE = '2003/07/05';
+$VERSION = '1.05';
+$DATE = '2003/08/01';
 
 my $output = 'all';
 my $man = '0';
@@ -27,8 +27,8 @@ unless ( GetOptions(
             'pm=s' => \$options{pm},
             'options_pm=s' => \$options{options_pm}, 
             'targets=s' => \$options{targets}, 
-            'test_scripts' => \$options{test_scripts},
-            'test_fspec' => \$options{test_fspec},
+            'test_scripts=s' => \$options{test_scripts},
+            'test_fspec=s' => \$options{test_fspec},
             'replace!' => \$options{replace},
             'nounlink!' => \$options{nounlink},
             'STD2167!' => \$options{STD2167},
@@ -64,10 +64,9 @@ __END__
 
 =head1 SYNOPSIS
  
- tmake [-help|?] [-man] [-pm=I<list>] [-dir_path] [-replace] [-nounlink] 
-       [-verbose] {perform|execute|run] target ... target
+ tmake [-help|?] [-man] [-options] target ... target 
 
-=DESCRIPTION
+=head1 DESCRIPTION
 
 The tg command is a cover command for the following function:
 

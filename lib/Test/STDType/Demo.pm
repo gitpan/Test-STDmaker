@@ -16,8 +16,8 @@ use File::AnySpec;
 use File::SmartNL;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.06';
-$DATE = '2003/07/05';
+$VERSION = '1.08';
+$DATE = '2004/04/09';
 
 
 ########
@@ -94,21 +94,30 @@ use vars qw($__restore_dir__ \@__restore_inc__ );
 BEGIN {
     use Cwd;
     use File::Spec;
-    use File::TestPath;
-    use Test::Tech qw(tech_config plan demo);
+    use FindBIN;
+    use Test::Tech qw(tech_config plan demo skip_tests);
 
     ########
-    # Working directory is that of the script file
+    # The working directory for this script file is the directory where
+    # the test script resides. Thus, any relative files written or read
+    # by this test script are located relative to this test script.
     #
+    use vars qw( $__restore_dir__ );
     $__restore_dir__ = cwd();
-    my ($vol, $dirs, undef) = File::Spec->splitpath(__FILE__);
+    my ($vol, $dirs) = File::Spec->splitpath(\$FindBin::Bin,'nofile');
     chdir $vol if $vol;
     chdir $dirs if $dirs;
 
     #######
-    # Add the library of the unit under test (UUT) to \@INC
+    # Pick up any testing program modules off this test script.
     #
-    \@__restore_inc__ = File::TestPath->test_lib2inc();
+    # When testing on a target site before installation, place any test
+    # program modules that should not be installed in the same directory
+    # as this test script. Likewise, when testing on a host with a \@INC
+    # restricted to just raw Perl distribution, place any test program
+    # modules in the same directory as this test script.
+    #
+    use lib \$FindBin::Bin;
 
     unshift \@INC, File::Spec->catdir( cwd(), 'lib' ); 
 
@@ -116,11 +125,11 @@ BEGIN {
 
 END {
 
-   #########
-   # Restore working directory and \@INC back to when enter script
-   #
-   \@INC = \@__restore_inc__;
-   chdir $__restore_dir__;
+    #########
+    # Restore working directory and \@INC back to when enter script
+    #
+    \@INC = \@lib::ORIG_INC;
+    chdir $__restore_dir__;
 
 }
 
@@ -197,7 +206,7 @@ sub post_print
          return undef;
      }
      
-     my ($uut_file) = File::PM2File->pm2file($uut);
+     my ($uut_file) = File::Where->where_pm($uut);
      return undef unless $uut_file && -e $uut_file;
      my $uut_contents = File::SmartNL->fin( $uut_file );
      $uut_contents =~ s/(\n=head\d\s+Demonstration).*?\n=/$1\n$demo\n=/si;
@@ -219,6 +228,7 @@ sub SE { '' }
 sub  N { '' }
 sub  U { '' }
 sub DO { '' }
+sub DM { '' }
 
 
 #####

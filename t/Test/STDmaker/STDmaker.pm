@@ -10,8 +10,8 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE );
-$VERSION = '0.05';
-$DATE = '2003/07/05';
+$VERSION = '0.07';
+$DATE = '2004/04/09';
 $FILE = __FILE__;
 
 ########
@@ -40,7 +40,7 @@ $FILE = __FILE__;
 
  Version: 
 
- Date: 2003/07/05
+ Date: 2004/04/09
 
  Prepared for: General Public 
 
@@ -98,13 +98,9 @@ L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description 
      # redirect the TESTERR to STDOUT
      #
      my $restore_testerr = tech_config( 'Test.TESTERR', \*STDOUT );   
-     my $internal_number = tech_config('Internal_Number');
      my $fp = 'File::Package';
      my $snl = 'File::SmartNL';
      my $s = 'Text::Scrub';
-     my $tgB0_pm = ($internal_number eq 'string') ? 'tgB0s.pm' : 'tgB0n.pm';
-     my $tgB2_pm = ($internal_number eq 'string') ? 'tgB2s.pm' : 'tgB2n.pm';
-     my $tgB2_txt = ($internal_number eq 'string') ? 'tgB2s.txt' : 'tgB2n.txt';
      my $test_results;
      my $loaded = 0;
      my @outputs;
@@ -112,7 +108,6 @@ L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description 
  VO: ^
 
   C:
-     use File::Copy;
      @outputs = bsd_glob( 'tg*1.*' );
      unlink @outputs;
      #### 
@@ -137,6 +132,7 @@ L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description 
      #  unlink <tg1*.*>;  causes subsequent bsd_blog calls to crash
      #
  ^
+ DM: For a valid test, the UUT should not be loaded^
   N: UUT not loaded^
   A: $loaded = $fp->is_package_loaded('Test::STDmaker')^
   E:  ''^
@@ -178,10 +174,10 @@ L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description 
 =head2 ok: 4
 
  DO: ^
-  A: $snl->fin('tgB0n.pm')^
+  A: $snl->fin('tgB0.pm')^
 
   C:
-     copy $tgB0_pm, 'tgB1.pm';
+     copy 'tgB0.pm', 'tgB1.pm';
      $tmaker->tmake('STD', 'verify', {pm => 't::Test::STDmaker::tgB1'} );
  ^
 
@@ -193,8 +189,8 @@ L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description 
      L<Test::STDmaker/file_out option [1]>
  ^
   A: $s->scrub_date_version($snl->fin('tgB1.pm'))^
-  N: clean STD pm without a todo list^
-  E: $s->scrub_date_version($snl->fin($tgB2_pm))^
+  N: Clean STD pm without a todo list^
+  E: $s->scrub_date_version($snl->fin('tgB2.pm'))^
  ok: 4^
 
 =head2 ok: 5
@@ -206,7 +202,7 @@ L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description 
  ^
   A: $s->scrub_probe($s->scrub_file_line($test_results))^
   N: Generated and execute the test script^
-  E: $s->scrub_probe($s->scrub_file_line($snl->fin($tgB2_txt)))^
+  E: $s->scrub_probe($s->scrub_file_line($snl->fin('tgB2.txt')))^
  ok: 5^
 
 =head2 ok: 6
@@ -538,7 +534,7 @@ ANY WAY OUT OF THE POSSIBILITY OF SUCH DAMAGE.
 
 =head1 SEE ALSO
 
-\over 4
+=over 4
 
 =item L<STD Automated Generation|Test::STDmaker>
 
@@ -554,7 +550,7 @@ ANY WAY OUT OF THE POSSIBILITY OF SUCH DAMAGE.
 
 =item L<File::PM2File|File::PM2File>
 
-=item L<File::SubPM|File::PSubPM>
+=item L<File::SubPM|File::SubPM>
 
 =item L<Text::Replace|Text::Replace>
 
@@ -627,13 +623,9 @@ Verify: STDmaker.t^
     #
     my $restore_testerr = tech_config( 'Test.TESTERR', \*STDOUT );   
 
-    my $internal_number = tech_config('Internal_Number');
     my $fp = 'File::Package';
     my $snl = 'File::SmartNL';
     my $s = 'Text::Scrub';
-    my $tgB0_pm = ($internal_number eq 'string') ? 'tgB0s.pm' : 'tgB0n.pm';
-    my $tgB2_pm = ($internal_number eq 'string') ? 'tgB2s.pm' : 'tgB2n.pm';
-    my $tgB2_txt = ($internal_number eq 'string') ? 'tgB2s.txt' : 'tgB2n.txt';
 
     my $test_results;
     my $loaded = 0;
@@ -643,8 +635,6 @@ Verify: STDmaker.t^
 VO: ^
 
  C:
-    use File::Copy;
-
     @outputs = bsd_glob( 'tg*1.*' );
     unlink @outputs;
 
@@ -671,6 +661,7 @@ VO: ^
     #
 ^
 
+DM: For a valid test, the UUT should not be loaded^
  N: UUT not loaded^
  A: $loaded = $fp->is_package_loaded('Test::STDmaker')^
  E:  ''^
@@ -708,10 +699,10 @@ DO: ^
 ok: 3^
 
 DO: ^
- A: $snl->fin('tgB0n.pm')^
+ A: $snl->fin('tgB0.pm')^
 
  C:
-    copy $tgB0_pm, 'tgB1.pm';
+    copy 'tgB0.pm', 'tgB1.pm';
     $tmaker->tmake('STD', 'verify', {pm => 't::Test::STDmaker::tgB1'} );
 ^
 
@@ -725,8 +716,8 @@ DO: ^
 ^
 
  A: $s->scrub_date_version($snl->fin('tgB1.pm'))^
- N: clean STD pm without a todo list^
- E: $s->scrub_date_version($snl->fin($tgB2_pm))^
+ N: Clean STD pm without a todo list^
+ E: $s->scrub_date_version($snl->fin('tgB2.pm'))^
 ok: 4^
 
 
@@ -737,7 +728,7 @@ ok: 4^
 
  A: $s->scrub_probe($s->scrub_file_line($test_results))^
  N: Generated and execute the test script^
- E: $s->scrub_probe($s->scrub_file_line($snl->fin($tgB2_txt)))^
+ E: $s->scrub_probe($s->scrub_file_line($snl->fin('tgB2.txt')))^
 ok: 5^
 
 VO: ^
@@ -946,39 +937,39 @@ ok: 12^
 
 
 See_Also:
-\over 4
+\=over 4
 
-=item L<STD Automated Generation|Test::STDmaker>
+\=item L<STD Automated Generation|Test::STDmaker>
 
-=item L<File::Package|File::Package>
+\=item L<File::Package|File::Package>
 
-=item L<File::SmartNL|File::SmartNL>
+\=item L<File::SmartNL|File::SmartNL>
 
-=item L<File::TestPath|File::TestPath>
+\=item L<File::TestPath|File::TestPath>
 
-=item L<File::AnySpec|File::AnySpec>
+\=item L<File::AnySpec|File::AnySpec>
 
-=item L<File::Data|File::Data>
+\=item L<File::Data|File::Data>
 
-=item L<File::PM2File|File::PM2File>
+\=item L<File::PM2File|File::PM2File>
 
-=item L<File::SubPM|File::PSubPM>
+\=item L<File::SubPM|File::SubPM>
 
-=item L<Text::Replace|Text::Replace>
+\=item L<Text::Replace|Text::Replace>
 
-=item L<Text::Column|Text::Column>
+\=item L<Text::Column|Text::Column>
 
-=item L<Text::Scrub|Text::::Scrub>
+\=item L<Text::Scrub|Text::::Scrub>
 
-=item L<DataPort::FileType::FormDB|DataPort::FileType::FormDB>
+\=item L<DataPort::FileType::FormDB|DataPort::FileType::FormDB>
 
-=item L<Software Development Standard|Docs::US_DOD::STD2167A>
+\=item L<Software Development Standard|Docs::US_DOD::STD2167A>
 
-=item L<Specification Practices|Docs::US_DOD::STD490A>
+\=item L<Specification Practices|Docs::US_DOD::STD490A>
 
-=item L<STD DID|US_DOD::STD>
+\=item L<STD DID|US_DOD::STD>
 
-=item L<Test Harness|Test::Harness>
+\=item L<Test Harness|Test::Harness>
 
 =back
 ^
@@ -992,15 +983,15 @@ and use in source and binary forms, with or
 without modification, provided that the 
 following conditions are met: 
 
-=over 4
+\=over 4
 
-=item 1
+\=item 1
 
 Redistributions of source code, modified or unmodified
 must retain the above copyright notice, this list of
 conditions and the following disclaimer. 
 
-=item 2
+\=item 2
 
 Redistributions in binary form must 
 reproduce the above copyright notice,
@@ -1009,7 +1000,7 @@ disclaimer in the documentation and/or
 other materials provided with the
 distribution.
 
-=back
+\=back
 
 SOFTWARE DIAMONDS, http://www.SoftwareDiamonds.com,
 PROVIDES THIS SOFTWARE 

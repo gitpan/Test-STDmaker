@@ -10,48 +10,45 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE );
-$VERSION = '0.05';
-$DATE = '2003/07/05';
+$VERSION = '0.07';
+$DATE = '2004/04/09';
 $FILE = __FILE__;
 
 use vars qw(%INVENTORY);
 %INVENTORY = (
-    'lib/Docs/Site_SVD/Test_STDmaker.pm' => [qw(0.05 2003/07/05), 'revised 0.04'],
-    'MANIFEST' => [qw(0.05 2003/07/05), 'generated, replaces 0.04'],
-    'Makefile.PL' => [qw(0.05 2003/07/05), 'generated, replaces 0.04'],
-    'README' => [qw(0.05 2003/07/05), 'generated, replaces 0.04'],
-    'lib/Test/STDmaker.pm' => [qw(1.08 2003/07/05), 'revised 1.07'],
-    'lib/Test/STDType/Demo.pm' => [qw(1.06 2003/07/05), 'unchanged'],
-    'lib/Test/STDType/STD.pm' => [qw(1.07 2003/07/05), 'revised 1.06'],
-    'lib/Test/STDType/Verify.pm' => [qw(1.06 2003/07/04), 'unchanged'],
-    'lib/Test/STD/Check.pm' => [qw(1.06 2003/07/04), 'unchanged'],
-    'lib/Test/STD/FileGen.pm' => [qw(1.06 2003/07/05), 'unchanged'],
-    'lib/Test/STD/STD2167.pm' => [qw(1.04 2003/07/05), 'unchanged'],
-    'lib/Test/STD/STDgen.pm' => [qw(1.04 2003/07/05), 'revised 1.03'],
-    't/Test/STDmaker/FileGenI.pm' => [qw(1.02 2003/06/14), 'unchanged'],
-    't/Test/STDmaker/STDmaker.d' => [qw(0.01 2003/07/05), 'unchanged'],
-    't/Test/STDmaker/STDmaker.pm' => [qw(0.05 2003/07/05), 'revised 0.04'],
-    't/Test/STDmaker/STDmaker.t' => [qw(0.01 2003/07/05), 'unchanged'],
-    't/Test/STDmaker/tg0.pm' => [qw(0.02 2003/06/14), 'unchanged'],
-    't/Test/STDmaker/tg2.pm' => [qw(0.02 2003/06/21), 'unchanged'],
-    't/Test/STDmaker/tgA0.pm' => [qw(0.02 2003/06/21), 'unchanged'],
-    't/Test/STDmaker/tgA1.pm' => [qw(0.02 2003/06/21), 'unchanged'],
-    't/Test/STDmaker/tgA2.pm' => [qw(0.02 2003/06/21), 'unchanged'],
-    't/Test/STDmaker/tgA2A.txt' => [qw(0.03 2003/06/21), 'unchanged'],
-    't/Test/STDmaker/tgA2B.txt' => [qw(0.04 2003/07/04), 'unchanged'],
-    't/Test/STDmaker/tgA2C.txt' => [qw(0.05 2003/07/04), 'unchanged'],
-    't/Test/STDmaker/tgA2D.txt' => [qw(0.02 2003/06/05), 'unchanged'],
-    't/Test/STDmaker/tgB0n.pm' => [qw(0.01 2003/06/21), 'unchanged'],
-    't/Test/STDmaker/tgB0s.pm' => [qw(0.01 2003/06/21), 'unchanged'],
-    't/Test/STDmaker/tgB1.pm' => [qw(0.01 2003/06/07), 'unchanged'],
-    't/Test/STDmaker/tgB2n.pm' => [qw(0.01 2003/06/21), 'unchanged'],
-    't/Test/STDmaker/tgB2n.txt' => [qw(0.02 2003/06/21), 'unchanged'],
-    't/Test/STDmaker/tgB2s.pm' => [qw(0.01 2003/06/21), 'unchanged'],
-    't/Test/STDmaker/tgB2s.txt' => [qw(0.02 2003/06/21), 'unchanged'],
-    't/Test/STDmaker/tgC0.pm' => [qw(0.02 2003/06/21), 'unchanged'],
-    't/Test/STDmaker/tgC1.pm' => [qw(0.01 2003/06/07), 'unchanged'],
-    't/Test/STDmaker/tgC2.pm' => [qw(0.02 2003/06/21), 'unchanged'],
-    'bin/tmake.pl' => [qw(1.04 2003/07/05), 'unchanged'],
+    'lib/Docs/Site_SVD/Test_STDmaker.pm' => [qw(0.07 2004/04/09), 'revised 0.06'],
+    'MANIFEST' => [qw(0.07 2004/04/09), 'generated, replaces 0.06'],
+    'Makefile.PL' => [qw(0.07 2004/04/09), 'generated, replaces 0.06'],
+    'README' => [qw(0.07 2004/04/09), 'generated, replaces 0.06'],
+    'lib/Test/STDmaker.pm' => [qw(1.1 2004/04/09), 'revised 1.09'],
+    'lib/Test/STDType/Demo.pm' => [qw(1.08 2004/04/09), 'revised 1.07'],
+    'lib/Test/STDType/STD.pm' => [qw(1.08 2004/04/09), 'revised 1.07'],
+    'lib/Test/STDType/Verify.pm' => [qw(1.08 2004/04/09), 'revised 1.07'],
+    'lib/Test/STD/Check.pm' => [qw(1.08 2004/04/09), 'revised 1.07'],
+    'lib/Test/STD/FileGen.pm' => [qw(1.07 2004/04/09), 'revised 1.06'],
+    'lib/Test/STD/STD2167.pm' => [qw(1.05 2004/04/09), 'revised 1.04'],
+    'lib/Test/STD/STDgen.pm' => [qw(1.05 2004/04/09), 'revised 1.04'],
+    't/Test/STDmaker/STDmaker.d' => [qw(0.08 2004/04/09), 'revised 0.07'],
+    't/Test/STDmaker/STDmaker.pm' => [qw(0.07 2004/04/09), 'revised 0.06'],
+    't/Test/STDmaker/STDmaker.t' => [qw(0.08 2004/04/09), 'revised 0.07'],
+    't/Test/STDmaker/tg0.pm' => [qw(0.03 2004/04/09), 'revised 0.02'],
+    't/Test/STDmaker/tg2.pm' => [qw(0.02 2004/04/09), 'new'],
+    't/Test/STDmaker/tgA0.pm' => [qw(0.03 2004/04/09), 'revised 0.02'],
+    't/Test/STDmaker/tgA2.pm' => [qw(0.03 2004/04/09), 'revised 0.02'],
+    't/Test/STDmaker/tgA2A.txt' => [qw(0.07 2004/04/09), 'new'],
+    't/Test/STDmaker/tgA2B.txt' => [qw(0.06 2004/04/09), 'revised 0.05'],
+    't/Test/STDmaker/tgA2C.txt' => [qw(0.07 2004/04/09), 'revised 0.06'],
+    't/Test/STDmaker/tgA2D.txt' => [qw(0.03 2003/08/01), 'unchanged'],
+    't/Test/STDmaker/tgB0.pm' => [qw(0.01 2004/04/09), 'new'],
+    't/Test/STDmaker/tgB2.pm' => [qw(0.01 2004/04/09), 'new'],
+    't/Test/STDmaker/tgB2.txt' => [qw(0.07 2004/04/09), 'new'],
+    't/Test/STDmaker/tgC0.pm' => [qw(0.03 2004/04/09), 'revised 0.02'],
+    't/Test/STDmaker/tgC2.pm' => [qw(0.03 2004/04/09), 'revised 0.02'],
+    'bin/tmake.pl' => [qw(1.05 2003/08/01), 'unchanged'],
+    't/Test/STDmaker/Text/Scrub.pm' => [qw(1.11 2004/04/09), 'new'],
+    't/Test/STDmaker/Test/Tech.pm' => [qw(1.17 2004/04/09), 'new'],
+    't/Test/STDmaker/Data/Secs2.pm' => [qw(1.15 2004/04/09), 'new'],
+    't/Test/STDmaker/File/TestPath.pm' => [qw(1.11 2004/04/09), 'new'],
 
 );
 
@@ -78,11 +75,11 @@ use vars qw(%INVENTORY);
 
  Test::STDmaker - Test Scripts, Demo Scripts and Software Test Description (STD) Automation
 
- Revision: D
+ Revision: F
 
- Version: 0.05
+ Version: 0.07
 
- Date: 2003/07/05
+ Date: 2004/04/09
 
  Prepared for: General Public 
 
@@ -211,7 +208,7 @@ The dependency of the program modules in the US DOD STD2167A bundle is as follow
 
 =head2 1.3 Document overview.
 
-This document releases Test::STDmaker version 0.05
+This document releases Test::STDmaker version 0.07
 providing description of the inventory, installation
 instructions and other information necessary to
 utilize and track this release.
@@ -224,12 +221,14 @@ system file specification.
 
 =head2 3.1 Inventory of materials released.
 
-This document releases the file found
-at the following repository(s):
+This document releases the file 
 
-   http://www.softwarediamonds/packages/Test-STDmaker-0.05
-   http://www.perl.com/CPAN-local/authors/id/S/SO/SOFTDIA/Test-STDmaker-0.05
+ Test-STDmaker-0.07.tar.gz
 
+found at the following repository(s):
+
+  http://www.softwarediamonds/packages/
+  http://www.perl.com/CPAN-local/authors/id/S/SO/SOFTDIA/
 
 Restrictions regarding duplication and license provisions
 are as follows:
@@ -305,42 +304,39 @@ consists of the following files:
 
  file                                                         version date       comment
  ------------------------------------------------------------ ------- ---------- ------------------------
- lib/Docs/Site_SVD/Test_STDmaker.pm                           0.05    2003/07/05 revised 0.04
- MANIFEST                                                     0.05    2003/07/05 generated, replaces 0.04
- Makefile.PL                                                  0.05    2003/07/05 generated, replaces 0.04
- README                                                       0.05    2003/07/05 generated, replaces 0.04
- lib/Test/STDmaker.pm                                         1.08    2003/07/05 revised 1.07
- lib/Test/STDType/Demo.pm                                     1.06    2003/07/05 unchanged
- lib/Test/STDType/STD.pm                                      1.07    2003/07/05 revised 1.06
- lib/Test/STDType/Verify.pm                                   1.06    2003/07/04 unchanged
- lib/Test/STD/Check.pm                                        1.06    2003/07/04 unchanged
- lib/Test/STD/FileGen.pm                                      1.06    2003/07/05 unchanged
- lib/Test/STD/STD2167.pm                                      1.04    2003/07/05 unchanged
- lib/Test/STD/STDgen.pm                                       1.04    2003/07/05 revised 1.03
- t/Test/STDmaker/FileGenI.pm                                  1.02    2003/06/14 unchanged
- t/Test/STDmaker/STDmaker.d                                   0.01    2003/07/05 unchanged
- t/Test/STDmaker/STDmaker.pm                                  0.05    2003/07/05 revised 0.04
- t/Test/STDmaker/STDmaker.t                                   0.01    2003/07/05 unchanged
- t/Test/STDmaker/tg0.pm                                       0.02    2003/06/14 unchanged
- t/Test/STDmaker/tg2.pm                                       0.02    2003/06/21 unchanged
- t/Test/STDmaker/tgA0.pm                                      0.02    2003/06/21 unchanged
- t/Test/STDmaker/tgA1.pm                                      0.02    2003/06/21 unchanged
- t/Test/STDmaker/tgA2.pm                                      0.02    2003/06/21 unchanged
- t/Test/STDmaker/tgA2A.txt                                    0.03    2003/06/21 unchanged
- t/Test/STDmaker/tgA2B.txt                                    0.04    2003/07/04 unchanged
- t/Test/STDmaker/tgA2C.txt                                    0.05    2003/07/04 unchanged
- t/Test/STDmaker/tgA2D.txt                                    0.02    2003/06/05 unchanged
- t/Test/STDmaker/tgB0n.pm                                     0.01    2003/06/21 unchanged
- t/Test/STDmaker/tgB0s.pm                                     0.01    2003/06/21 unchanged
- t/Test/STDmaker/tgB1.pm                                      0.01    2003/06/07 unchanged
- t/Test/STDmaker/tgB2n.pm                                     0.01    2003/06/21 unchanged
- t/Test/STDmaker/tgB2n.txt                                    0.02    2003/06/21 unchanged
- t/Test/STDmaker/tgB2s.pm                                     0.01    2003/06/21 unchanged
- t/Test/STDmaker/tgB2s.txt                                    0.02    2003/06/21 unchanged
- t/Test/STDmaker/tgC0.pm                                      0.02    2003/06/21 unchanged
- t/Test/STDmaker/tgC1.pm                                      0.01    2003/06/07 unchanged
- t/Test/STDmaker/tgC2.pm                                      0.02    2003/06/21 unchanged
- bin/tmake.pl                                                 1.04    2003/07/05 unchanged
+ lib/Docs/Site_SVD/Test_STDmaker.pm                           0.07    2004/04/09 revised 0.06
+ MANIFEST                                                     0.07    2004/04/09 generated, replaces 0.06
+ Makefile.PL                                                  0.07    2004/04/09 generated, replaces 0.06
+ README                                                       0.07    2004/04/09 generated, replaces 0.06
+ lib/Test/STDmaker.pm                                         1.1     2004/04/09 revised 1.09
+ lib/Test/STDType/Demo.pm                                     1.08    2004/04/09 revised 1.07
+ lib/Test/STDType/STD.pm                                      1.08    2004/04/09 revised 1.07
+ lib/Test/STDType/Verify.pm                                   1.08    2004/04/09 revised 1.07
+ lib/Test/STD/Check.pm                                        1.08    2004/04/09 revised 1.07
+ lib/Test/STD/FileGen.pm                                      1.07    2004/04/09 revised 1.06
+ lib/Test/STD/STD2167.pm                                      1.05    2004/04/09 revised 1.04
+ lib/Test/STD/STDgen.pm                                       1.05    2004/04/09 revised 1.04
+ t/Test/STDmaker/STDmaker.d                                   0.08    2004/04/09 revised 0.07
+ t/Test/STDmaker/STDmaker.pm                                  0.07    2004/04/09 revised 0.06
+ t/Test/STDmaker/STDmaker.t                                   0.08    2004/04/09 revised 0.07
+ t/Test/STDmaker/tg0.pm                                       0.03    2004/04/09 revised 0.02
+ t/Test/STDmaker/tg2.pm                                       0.02    2004/04/09 new
+ t/Test/STDmaker/tgA0.pm                                      0.03    2004/04/09 revised 0.02
+ t/Test/STDmaker/tgA2.pm                                      0.03    2004/04/09 revised 0.02
+ t/Test/STDmaker/tgA2A.txt                                    0.07    2004/04/09 new
+ t/Test/STDmaker/tgA2B.txt                                    0.06    2004/04/09 revised 0.05
+ t/Test/STDmaker/tgA2C.txt                                    0.07    2004/04/09 revised 0.06
+ t/Test/STDmaker/tgA2D.txt                                    0.03    2003/08/01 unchanged
+ t/Test/STDmaker/tgB0.pm                                      0.01    2004/04/09 new
+ t/Test/STDmaker/tgB2.pm                                      0.01    2004/04/09 new
+ t/Test/STDmaker/tgB2.txt                                     0.07    2004/04/09 new
+ t/Test/STDmaker/tgC0.pm                                      0.03    2004/04/09 revised 0.02
+ t/Test/STDmaker/tgC2.pm                                      0.03    2004/04/09 revised 0.02
+ bin/tmake.pl                                                 1.05    2003/08/01 unchanged
+ t/Test/STDmaker/Text/Scrub.pm                                1.11    2004/04/09 new
+ t/Test/STDmaker/Test/Tech.pm                                 1.17    2004/04/09 new
+ t/Test/STDmaker/Data/Secs2.pm                                1.15    2004/04/09 new
+ t/Test/STDmaker/File/TestPath.pm                             1.11    2004/04/09 new
 
 
 =head2 3.3 Changes
@@ -349,12 +345,12 @@ Changes are as follows:
 
 =over 4
 
-=item STD::STDgen 0.01
+=item STD-STDgen-0.01
 
 This is the original release. 
 There are no previous releases to change.
 
-=item STD::STDgen 0.02
+=item STD-STDgen-0.02
 
 =over 4
 
@@ -383,8 +379,7 @@ looping work
 
 =back
 
-
-=item Test::STDmaker 0.01
+=item Test-STDmaker-0.01
 
 =over 4
 
@@ -400,7 +395,7 @@ directives to use existing top levels whenever possible.
 
 =back
 
-=item Test::STDmaker 0.02
+=item Test-STDmaker-0.02
 
 Replaced using Test::TestUtil with File::FileUtil, Test::STD::Scrub, Test::STD::STDutil
 
@@ -413,7 +408,7 @@ surprises because of Test versions.
 Changed the generated test script to use subroutine interface of "Test::Tech"
 The object interface was removed.
 
-=item Test::STDmaker 0.03
+=item Test-STDmaker-0.03
 
 Make the same additions to @INC for "Test::STDtype::Demo" and "Test::STD::Check" as for
 "Test::STDtype::Verify".
@@ -421,16 +416,46 @@ Make the same additions to @INC for "Test::STDtype::Demo" and "Test::STD::Check"
 Changed from using "File::FileUtil" (disappeared) to the File::* modules broken out from
 "File::FileUtil"
 
-=item Test::STDmaker 0.04
+=item Test-STDmaker-0.04
 
 Changed from using "Test::STD::STDutil" (disappeared) to the File::* modules broken out from
 "Test::STD::STDutil"
 
 Added the -options_pm option and the ability to make multiple tests from a file list.
 
-=item Test::STDmaker 0.05
+=item Test-STDmaker-0.05
 
 Chnage name of Test::Table to Test::Column. Test::Table taken.
+
+=item Test-STDmaker-0.06
+
+Added DM Diagnostic Message tag
+
+Change the test so that test support program modules resides in distribution
+directory tlib directory instead of the lib directory. 
+Because they are no longer in the lib directory, 
+test support files will not be installed as a pre-condition for the 
+test of this module.
+The test of this module will precede immediately.
+The test support files in the tlib directory will vanish after
+the installtion.
+
+=item Test-STDmaker-0.07
+
+Change the location where of Test::STDmaker expects the test library from tlib
+to the the same directory as the test script. Eliminated the need for File::TestPath.
+which adds the tlib directory to the @INC directory of lists with the below
+Perl build-ins:
+
+ use FindBIN 
+ use lib $FindBin::Bin;
+
+Replace the obsoleted File::PM2File program module with File::Where.
+
+Eliminated detecting broken Perl where Data::Dumper treats arrays of number as
+strings on some Perl and numbers on others. 
+If something is broken, replace it with a fixed version in order to
+pass the tests for the Test::STDmaker program module.
 
 =back
 
@@ -438,15 +463,6 @@ Chnage name of Test::Table to Test::Column. Test::Table taken.
 
 This installation requires that the installation site
 has the Perl programming language installed.
-Installation sites running Microsoft Operating systems require
-the installation of Unix utilities. 
-An excellent, highly recommended Unix utilities for Microsoft
-operating systems is unxutils by Karl M. Syring.
-A copy is available at the following web sites:
-
- http://unxutils.sourceforge.net
- http://packages.SoftwareDiamnds.com
-
 There are no other additional requirements or tailoring needed of 
 configurations files, adaptation data or other software needed for this
 installation particular to any installation site.
@@ -465,35 +481,50 @@ and installation support are as follows:
 
 =item Installation Instructions.
 
-To installed the release file, use the CPAN module in the Perl release
+To installed the release file, use the CPAN module
+pr PPM module in the Perl release
 or the INSTALL.PL script at the following web site:
 
  http://packages.SoftwareDiamonds.com
 
 Follow the instructions for the the chosen installation software.
 
-The distribution file is at the following respositories:
+If all else fails, the file may be manually installed.
+Enter one of the following repositories in a web browser:
 
-   http://www.softwarediamonds/packages/Test-STDmaker-0.05
-   http://www.perl.com/CPAN-local/authors/id/S/SO/SOFTDIA/Test-STDmaker-0.05
+  http://www.softwarediamonds/packages/
+  http://www.perl.com/CPAN-local/authors/id/S/SO/SOFTDIA/
 
+Right click on 'Test-STDmaker-0.07.tar.gz' and download to a temporary
+installation directory.
+Enter the following where $make is 'nmake' for microsoft
+windows; otherwise 'make'.
+
+ gunzip Test-STDmaker-0.07.tar.gz
+ tar -xf Test-STDmaker-0.07.tar
+ perl Makefile.PL
+ $make test
+ $make install
+
+On Microsoft operating system, nmake, tar, and gunzip 
+must be in the exeuction path. If tar and gunzip are
+not install, download and install unxutils from
+
+ http://packages.softwarediamonds.com
 
 =item Prerequistes.
 
- 'DataPort::DataFile' => '0.02',
- 'DataPort::FileType::FormDB' => '0.02',
- 'DataPort::Maker' => '0',
- 'Test::Tech' => '1.08',
- 'Text::Scrub' => '0',
- 'Text::Replace' => '0',
- 'Text::Column' => '0',
- 'File::AnySpec' => '0',
- 'File::TestPath' => '0',
- 'File::SubPM' => '0',
- 'File::PM2File' => '0',
- 'File::SmartNL' => '0',
- 'File::Package' => '0',
- 'File::Data' => '0',
+ 'File::AnySpec' => '1.1',
+ 'File::Data' => '1.1',
+ 'File::Package' => '1.1',
+ 'File::Where' => '0.02',
+ 'File::SmartNL' => '1.1',
+ 'File::SubPM' => '1.1',
+ 'Text::Replace' => '1.08',
+ 'Text::Column' => '1.08',
+ 'DataPort::FileType::FormDB' => '0.03',
+ 'DataPort::Maker' => '1.04',
+ 'DataPort::DataFile' => '0.04',
 
 
 =item Security, privacy, or safety precautions.
@@ -541,7 +572,7 @@ design requirements and to design requirements tests
 =item *
 
 Functional requirements are basically requirements important
-to the end-user and stated for the point of view of the
+to the end-user and stated from the point of view of the
 end-user.  
 Test coverage is not an issue. 
 However, when design requirements are added to the mix,
@@ -733,10 +764,10 @@ __DATA__
 DISTNAME: Test-STDmaker^
 REPOSITORY_DIR: packages^
 
-VERSION : 0.05^
+VERSION : 0.07^
 FREEZE: 1^
-PREVIOUS_RELEASE: 0.04^
-REVISION: D^
+PREVIOUS_RELEASE: 0.06^
+REVISION: F^
 
 PREVIOUS_DISTNAME:  ^
 AUTHOR  : SoftwareDiamonds.com E<lt>support@SoftwareDiamonds.comE<gt>^
@@ -777,23 +808,24 @@ t/Test/STDmaker/*
 t/Test/STDmaker/lib/*
 t/Test/STDmaker/lib/Data/*
 bin/tmake.pl
+lib/Text/Scrub.pm => t/Test/STDmaker/Text/Scrub.pm
+lib/Test/Tech.pm => t/Test/STDmaker/Test/Tech.pm
+lib/Data/Secs2.pm => t/Test/STDmaker/Data/Secs2.pm
+lib/File/TestPath.pm => t/Test/STDmaker/File/TestPath.pm
 ^
 
 PREREQ_PM:
-'DataPort::DataFile' => '0.02',
-'DataPort::FileType::FormDB' => '0.02',
-'DataPort::Maker' => '0',
-'Test::Tech' => '1.08',
-'Text::Scrub' => '0',
-'Text::Replace' => '0',
-'Text::Column' => '0',
-'File::AnySpec' => '0',
-'File::TestPath' => '0',
-'File::SubPM' => '0',
-'File::PM2File' => '0',
-'File::SmartNL' => '0',
-'File::Package' => '0',
-'File::Data' => '0',
+'File::AnySpec' => '1.1',
+'File::Data' => '1.1',
+'File::Package' => '1.1',
+'File::Where' => '0.02',
+'File::SmartNL' => '1.1',
+'File::SubPM' => '1.1',
+'Text::Replace' => '1.08',
+'Text::Column' => '1.08',
+'DataPort::FileType::FormDB' => '0.03',
+'DataPort::Maker' => '1.04',
+'DataPort::DataFile' => '0.04',
 ^
 
 TESTS: t/Test/STDmaker/STDmaker.t^
@@ -911,12 +943,12 @@ Changes are as follows:
 
 \=over 4
 
-\=item STD::STDgen 0.01
+\=item STD-STDgen-0.01
 
 This is the original release. 
 There are no previous releases to change.
 
-\=item STD::STDgen 0.02
+\=item STD-STDgen-0.02
 
 \=over 4
 
@@ -945,8 +977,7 @@ looping work
 
 \=back
 
-
-\=item Test::STDmaker 0.01
+\=item Test-STDmaker-0.01
 
 \=over 4
 
@@ -962,7 +993,7 @@ directives to use existing top levels whenever possible.
 
 \=back
 
-\=item Test::STDmaker 0.02
+\=item Test-STDmaker-0.02
 
 Replaced using Test::TestUtil with File::FileUtil, Test::STD::Scrub, Test::STD::STDutil
 
@@ -975,7 +1006,7 @@ surprises because of Test versions.
 Changed the generated test script to use subroutine interface of "Test::Tech"
 The object interface was removed.
 
-\=item Test::STDmaker 0.03
+\=item Test-STDmaker-0.03
 
 Make the same additions to @INC for "Test::STDtype::Demo" and "Test::STD::Check" as for
 "Test::STDtype::Verify".
@@ -983,16 +1014,46 @@ Make the same additions to @INC for "Test::STDtype::Demo" and "Test::STD::Check"
 Changed from using "File::FileUtil" (disappeared) to the File::* modules broken out from
 "File::FileUtil"
 
-\=item Test::STDmaker 0.04
+\=item Test-STDmaker-0.04
 
 Changed from using "Test::STD::STDutil" (disappeared) to the File::* modules broken out from
 "Test::STD::STDutil"
 
 Added the -options_pm option and the ability to make multiple tests from a file list.
 
-\=item Test::STDmaker 0.05
+\=item Test-STDmaker-0.05
 
 Chnage name of Test::Table to Test::Column. Test::Table taken.
+
+\=item Test-STDmaker-0.06
+
+Added DM Diagnostic Message tag
+
+Change the test so that test support program modules resides in distribution
+directory tlib directory instead of the lib directory. 
+Because they are no longer in the lib directory, 
+test support files will not be installed as a pre-condition for the 
+test of this module.
+The test of this module will precede immediately.
+The test support files in the tlib directory will vanish after
+the installtion.
+
+\=item Test-STDmaker-0.07
+
+Change the location where of Test::STDmaker expects the test library from tlib
+to the the same directory as the test script. Eliminated the need for File::TestPath.
+which adds the tlib directory to the @INC directory of lists with the below
+Perl build-ins:
+
+ use FindBIN 
+ use lib $FindBin::Bin;
+
+Replace the obsoleted File::PM2File program module with File::Where.
+
+Eliminated detecting broken Perl where Data::Dumper treats arrays of number as
+strings on some Perl and numbers on others. 
+If something is broken, replace it with a fixed version in order to
+pass the tests for the Test::STDmaker program module.
 
 \=back
 
@@ -1022,7 +1083,7 @@ design requirements and to design requirements tests
 \=item *
 
 Functional requirements are basically requirements important
-to the end-user and stated for the point of view of the
+to the end-user and stated from the point of view of the
 end-user.  
 Test coverage is not an issue. 
 However, when design requirements are added to the mix,
@@ -1095,16 +1156,35 @@ ANY WAY OUT OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 INSTALLATION:
-To installed the release file, use the CPAN module in the Perl release
+To installed the release file, use the CPAN module
+pr PPM module in the Perl release
 or the INSTALL.PL script at the following web site:
 
  http://packages.SoftwareDiamonds.com
 
 Follow the instructions for the the chosen installation software.
 
-The distribution file is at the following respositories:
+If all else fails, the file may be manually installed.
+Enter one of the following repositories in a web browser:
 
 ${REPOSITORY}
+
+Right click on '${DIST_FILE}' and download to a temporary
+installation directory.
+Enter the following where $make is 'nmake' for microsoft
+windows; otherwise 'make'.
+
+ gunzip ${BASE_DIST_FILE}.tar.${COMPRESS_SUFFIX}
+ tar -xf ${BASE_DIST_FILE}.tar
+ perl Makefile.PL
+ $make test
+ $make install
+
+On Microsoft operating system, nmake, tar, and gunzip 
+must be in the exeuction path. If tar and gunzip are
+not install, download and install unxutils from
+
+ http://packages.softwarediamonds.com
 ^
 
 SUPPORT:

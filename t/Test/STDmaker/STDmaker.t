@@ -7,15 +7,10 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE);
-$VERSION = '0.06';   # automatically generated file
-$DATE = '2003/07/05';
+$VERSION = '0.08';   # automatically generated file
+$DATE = '2004/04/09';
 $FILE = __FILE__;
 
-use Test::Tech;
-use Getopt::Long;
-use Cwd;
-use File::Spec;
-use File::TestPath;
 
 ##### Test Script ####
 #
@@ -44,48 +39,57 @@ use File::TestPath;
 # use a BEGIN block so we print our plan before Module Under Test is loaded
 #
 BEGIN { 
-   use vars qw( $__restore_dir__ @__restore_inc__);
+
+   use FindBIN;
+   use File::Spec;
+   use Cwd;
 
    ########
-   # Working directory is that of the script file
+   # The working directory for this script file is the directory where
+   # the test script resides. Thus, any relative files written or read
+   # by this test script are located relative to this test script.
    #
+   use vars qw( $__restore_dir__ );
    $__restore_dir__ = cwd();
-   my ($vol, $dirs, undef) = File::Spec->splitpath(__FILE__);
+   my ($vol, $dirs) = File::Spec->splitpath($FindBin::Bin,'nofile');
    chdir $vol if $vol;
    chdir $dirs if $dirs;
 
    #######
-   # Add the library of the unit under test (UUT) to @INC
+   # Pick up any testing program modules off this test script.
    #
-   @__restore_inc__ = File::TestPath->test_lib2inc();
-
-   unshift @INC, File::Spec->catdir( cwd(), 'lib' ); 
-
-   ##########
-   # Pick up a output redirection file and tests to skip
-   # from the command line.
+   # When testing on a target site before installation, place any test
+   # program modules that should not be installed in the same directory
+   # as this test script. Likewise, when testing on a host with a @INC
+   # restricted to just raw Perl distribution, place any test program
+   # modules in the same directory as this test script.
    #
-   my $test_log = '';
-   GetOptions('log=s' => \$test_log);
+   use lib $FindBin::Bin;
 
    ########
+   # Using Test::Tech, a very light layer over the module "Test" to
+   # conduct the tests.  The big feature of the "Test::Tech: module
+   # is that it takes expected and actual references and stringify
+   # them by using "Data::Secs2" before passing them to the "&Test::ok"
+   # Thus, almost any time of Perl data structures may be
+   # compared by passing a reference to them to Test::Tech::ok
+   #
    # Create the test plan by supplying the number of tests
    # and the todo tests
    #
    require Test::Tech;
-   Test::Tech->import( qw(plan ok skip skip_tests tech_config) );
+   Test::Tech->import( qw(plan ok skip skip_tests tech_config finish) );
    plan(tests => 12);
 
 }
 
 
-
 END {
-
+ 
    #########
    # Restore working directory and @INC back to when enter script
    #
-   @INC = @__restore_inc__;
+   @INC = @lib::ORIG_INC;
    chdir $__restore_dir__;
 }
 
@@ -103,21 +107,15 @@ END {
     #
     my $restore_testerr = tech_config( 'Test.TESTERR', \*STDOUT );   
 
-    my $internal_number = tech_config('Internal_Number');
     my $fp = 'File::Package';
     my $snl = 'File::SmartNL';
     my $s = 'Text::Scrub';
-    my $tgB0_pm = ($internal_number eq 'string') ? 'tgB0s.pm' : 'tgB0n.pm';
-    my $tgB2_pm = ($internal_number eq 'string') ? 'tgB2s.pm' : 'tgB2n.pm';
-    my $tgB2_txt = ($internal_number eq 'string') ? 'tgB2s.txt' : 'tgB2n.txt';
 
     my $test_results;
     my $loaded = 0;
     my @outputs;
 
    # Perl code from C:
-    use File::Copy;
-
     @outputs = bsd_glob( 'tg*1.*' );
     unlink @outputs;
 
@@ -145,8 +143,8 @@ END {
 
 ok(  $loaded = $fp->is_package_loaded('Test::STDmaker'), # actual results
       '', # expected results
-     '',
-     'UUT not loaded');
+     "For a valid test, the UUT should not be loaded",
+     "UUT not loaded");
 
 #  ok:  1
 
@@ -164,8 +162,8 @@ skip_tests( 1 ) unless skip(
       $loaded, # condition to skip test   
       $errors, # actual results
       '',  # expected results
-      '',
-      'Load UUT');
+      "",
+      "Load UUT");
  
 #  ok:  2
 
@@ -187,13 +185,13 @@ skip_tests( 1 ) unless skip(
 #####
 ok(  $s->scrub_date_version($snl->fin('tgA1.pm')), # actual results
      $s->scrub_date_version($snl->fin('tgA2.pm')), # expected results
-     '',
-     'Clean STD pm with a todo list');
+     "",
+     "Clean STD pm with a todo list");
 
 #  ok:  3
 
    # Perl code from C:
-    copy $tgB0_pm, 'tgB1.pm';
+    copy 'tgB0.pm', 'tgB1.pm';
     $tmaker->tmake('STD', 'verify', {pm => 't::Test::STDmaker::tgB1'} );
 
 
@@ -208,9 +206,9 @@ ok(  $s->scrub_date_version($snl->fin('tgA1.pm')), # actual results
 
 #####
 ok(  $s->scrub_date_version($snl->fin('tgB1.pm')), # actual results
-     $s->scrub_date_version($snl->fin($tgB2_pm)), # expected results
-     '',
-     'clean STD pm without a todo list');
+     $s->scrub_date_version($snl->fin('tgB2.pm')), # expected results
+     "",
+     "Clean STD pm without a todo list");
 
 #  ok:  4
 
@@ -219,9 +217,9 @@ ok(  $s->scrub_date_version($snl->fin('tgB1.pm')), # actual results
     $snl->fout('tgB1.txt', $test_results);
 
 ok(  $s->scrub_probe($s->scrub_file_line($test_results)), # actual results
-     $s->scrub_probe($s->scrub_file_line($snl->fin($tgB2_txt))), # expected results
-     '',
-     'Generated and execute the test script');
+     $s->scrub_probe($s->scrub_file_line($snl->fin('tgB2.txt'))), # expected results
+     "",
+     "Generated and execute the test script");
 
 #  ok:  5
 
@@ -249,8 +247,8 @@ ok(  $s->scrub_probe($s->scrub_file_line($test_results)), # actual results
 #####
 ok(  $s->scrub_date_version($snl->fin('tgA1.pm')), # actual results
      $s->scrub_date_version($snl->fin('tgA2.pm')), # expected results
-     '',
-     'Cleaned tgA1.pm');
+     "",
+     "Cleaned tgA1.pm");
 
 #  ok:  6
 
@@ -268,8 +266,8 @@ ok(  $s->scrub_date_version($snl->fin('tgA1.pm')), # actual results
 #####
 ok(  $test_results, # actual results
      $snl->fin('tgA2A.txt'), # expected results
-     '',
-     'Demonstration script');
+     "",
+     "Demonstration script");
 
 #  ok:  7
 
@@ -288,8 +286,8 @@ ok(  $test_results, # actual results
 #####
 ok(  $s->scrub_probe($s->scrub_file_line($test_results)), # actual results
      $s->scrub_probe($s->scrub_file_line($snl->fin('tgA2B.txt'))), # expected results
-     '',
-     'Generated and execute the test script');
+     "",
+     "Generated and execute the test script");
 
 #  ok:  8
 
@@ -316,8 +314,8 @@ ok(  $s->scrub_probe($s->scrub_file_line($test_results)), # actual results
 
 ok(  $s->scrub_date_version($snl->fin('tg1.pm')), # actual results
      $s->scrub_date_version($snl->fin('tg2.pm')), # expected results
-     '',
-     'Generate and replace a demonstration');
+     "",
+     "Generate and replace a demonstration");
 
 #  ok:  9
 
@@ -355,8 +353,8 @@ ok(  $s->scrub_date_version($snl->fin('tg1.pm')), # actual results
 #####
 ok(  $s->scrub_probe($s->scrub_test_file($s->scrub_file_line($test_results))), # actual results
      $s->scrub_probe($s->scrub_test_file($s->scrub_file_line($snl->fin('tgA2C.txt')))), # expected results
-     '',
-     'Generate and verbose test harness run test script');
+     "",
+     "Generate and verbose test harness run test script");
 
 #  ok:  10
 
@@ -394,8 +392,8 @@ ok(  $s->scrub_probe($s->scrub_test_file($s->scrub_file_line($test_results))), #
 #####
 ok(  $test_results, # actual results
      $snl->fin('tgA2D.txt'), # expected results
-     '',
-     'Generate and test harness run test script');
+     "",
+     "Generate and test harness run test script");
 
 #  ok:  11
 
@@ -412,8 +410,8 @@ ok(  $test_results, # actual results
 #####
 ok(  $s->scrub_date_version($snl->fin('tgC1.pm')), # actual results
      $s->scrub_date_version($snl->fin('tgC2.pm')), # expected results
-     '',
-     'Change File Spec');
+     "",
+     "Change File Spec");
 
 #  ok:  12
 
@@ -434,6 +432,10 @@ ok(  $s->scrub_date_version($snl->fin('tgC1.pm')), # actual results
        CORE::warn( $text );
     };
 
+
+    finish();
+
+__END__
 
 =head1 NAME
 
@@ -466,15 +468,15 @@ and use in source and binary forms, with or
 without modification, provided that the 
 following conditions are met: 
 
-=over 4
+\=over 4
 
-=item 1
+\=item 1
 
 Redistributions of source code, modified or unmodified
 must retain the above copyright notice, this list of
 conditions and the following disclaimer. 
 
-=item 2
+\=item 2
 
 Redistributions in binary form must 
 reproduce the above copyright notice,
@@ -483,7 +485,7 @@ disclaimer in the documentation and/or
 other materials provided with the
 distribution.
 
-=back
+\=back
 
 SOFTWARE DIAMONDS, http://www.SoftwareDiamonds.com,
 PROVIDES THIS SOFTWARE 

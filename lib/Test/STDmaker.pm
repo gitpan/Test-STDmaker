@@ -14,11 +14,11 @@ use Cwd;
 use File::AnySpec;
 use File::TestPath;
 use File::SubPM;
-use File::PM2File;
+use File::Where;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.08';
-$DATE = '2003/07/05';
+$VERSION = '1.1';
+$DATE = '2004/04/09';
 
 use DataPort::Maker;
 use vars qw(@ISA);
@@ -101,8 +101,7 @@ sub tmake
          my $test_script;
          foreach $test_script (@test_scripts) {
              $test_script = File::AnySpec->fspec2os( $test_fspec, $test_script);
-             ($test_script) = File::PM2File->find_in_include( $test_script );
-             unshift   @{$self->{'Test::STDtype::Verify'}->{generated_files}} ,$test_script;
+             unshift   @{$self->{'Test::STDtype::Verify'}->{generated_files}} ,File::Where->where( $test_script );
          } 
          @INC = @restore_inc; 
      }
@@ -231,7 +230,7 @@ for starters, the following files:
      Test::Tech 
 
         DataPort::FileType::FormDB DataPort::DataFile Text::Replace Text::Column
-        File::AnySpec File::Data File::PM2File File::SubPM
+        File::AnySpec File::Data File::Where File::SubPM
 
             Test::STDmaker ExtUtils::SVDmaker
 
@@ -692,7 +691,7 @@ An example of a STD FormDB follows:
   A: ($x+4,$x*$y)^
   E: (6,5)^
 
-  U: ^  Test under development
+  U:  Test under development ^ 
   S: 1^
   A: $x*$y*2^
   E: 6^
@@ -1271,13 +1270,9 @@ follow on the next lines. For example,
  =>     #
  =>     my $restore_testerr = tech_config( 'Test.TESTERR', \*STDOUT );   
 
- =>     my $internal_number = tech_config('Internal_Number');
  =>     my $fp = 'File::Package';
  =>     my $snl = 'File::SmartNL';
  =>     my $s = 'Text::Scrub';
- =>     my $tgB0_pm = ($internal_number eq 'string') ? 'tgB0s.pm' : 'tgB0n.pm';
- =>     my $tgB2_pm = ($internal_number eq 'string') ? 'tgB2s.pm' : 'tgB2n.pm';
- =>     my $tgB2_txt = ($internal_number eq 'string') ? 'tgB2s.txt' : 'tgB2n.txt';
 
  =>     my $test_results;
  =>     my $loaded = 0;
@@ -1846,7 +1841,7 @@ follow on the next lines. For example,
  ~-~
  '
 
- => $snl->fin('tgB0n.pm')
+ => $snl->fin('tgB0.pm')
  '#!perl
  #
  # The copyright notice and plain old documentation (POD)
@@ -1909,7 +1904,7 @@ follow on the next lines. For example,
  ok: 1^
 
   A: [($x+$y,$y-$x)]^
-  E: ['5,2']^
+  E: [5,2]^
  ok: 2^
 
  See_Also: L<Test::STDmaker::tg1>^
@@ -1933,7 +1928,7 @@ follow on the next lines. For example,
  ~-~
  '
 
- =>     copy $tgB0_pm, 'tgB1.pm';
+ =>     copy 'tgB0.pm', 'tgB1.pm';
  =>     $tmaker->tmake('STD', 'verify', {pm => 't::Test::STDmaker::tgB1'} );
  => $s->scrub_date_version($snl->fin('tgB1.pm'))
  '#!perl
@@ -2038,7 +2033,7 @@ follow on the next lines. For example,
  =head2 ok: 2
 
    A: [($x+$y,$y-$x)]^
-   E: ['\'5\',\'2\'']^
+   E: [5,2]^
   ok: 2^
 
  #######
@@ -2131,7 +2126,7 @@ follow on the next lines. For example,
  ok: 1^
 
   A: [($x+$y,$y-$x)]^
-  E: ['\'5\',\'2\'']^
+  E: [5,2]^
  ok: 2^
 
  See_Also: L<Test::STDmaker::tg1>^
@@ -2161,10 +2156,20 @@ follow on the next lines. For example,
  '1..2
  ok 1
  not ok 2
- # Test 2 got: ''5'
- '1'
+ # Test 2 got: 'L[4]
+   A[0] 
+   A[5] ARRAY
+   A[1] 5
+   A[1] 1
  ' (xxxx.t at line 000)
- #   Expected: ''5','2''
+ #   Expected: 'L[4]
+   A[0] 
+   A[5] ARRAY
+   A[1] 5
+   A[1] 2
+ '
+ # Failed : 2
+ # Passed : 1/2 50%
  '
 
  => $snl->fin( 'tg0.pm'  )
@@ -2330,16 +2335,16 @@ follow on the next lines. For example,
   => my $x = 2
   => my $y = 3
   => $x + $y
-  '5'
+  5
 
   => $y-$x
-  '1'
+  1
 
   => $x+4
-  '6'
+  6
 
   => $x*$y*2
-  '12'
+  12
 
   => $x
   2
@@ -2348,34 +2353,34 @@ follow on the next lines. For example,
   =>     my $i;
   =>     for( $i=0; $i < 3; $i++) {
   => $i+200
-  '200'
+  200
 
   => $i + ($x * 100)
-  '200'
+  200
 
   =>     };
   => $i+200
-  '201'
+  201
 
   => $i + ($x * 100)
-  '201'
+  201
 
   =>     };
   => $i+200
-  '202'
+  202
 
   => $i + ($x * 100)
-  '202'
+  202
 
   =>     };
   => $x + $y
-  '5'
+  5
 
   => $x + $y + $x
-  '7'
+  7
 
   => $x + $y + $x + $y
-  '10'
+  10
 
  =head1 SEE ALSO
 
@@ -2403,47 +2408,40 @@ follow on the next lines. For example,
  =>     $snl->fout('tgA1.txt',$test_results);
  => $s->scrub_probe($s->scrub_test_file($s->scrub_file_line($test_results)))
  '~~~~
- # Pass test
- ok 1
- # Todo test that passes
- ok 2 # (xxxx.t at line 000 TODO?!)
- # Test that fails
- not ok 3
+ ok 1 - Pass test 
+ ok 2 - Todo test that passes  # (xxxx.t at line 000 TODO?!)
+ not ok 3 - Test that fails 
  # Test 3 got: '6' (xxxx.t at line 000)
  #   Expected: '7'
- # Skipped tests
- ok 4 # skip
- # Todo Test that Fails
- not ok 5
+ ok 4 - Skipped tests  # skip
+ not ok 5 - Todo Test that Fails 
  # Test 5 got: '12' (xxxx.t at line 000 *TODO*)
  #   Expected: '6'
- # verify only
- ok 6
- # Test loop
- ok 7
+ ok 6 - verify only 
+ ok 7 - Test loop 
  ok 8
- # Test loop
- ok 9
+ ok 9 - Test loop 
  ok 10
- # Test loop
- ok 11
+ ok 11 - Test loop 
  ok 12
- # Failed test that skips the rest
- not ok 13
+ not ok 13 - Failed test that skips the rest 
  # Test 13 got: '5' (xxxx.t at line 000)
  #    Expected: '6'
- # A test to skip
- # Test invalid because of previous failure.
- ok 14 # skip
- # A not skip to skip
- # Test invalid because of previous failure.
- ok 15 # skip
- # A skip to skip
- # Test invalid because of previous failure.
- ok 16 # skip
+ ok 14 - A test to skip  # skip
+ # Test 14 got:
+ # Expected: (Test not performed because of previous failure.)
+ ok 15 - A not skip to skip  # skip
+ # Test 15 got:
+ # Expected: (Test not performed because of previous failure.)
+ ok 16 - A skip to skip  # skip
+ # Test 16 got:
+ # Expected: (Test not performed because of previous failure.)
+ # Skipped: 4 14 15 16
+ # Failed : 3 5 13
+ # Passed : 9/12 75%
  FAILED tests 3, 13
- 	Failed 2/16 tests, 87.50% okay (-4 skipped tests: 10 okay, 62.50%)
- Failed Test                      Status Wstat Total Fail  Failed  List of Failed
+ 	Failed 2/16 tests, 87.50% okay (less 4 skipped tests: 10 okay, 62.50%)
+ Failed Test                       Stat Wstat Total Fail  Failed  List of Failed
 
    (1 subtest UNEXPECTEDLY SUCCEEDED), 4 subtests skipped.
  Failed 1/1 test scripts, 0.00% okay. 2/16 subtests failed, 87.50% okay.

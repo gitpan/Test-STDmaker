@@ -19,8 +19,8 @@ use File::Package;
 use File::Data;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.07';
-$DATE = '2003/07/05';
+$VERSION = '1.08';
+$DATE = '2004/04/09';
 
 ########
 # Inherit Test::STD::FileGen

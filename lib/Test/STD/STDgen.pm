@@ -20,8 +20,8 @@ use File::Data;
 use Cwd;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.04';
-$DATE = '2003/07/05';
+$VERSION = '1.05';
+$DATE = '2004/04/09';
 
 ########
 # Inherit Test::STD::FileGen

@@ -15,8 +15,8 @@ use File::AnySpec;
 use Test::Harness;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.06';
-$DATE = '2003/07/04';
+$VERSION = '1.08';
+$DATE = '2004/04/09';
 
 ########
 # Inherit Test::STD::FileGen
@@ -36,8 +36,7 @@ sub start
 
     $module_db->{'requirement'} = '';
     $module_db->{test_name} = '';
-
-
+    $module_db->{diag_msg} = '';
 
 }
 
@@ -104,20 +103,10 @@ sub T
 {
     my ($self, $command, $data) = @_;
 
-    ###########
-    # use in variables without have to backslash escape the dollar sign
-    # every which way in the below << here statement
-    #   
-    my ($test_log,$work_dir,$lib_dir) = ('$test_log','$work_dir','$lib_dir');
-    my ($vol, $dirs, $__restore_dir__) = ('$vol', '$dirs', '$__restore_dir__');
-    $@='$@';  # cannot put globals under a my
-
-    my ($tests, $todo ) = split ' - ', $data;
+    my ($tests, $todo) = split ' - ', $data;
 
     my $plan = "tests => $tests";
     $plan .= ", todo => [$todo]" if $todo;
-    
-    my ($VERSION, $DATE, $FILE) = ('$VERSION', '$DATE', '$FILE');
 
     ######
     # Build reference files
@@ -125,6 +114,12 @@ sub T
     my (undef,undef,$test_script) = File::Spec->splitpath( $self->{Verify} );
     my $uut = File::AnySpec->fspec2pm($self->{File_Spec},  $self->{UUT}  );
 
+    ###########
+    # use in variables without have to backslash escape the dollar sign
+    # every which way in the below << here statement
+    #   
+    my ($vol, $dirs, $__restore_dir__) = ('$vol', '$dirs', '$__restore_dir__');
+    my ($VERSION, $DATE, $FILE) = ('$VERSION', '$DATE', '$FILE');
 
     << "EOF";
 #!perl
@@ -140,11 +135,6 @@ $VERSION = '0.01';   # automatically generated file
 $DATE = '$self->{'Date'}';
 $FILE = __FILE__;
 
-use Test::Tech;
-use Getopt::Long;
-use Cwd;
-use File::Spec;
-use File::TestPath;
 
 ##### Test Script ####
 #
@@ -173,48 +163,57 @@ use File::TestPath;
 # use a BEGIN block so we print our plan before Module Under Test is loaded
 #
 BEGIN { 
-   use vars qw( $__restore_dir__ \@__restore_inc__);
+
+   use FindBIN;
+   use File::Spec;
+   use Cwd;
 
    ########
-   # Working directory is that of the script file
+   # The working directory for this script file is the directory where
+   # the test script resides. Thus, any relative files written or read
+   # by this test script are located relative to this test script.
    #
+   use vars qw( $__restore_dir__ );
    $__restore_dir__ = cwd();
-   my ($vol, $dirs, undef) = File::Spec->splitpath(__FILE__);
+   my ($vol, $dirs) = File::Spec->splitpath(\$FindBin::Bin,'nofile');
    chdir $vol if $vol;
    chdir $dirs if $dirs;
 
    #######
-   # Add the library of the unit under test (UUT) to \@INC
+   # Pick up any testing program modules off this test script.
    #
-   \@__restore_inc__ = File::TestPath->test_lib2inc();
-
-   unshift \@INC, File::Spec->catdir( cwd(), 'lib' ); 
-
-   ##########
-   # Pick up a output redirection file and tests to skip
-   # from the command line.
+   # When testing on a target site before installation, place any test
+   # program modules that should not be installed in the same directory
+   # as this test script. Likewise, when testing on a host with a \@INC
+   # restricted to just raw Perl distribution, place any test program
+   # modules in the same directory as this test script.
    #
-   my $test_log = '';
-   GetOptions('log=s' => \\$test_log);
+   use lib \$FindBin::Bin;
 
    ########
+   # Using Test::Tech, a very light layer over the module "Test" to
+   # conduct the tests.  The big feature of the "Test::Tech: module
+   # is that it takes expected and actual references and stringify
+   # them by using "Data::Secs2" before passing them to the "&Test::ok"
+   # Thus, almost any time of Perl data structures may be
+   # compared by passing a reference to them to Test::Tech::ok
+   #
    # Create the test plan by supplying the number of tests
    # and the todo tests
    #
    require Test::Tech;
-   Test::Tech->import( qw(plan ok skip skip_tests tech_config) );
+   Test::Tech->import( qw(plan ok skip skip_tests tech_config finish) );
    plan($plan);
 
 }
 
 
-
 END {
-
+ 
    #########
    # Restore working directory and \@INC back to when enter script
    #
-   \@INC = \@__restore_inc__;
+   \@INC = \@lib::ORIG_INC;
    chdir $__restore_dir__;
 }
 
@@ -229,6 +228,16 @@ sub N
    my $module = ref($self);
    return '' if  $self->{$module}->{demo_only};
    $self->{$module}->{test_name} = $data;
+   '' 
+};
+
+
+sub DM 
+{ 
+   my ($self, $command, $data) = @_;
+   my $module = ref($self);
+   return '' if  $self->{$module}->{demo_only};
+   $self->{$module}->{diag_msg} = $data;
    '' 
 };
 
@@ -310,6 +319,7 @@ sub A
        $module_db->{demo_only_expected} = 1;
        $module_db->{skip} = '';
        $module_db->{test_name} = '';
+       $module_db->{diag_msg} = '';
        return '';
    }
    $module_db->{demo_only_expected} = '';
@@ -335,6 +345,7 @@ sub E
        $module_db->{demo_only_expected} = '';
        $module_db->{skip} = '';
        $module_db->{test_name} = '';
+       $module_db->{diag_msg} = '';
        return '';
    }
 
@@ -361,8 +372,8 @@ skip_tests( 1 ) unless skip(
       $skip, # condition to skip test   
       $module_db->{actual}, # actual results
       $data,  # expected results
-      '',
-      '$module_db->{test_name}');
+      \"$module_db->{diag_msg}\",
+      \"$module_db->{test_name}\");
  
 EOF
        }
@@ -376,8 +387,8 @@ EOF
 skip_tests( 1 ) unless ok(
       $module_db->{actual}, # actual results
       $data, # expected results
-      '',
-      '$module_db->{test_name}'); 
+      \"$module_db->{diag_msg}\",
+      \"$module_db->{test_name}\"); 
 
 EOF
 
@@ -395,8 +406,8 @@ EOF
 skip( $skip, # condition to skip test   
       $module_db->{actual}, # actual results
       $data, # expected results
-      '',
-      '$module_db->{test_name}');
+      \"$module_db->{diag_msg}\",
+      \"$module_db->{test_name}\");
 
 EOF
        }
@@ -409,14 +420,15 @@ EOF
            $msg .=  << "EOF";
 ok(  $module_db->{actual}, # actual results
      $data, # expected results
-     '',
-     '$module_db->{test_name}');
+     \"$module_db->{diag_msg}\",
+     \"$module_db->{test_name}\");
 
 EOF
        }
    }
 
    $module_db->{test_name} = '';
+   $module_db->{diag_msg} = '',
    $msg;
 
 }
@@ -431,6 +443,10 @@ sub podgen
     my (undef,undef,$test_script) = File::Spec->splitpath( $self->{'Verify'} );
 
     my $msg = << "EOF";
+
+    finish();
+
+__END__
 
 =head1 NAME
 
