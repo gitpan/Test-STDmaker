@@ -7,7 +7,7 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE);
-$VERSION = '0.14';   # automatically generated file
+$VERSION = '0.15';   # automatically generated file
 $DATE = '2004/05/22';
 $FILE = __FILE__;
 
@@ -193,8 +193,9 @@ ok(  $Test::STDmaker::VERSION, # actual results
     copy 'tgA0.pm', 'tgA1.pm';
     my $tmaker = new Test::STDmaker(pm =>'t::Test::STDmaker::tgA1', nounlink => 1);
     $success = $tmaker->tmake( 'STD' );
-    $diag = (-e 'temp.pl') ? "\n~~~~~~~temp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
-    $diag .= (-e 'tgA1.pm') ? "\n~~~~~~~tgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
+    $diag = (-e 'temp.pl') ? "\n~~~~~~~\ntemp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
+    $diag .= (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
+    warn($diag);
 
 
 
@@ -228,9 +229,9 @@ ok(  $s->scrub_date_version($snl->fin('tgA1.pm')), # actual results
     skip_tests(0);
     copy 'tgB0.pm', 'tgB1.pm';
     $success = $tmaker->tmake('STD', 'verify', {pm => 't::Test::STDmaker::tgB1', nounlink => 1} );
-    $diag = (-e 'temp.pl') ? "\n~~~~~~~temp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
-    $diag .= (-e 'tgB1.pm') ? "\n~~~~~~~tgB1.pm\n\n" . $snl->fin('tgB1.pm') : 'No tgB1.pm';
-    $diag .= (-e 'tgB1.t') ? "\n~~~~~~~tgB1.t\n\n" . $snl->fin('tgB1.t') : 'No tgB1.t';
+    $diag = (-e 'temp.pl') ? "\n~~~~~~~\ntemp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
+    $diag .= (-e 'tgB1.pm') ? "\n~~~~~~~\ntgB1.pm\n\n" . $snl->fin('tgB1.pm') : 'No tgB1.pm';
+    $diag .= (-e 'tgB1.t') ? "\n~~~~~~~\ntgB1.t\n\n" . $snl->fin('tgB1.t') : 'No tgB1.t';
 
 
 
@@ -286,9 +287,9 @@ ok(  $s->scrub_probe($s->scrub_file_line($test_results)), # actual results
     copy 'tgA0.pm', 'tgA1.pm';
     $tmaker = new Test::STDmaker( {pm => 't::Test::STDmaker::tgA1'} );
     $success = $tmaker->tmake();
-    $diag = (-e 'tgA1.pm') ? "\n~~~~~~~tgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
-    $diag .= (-e 'tgA1.t') ? "\n~~~~~~~tgA1.t\n\n" . $snl->fin('tgA1.t') : 'No tgA1.t';
-    $diag .= (-e 'tgA1.d') ? "\n~~~~~~~tgA1.d\n\n" . $snl->fin('tgA1.d') : 'No tgA1.d';
+    $diag = (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
+    $diag .= (-e 'tgA1.t') ? "\n~~~~~~~\ntgA1.t\n\n" . $snl->fin('tgA1.t') : 'No tgA1.t';
+    $diag .= (-e 'tgA1.d') ? "\n~~~~~~~\ntgA1.d\n\n" . $snl->fin('tgA1.d') : 'No tgA1.d';
 
 
 
@@ -418,8 +419,8 @@ ok(  $s->scrub_probe($s->scrub_file_line($test_results)), # actual results
     else {
         $expected_results = 'tg2A.pm';
     }
-    $diag = (-e 'tgA1.pm') ? "\n~~~~~~~tgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
-    $diag .= (-e 'tgA1.d') ? "\n~~~~~~~tgA1.d\n\n" . $snl->fin('tgA1.d') : 'No tgA1.d';
+    $diag = (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
+    $diag .= (-e 'tgA1.d') ? "\n~~~~~~~\ntgA1.d\n\n" . $snl->fin('tgA1.d') : 'No tgA1.d';
 
 
 
@@ -459,8 +460,8 @@ ok(  $s->scrub_date_version($snl->fin('tg1.pm')), # actual results
     $test_results =~ s/.*?1..9/1..9/; 
     $test_results =~ s/------.*?\n(\s*\()/\n $1/s;
     $snl->fout('tgA1.txt',$test_results);
-    $diag = (-e 'tgA1.pm') ? "\n~~~~~~~tgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
-    $diag .= (-e 'tgA1.t') ? "\n~~~~~~~tgA1.d\n\n" . $snl->fin('tgA1.t') : 'No tgA1.t';
+    $diag = (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
+    $diag .= (-e 'tgA1.t') ? "\n~~~~~~~\ntgA1.d\n\n" . $snl->fin('tgA1.t') : 'No tgA1.t';
 
 
 
@@ -511,7 +512,7 @@ ok(  $s->scrub_probe($s->scrub_test_file($s->scrub_file_line($test_results))), #
     # stuff that is site dependent. Need to take it out also.
     #
     $test_results = $snl->fin('tgA1.txt');
-    $test_results = 'FAILED tests 3, 13' if( $test_results =~ /FAILED tests 3, 6, 16/ );
+    $test_results = 'FAILED tests 4, 8' if( $test_results =~ /FAILED tests 4, 8/ );
 
 
 
@@ -534,7 +535,7 @@ skip_tests( 1 ) unless
 #  ok:  17
 
 ok(  $test_results, # actual results
-     'FAILED tests 3, 13', # expected results
+     'FAILED tests 4, 8', # expected results
      "",
      "Generate and test harness run test script");
 

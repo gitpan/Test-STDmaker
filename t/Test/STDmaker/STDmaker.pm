@@ -10,7 +10,7 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE );
-$VERSION = '0.12';
+$VERSION = '0.13';
 $DATE = '2004/05/22';
 $FILE = __FILE__;
 
@@ -178,8 +178,9 @@ L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Databa
      copy 'tgA0.pm', 'tgA1.pm';
      my $tmaker = new Test::STDmaker(pm =>'t::Test::STDmaker::tgA1', nounlink => 1);
      $success = $tmaker->tmake( 'STD' );
-     $diag = (-e 'temp.pl') ? "\n~~~~~~~temp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
-     $diag .= (-e 'tgA1.pm') ? "\n~~~~~~~tgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
+     $diag = (-e 'temp.pl') ? "\n~~~~~~~\ntemp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
+     $diag .= (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
+     warn($diag);
  ^
  DM: $diag^
   A: $success^
@@ -210,9 +211,9 @@ L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Databa
      skip_tests(0);
      copy 'tgB0.pm', 'tgB1.pm';
      $success = $tmaker->tmake('STD', 'verify', {pm => 't::Test::STDmaker::tgB1', nounlink => 1} );
-     $diag = (-e 'temp.pl') ? "\n~~~~~~~temp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
-     $diag .= (-e 'tgB1.pm') ? "\n~~~~~~~tgB1.pm\n\n" . $snl->fin('tgB1.pm') : 'No tgB1.pm';
-     $diag .= (-e 'tgB1.t') ? "\n~~~~~~~tgB1.t\n\n" . $snl->fin('tgB1.t') : 'No tgB1.t';
+     $diag = (-e 'temp.pl') ? "\n~~~~~~~\ntemp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
+     $diag .= (-e 'tgB1.pm') ? "\n~~~~~~~\ntgB1.pm\n\n" . $snl->fin('tgB1.pm') : 'No tgB1.pm';
+     $diag .= (-e 'tgB1.t') ? "\n~~~~~~~\ntgB1.t\n\n" . $snl->fin('tgB1.t') : 'No tgB1.t';
  ^
   N: tmake('STD', 'verify', {pm => 't::Test::STDmaker::tgB1'})^
  DM: $diag^
@@ -263,9 +264,9 @@ L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Databa
      copy 'tgA0.pm', 'tgA1.pm';
      $tmaker = new Test::STDmaker( {pm => 't::Test::STDmaker::tgA1'} );
      $success = $tmaker->tmake();
-     $diag = (-e 'tgA1.pm') ? "\n~~~~~~~tgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
-     $diag .= (-e 'tgA1.t') ? "\n~~~~~~~tgA1.t\n\n" . $snl->fin('tgA1.t') : 'No tgA1.t';
-     $diag .= (-e 'tgA1.d') ? "\n~~~~~~~tgA1.d\n\n" . $snl->fin('tgA1.d') : 'No tgA1.d';
+     $diag = (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
+     $diag .= (-e 'tgA1.t') ? "\n~~~~~~~\ntgA1.t\n\n" . $snl->fin('tgA1.t') : 'No tgA1.t';
+     $diag .= (-e 'tgA1.d') ? "\n~~~~~~~\ntgA1.d\n\n" . $snl->fin('tgA1.d') : 'No tgA1.d';
  ^
   N: tmake( {pm => 't::Test::STDmaker::tgA1'})^
  DM: $diag^
@@ -401,8 +402,8 @@ L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Databa
      else {
          $expected_results = 'tg2A.pm';
      }
-     $diag = (-e 'tgA1.pm') ? "\n~~~~~~~tgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
-     $diag .= (-e 'tgA1.d') ? "\n~~~~~~~tgA1.d\n\n" . $snl->fin('tgA1.d') : 'No tgA1.d';
+     $diag = (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
+     $diag .= (-e 'tgA1.d') ? "\n~~~~~~~\ntgA1.d\n\n" . $snl->fin('tgA1.d') : 'No tgA1.d';
  ^
  DM: $diag^
   A: $success^
@@ -449,8 +450,8 @@ L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Databa
      $test_results =~ s/.*?1..9/1..9/; 
      $test_results =~ s/------.*?\n(\s*\()/\n $1/s;
      $snl->fout('tgA1.txt',$test_results);
-     $diag = (-e 'tgA1.pm') ? "\n~~~~~~~tgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
-     $diag .= (-e 'tgA1.t') ? "\n~~~~~~~tgA1.d\n\n" . $snl->fin('tgA1.t') : 'No tgA1.t';
+     $diag = (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
+     $diag .= (-e 'tgA1.t') ? "\n~~~~~~~\ntgA1.d\n\n" . $snl->fin('tgA1.t') : 'No tgA1.t';
  ^
  DM: $diag^
   A: $success^
@@ -494,7 +495,7 @@ L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Databa
      # stuff that is site dependent. Need to take it out also.
      #
      $test_results = $snl->fin('tgA1.txt');
-     $test_results = 'FAILED tests 3, 13' if( $test_results =~ /FAILED tests 3, 6, 16/ );
+     $test_results = 'FAILED tests 4, 8' if( $test_results =~ /FAILED tests 4, 8/ );
  ^
   A: $success^
  SE: 1^
@@ -504,7 +505,7 @@ L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Databa
 
   N: Generate and test harness run test script^
   A: $test_results^
-  E: 'FAILED tests 3, 13'^
+  E: 'FAILED tests 4, 8'^
  ok: 18^
 
 =head2 ok: 19
@@ -854,8 +855,9 @@ DO: ^
     copy 'tgA0.pm', 'tgA1.pm';
     my $tmaker = new Test::STDmaker(pm =>'t::Test::STDmaker::tgA1', nounlink => 1);
     $success = $tmaker->tmake( 'STD' );
-    $diag = (-e 'temp.pl') ? "\n~~~~~~~temp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
-    $diag .= (-e 'tgA1.pm') ? "\n~~~~~~~tgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
+    $diag = (-e 'temp.pl') ? "\n~~~~~~~\ntemp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
+    $diag .= (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
+    warn($diag);
 ^
 
 DM: $diag^
@@ -884,9 +886,9 @@ DO: ^
     skip_tests(0);
     copy 'tgB0.pm', 'tgB1.pm';
     $success = $tmaker->tmake('STD', 'verify', {pm => 't::Test::STDmaker::tgB1', nounlink => 1} );
-    $diag = (-e 'temp.pl') ? "\n~~~~~~~temp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
-    $diag .= (-e 'tgB1.pm') ? "\n~~~~~~~tgB1.pm\n\n" . $snl->fin('tgB1.pm') : 'No tgB1.pm';
-    $diag .= (-e 'tgB1.t') ? "\n~~~~~~~tgB1.t\n\n" . $snl->fin('tgB1.t') : 'No tgB1.t';
+    $diag = (-e 'temp.pl') ? "\n~~~~~~~\ntemp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
+    $diag .= (-e 'tgB1.pm') ? "\n~~~~~~~\ntgB1.pm\n\n" . $snl->fin('tgB1.pm') : 'No tgB1.pm';
+    $diag .= (-e 'tgB1.t') ? "\n~~~~~~~\ntgB1.t\n\n" . $snl->fin('tgB1.t') : 'No tgB1.t';
 ^
 
  N: tmake('STD', 'verify', {pm => 't::Test::STDmaker::tgB1'})^
@@ -935,9 +937,9 @@ VO: ^
     copy 'tgA0.pm', 'tgA1.pm';
     $tmaker = new Test::STDmaker( {pm => 't::Test::STDmaker::tgA1'} );
     $success = $tmaker->tmake();
-    $diag = (-e 'tgA1.pm') ? "\n~~~~~~~tgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
-    $diag .= (-e 'tgA1.t') ? "\n~~~~~~~tgA1.t\n\n" . $snl->fin('tgA1.t') : 'No tgA1.t';
-    $diag .= (-e 'tgA1.d') ? "\n~~~~~~~tgA1.d\n\n" . $snl->fin('tgA1.d') : 'No tgA1.d';
+    $diag = (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
+    $diag .= (-e 'tgA1.t') ? "\n~~~~~~~\ntgA1.t\n\n" . $snl->fin('tgA1.t') : 'No tgA1.t';
+    $diag .= (-e 'tgA1.d') ? "\n~~~~~~~\ntgA1.d\n\n" . $snl->fin('tgA1.d') : 'No tgA1.d';
 ^
 
  N: tmake( {pm => 't::Test::STDmaker::tgA1'})^
@@ -1078,8 +1080,8 @@ DO: ^
     else {
         $expected_results = 'tg2A.pm';
     }
-    $diag = (-e 'tgA1.pm') ? "\n~~~~~~~tgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
-    $diag .= (-e 'tgA1.d') ? "\n~~~~~~~tgA1.d\n\n" . $snl->fin('tgA1.d') : 'No tgA1.d';
+    $diag = (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
+    $diag .= (-e 'tgA1.d') ? "\n~~~~~~~\ntgA1.d\n\n" . $snl->fin('tgA1.d') : 'No tgA1.d';
 ^
 
 DM: $diag^
@@ -1125,8 +1127,8 @@ ok: 14^
     $test_results =~ s/.*?1..9/1..9/; 
     $test_results =~ s/------.*?\n(\s*\()/\n $1/s;
     $snl->fout('tgA1.txt',$test_results);
-    $diag = (-e 'tgA1.pm') ? "\n~~~~~~~tgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
-    $diag .= (-e 'tgA1.t') ? "\n~~~~~~~tgA1.d\n\n" . $snl->fin('tgA1.t') : 'No tgA1.t';
+    $diag = (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
+    $diag .= (-e 'tgA1.t') ? "\n~~~~~~~\ntgA1.d\n\n" . $snl->fin('tgA1.t') : 'No tgA1.t';
 ^
 
 DM: $diag^
@@ -1170,7 +1172,7 @@ VO: ^
     # stuff that is site dependent. Need to take it out also.
     #
     $test_results = $snl->fin('tgA1.txt');
-    $test_results = 'FAILED tests 3, 13' if( $test_results =~ /FAILED tests 3, 6, 16/ );
+    $test_results = 'FAILED tests 4, 8' if( $test_results =~ /FAILED tests 4, 8/ );
 ^
 
  A: $success^
@@ -1179,7 +1181,7 @@ ok: 17^
 
  N: Generate and test harness run test script^
  A: $test_results^
- E: 'FAILED tests 3, 13'^
+ E: 'FAILED tests 4, 8'^
 ok: 18^
 
 DO: ^

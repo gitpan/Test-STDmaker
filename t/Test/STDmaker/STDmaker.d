@@ -7,7 +7,7 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE);
-$VERSION = '0.14';   # automatically generated file
+$VERSION = '0.15';   # automatically generated file
 $DATE = '2004/05/22';
 
 
@@ -196,13 +196,15 @@ EOF
 demo( "\ \ \ \ copy\ \'tgA0\.pm\'\,\ \'tgA1\.pm\'\;\
 \ \ \ \ my\ \$tmaker\ \=\ new\ Test\:\:STDmaker\(pm\ \=\>\'t\:\:Test\:\:STDmaker\:\:tgA1\'\,\ nounlink\ \=\>\ 1\)\;\
 \ \ \ \ \$success\ \=\ \$tmaker\-\>tmake\(\ \'STD\'\ \)\;\
-\ \ \ \ \$diag\ \=\ \(\-e\ \'temp\.pl\'\)\ \?\ \"\\n\~\~\~\~\~\~\~temp\.pl\\n\\n\"\ \.\ \$snl\-\>fin\(\'temp\.pl\'\)\ \:\ \'No\ temp\.pl\'\;\
-\ \ \ \ \$diag\ \.\=\ \(\-e\ \'tgA1\.pm\'\)\ \?\ \"\\n\~\~\~\~\~\~\~tgA1\.pm\\n\\n\"\ \.\ \$snl\-\>fin\(\'tgA1\.pm\'\)\ \:\ \'No\ tgA1\.pm\'\;"); # typed in command           
+\ \ \ \ \$diag\ \=\ \(\-e\ \'temp\.pl\'\)\ \?\ \"\\n\~\~\~\~\~\~\~\\ntemp\.pl\\n\\n\"\ \.\ \$snl\-\>fin\(\'temp\.pl\'\)\ \:\ \'No\ temp\.pl\'\;\
+\ \ \ \ \$diag\ \.\=\ \(\-e\ \'tgA1\.pm\'\)\ \?\ \"\\n\~\~\~\~\~\~\~\\ntgA1\.pm\\n\\n\"\ \.\ \$snl\-\>fin\(\'tgA1\.pm\'\)\ \:\ \'No\ tgA1\.pm\'\;\
+\ \ \ \ warn\(\$diag\)\;"); # typed in command           
           copy 'tgA0.pm', 'tgA1.pm';
     my $tmaker = new Test::STDmaker(pm =>'t::Test::STDmaker::tgA1', nounlink => 1);
     $success = $tmaker->tmake( 'STD' );
-    $diag = (-e 'temp.pl') ? "\n~~~~~~~temp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
-    $diag .= (-e 'tgA1.pm') ? "\n~~~~~~~tgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm'; # execution
+    $diag = (-e 'temp.pl') ? "\n~~~~~~~\ntemp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
+    $diag .= (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
+    warn($diag); # execution
 
 
 
@@ -229,15 +231,15 @@ demo( "\$snl\-\>fin\(\'tgB0\.pm\'\)", # typed in command
 demo( "\ \ \ \ skip_tests\(0\)\;\
 \ \ \ \ copy\ \'tgB0\.pm\'\,\ \'tgB1\.pm\'\;\
 \ \ \ \ \$success\ \=\ \$tmaker\-\>tmake\(\'STD\'\,\ \'verify\'\,\ \{pm\ \=\>\ \'t\:\:Test\:\:STDmaker\:\:tgB1\'\,\ nounlink\ \=\>\ 1\}\ \)\;\
-\ \ \ \ \$diag\ \=\ \(\-e\ \'temp\.pl\'\)\ \?\ \"\\n\~\~\~\~\~\~\~temp\.pl\\n\\n\"\ \.\ \$snl\-\>fin\(\'temp\.pl\'\)\ \:\ \'No\ temp\.pl\'\;\
-\ \ \ \ \$diag\ \.\=\ \(\-e\ \'tgB1\.pm\'\)\ \?\ \"\\n\~\~\~\~\~\~\~tgB1\.pm\\n\\n\"\ \.\ \$snl\-\>fin\(\'tgB1\.pm\'\)\ \:\ \'No\ tgB1\.pm\'\;\
-\ \ \ \ \$diag\ \.\=\ \(\-e\ \'tgB1\.t\'\)\ \?\ \"\\n\~\~\~\~\~\~\~tgB1\.t\\n\\n\"\ \.\ \$snl\-\>fin\(\'tgB1\.t\'\)\ \:\ \'No\ tgB1\.t\'\;"); # typed in command           
+\ \ \ \ \$diag\ \=\ \(\-e\ \'temp\.pl\'\)\ \?\ \"\\n\~\~\~\~\~\~\~\\ntemp\.pl\\n\\n\"\ \.\ \$snl\-\>fin\(\'temp\.pl\'\)\ \:\ \'No\ temp\.pl\'\;\
+\ \ \ \ \$diag\ \.\=\ \(\-e\ \'tgB1\.pm\'\)\ \?\ \"\\n\~\~\~\~\~\~\~\\ntgB1\.pm\\n\\n\"\ \.\ \$snl\-\>fin\(\'tgB1\.pm\'\)\ \:\ \'No\ tgB1\.pm\'\;\
+\ \ \ \ \$diag\ \.\=\ \(\-e\ \'tgB1\.t\'\)\ \?\ \"\\n\~\~\~\~\~\~\~\\ntgB1\.t\\n\\n\"\ \.\ \$snl\-\>fin\(\'tgB1\.t\'\)\ \:\ \'No\ tgB1\.t\'\;"); # typed in command           
           skip_tests(0);
     copy 'tgB0.pm', 'tgB1.pm';
     $success = $tmaker->tmake('STD', 'verify', {pm => 't::Test::STDmaker::tgB1', nounlink => 1} );
-    $diag = (-e 'temp.pl') ? "\n~~~~~~~temp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
-    $diag .= (-e 'tgB1.pm') ? "\n~~~~~~~tgB1.pm\n\n" . $snl->fin('tgB1.pm') : 'No tgB1.pm';
-    $diag .= (-e 'tgB1.t') ? "\n~~~~~~~tgB1.t\n\n" . $snl->fin('tgB1.t') : 'No tgB1.t'; # execution
+    $diag = (-e 'temp.pl') ? "\n~~~~~~~\ntemp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
+    $diag .= (-e 'tgB1.pm') ? "\n~~~~~~~\ntgB1.pm\n\n" . $snl->fin('tgB1.pm') : 'No tgB1.pm';
+    $diag .= (-e 'tgB1.t') ? "\n~~~~~~~\ntgB1.t\n\n" . $snl->fin('tgB1.t') : 'No tgB1.t'; # execution
 
 
 
@@ -381,8 +383,8 @@ demo( "\ \ \ \ \#\#\#\#\#\#\#\#\#\
 \ \ \ \ else\ \{\
 \ \ \ \ \ \ \ \ \$expected_results\ \=\ \'tg2A\.pm\'\;\
 \ \ \ \ \}\
-\ \ \ \ \$diag\ \=\ \(\-e\ \'tgA1\.pm\'\)\ \?\ \"\\n\~\~\~\~\~\~\~tgA1\.pm\\n\\n\"\ \.\ \$snl\-\>fin\(\'tgA1\.pm\'\)\ \:\ \'No\ tgA1\.pm\'\;\
-\ \ \ \ \$diag\ \.\=\ \(\-e\ \'tgA1\.d\'\)\ \?\ \"\\n\~\~\~\~\~\~\~tgA1\.d\\n\\n\"\ \.\ \$snl\-\>fin\(\'tgA1\.d\'\)\ \:\ \'No\ tgA1\.d\'\;"); # typed in command           
+\ \ \ \ \$diag\ \=\ \(\-e\ \'tgA1\.pm\'\)\ \?\ \"\\n\~\~\~\~\~\~\~\\ntgA1\.pm\\n\\n\"\ \.\ \$snl\-\>fin\(\'tgA1\.pm\'\)\ \:\ \'No\ tgA1\.pm\'\;\
+\ \ \ \ \$diag\ \.\=\ \(\-e\ \'tgA1\.d\'\)\ \?\ \"\\n\~\~\~\~\~\~\~\\ntgA1\.d\\n\\n\"\ \.\ \$snl\-\>fin\(\'tgA1\.d\'\)\ \:\ \'No\ tgA1\.d\'\;"); # typed in command           
           #########
     #
     # Individual generate outputs using options
@@ -415,8 +417,8 @@ demo( "\ \ \ \ \#\#\#\#\#\#\#\#\#\
     else {
         $expected_results = 'tg2A.pm';
     }
-    $diag = (-e 'tgA1.pm') ? "\n~~~~~~~tgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
-    $diag .= (-e 'tgA1.d') ? "\n~~~~~~~tgA1.d\n\n" . $snl->fin('tgA1.d') : 'No tgA1.d'; # execution
+    $diag = (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
+    $diag .= (-e 'tgA1.d') ? "\n~~~~~~~\ntgA1.d\n\n" . $snl->fin('tgA1.d') : 'No tgA1.d'; # execution
 
 
 
@@ -464,8 +466,8 @@ demo( "\ \ \ \ skip_tests\(0\)\;\
 \ \ \ \ \$test_results\ \=\~\ s\/\.\*\?1\.\.9\/1\.\.9\/\;\ \
 \ \ \ \ \$test_results\ \=\~\ s\/\-\-\-\-\-\-\.\*\?\\n\(\\s\*\\\(\)\/\\n\ \$1\/s\;\
 \ \ \ \ \$snl\-\>fout\(\'tgA1\.txt\'\,\$test_results\)\;\
-\ \ \ \ \$diag\ \=\ \(\-e\ \'tgA1\.pm\'\)\ \?\ \"\\n\~\~\~\~\~\~\~tgA1\.pm\\n\\n\"\ \.\ \$snl\-\>fin\(\'tgA1\.pm\'\)\ \:\ \'No\ tgA1\.pm\'\;\
-\ \ \ \ \$diag\ \.\=\ \(\-e\ \'tgA1\.t\'\)\ \?\ \"\\n\~\~\~\~\~\~\~tgA1\.d\\n\\n\"\ \.\ \$snl\-\>fin\(\'tgA1\.t\'\)\ \:\ \'No\ tgA1\.t\'\;"); # typed in command           
+\ \ \ \ \$diag\ \=\ \(\-e\ \'tgA1\.pm\'\)\ \?\ \"\\n\~\~\~\~\~\~\~\\ntgA1\.pm\\n\\n\"\ \.\ \$snl\-\>fin\(\'tgA1\.pm\'\)\ \:\ \'No\ tgA1\.pm\'\;\
+\ \ \ \ \$diag\ \.\=\ \(\-e\ \'tgA1\.t\'\)\ \?\ \"\\n\~\~\~\~\~\~\~\\ntgA1\.d\\n\\n\"\ \.\ \$snl\-\>fin\(\'tgA1\.t\'\)\ \:\ \'No\ tgA1\.t\'\;"); # typed in command           
           skip_tests(0);
 
     no warnings;
@@ -486,8 +488,8 @@ demo( "\ \ \ \ skip_tests\(0\)\;\
     $test_results =~ s/.*?1..9/1..9/; 
     $test_results =~ s/------.*?\n(\s*\()/\n $1/s;
     $snl->fout('tgA1.txt',$test_results);
-    $diag = (-e 'tgA1.pm') ? "\n~~~~~~~tgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
-    $diag .= (-e 'tgA1.t') ? "\n~~~~~~~tgA1.d\n\n" . $snl->fin('tgA1.t') : 'No tgA1.t'; # execution
+    $diag = (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
+    $diag .= (-e 'tgA1.t') ? "\n~~~~~~~\ntgA1.d\n\n" . $snl->fin('tgA1.t') : 'No tgA1.t'; # execution
 
 
 

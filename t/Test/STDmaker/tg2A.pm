@@ -11,7 +11,7 @@ use warnings::register;
 
 use vars qw($VERSION);
 
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 1
 
@@ -85,24 +85,6 @@ follow on the next lines as comments. For example,
  #
 
  ##################
- # ok subroutine
- # 
-
- 99
-
- # 99
- #
-
- ##################
- # skip subroutine
- # 
-
- 80
-
- # 80
- #
-
- ##################
  # Pass test
  # 
 
@@ -156,41 +138,6 @@ follow on the next lines as comments. For example,
  ##################
  # verify only
  # 
-
- ##################
- # Test loop
- # 
-
-     my @expected = ('200','201','202');
-     my $i;
-     for( $i=0; $i < 3; $i++) {
- $i+200
-
- # 200
- #
- $i + ($x * 100)
-
- # 200
- #
-     }
- $i+200
-
- # 201
- #
- $i + ($x * 100)
-
- # 201
- #
-     }
- $i+200
-
- # 202
- #
- $i + ($x * 100)
-
- # 202
- #
-     }
 
  ##################
  # Failed test that skips the rest

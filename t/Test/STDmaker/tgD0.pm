@@ -10,7 +10,7 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE );
-$VERSION = '0.07';
+$VERSION = '0.06';
 $DATE = '2004/05/22';
 $FILE = __FILE__;
 
@@ -44,6 +44,17 @@ QC: my $expected1 = 'hello world'; ^
  N: Quiet Code^
  A: 'hello world'^
  E: $expected1^
+
+ N: ok subroutine^
+TS: \&tolerance^
+ A: 99^
+ E: [100, 10]^
+
+ N: skip subroutine^
+ S: 0^
+TS: \&tolerance^
+ A: 80 ^
+ E: [100, 10] ^
 
  N: Pass test^
  R: L<Test::STDmaker::tg1/capability-A [1]>^
@@ -86,6 +97,25 @@ VO: ^
  A: $x^
  E: $x^
 
+ N: Test loop^
+ C:
+    my @expected = ('200','201','202');
+    my $i;
+    for( $i=0; $i < 3; $i++) {
+ ^
+
+ A: $i+200^
+ R: L<Test::STDmaker::tg1/capability-C [1]>^
+ E: $expected[$i]^
+
+ A: $i + ($x * 100)^
+ R: L<Test::STDmaker::tg1/capability-B [4]>^
+ E: $expected[$i]^
+
+C:
+    }
+^
+
  N: Failed test that skips the rest^
  R: L<Test::STDmaker::tg1/capability-B [2]>^
  A: $x + $y^
@@ -106,6 +136,18 @@ SE: 6^
  R: L<Test::STDmaker::tg1/capability-B [3]>^
  A: $x + $y + $x + $y + $x^
  E: 10^
+
+QC:
+    sub tolerance
+    {   
+        my ($actual,$expected) = @_;
+        my ($average, $tolerance) = @$expected;
+        use integer;
+        $actual = (($average - $actual) * 100) / $average;
+        no integer;
+        (-$tolerance < $actual) && ($actual < $tolerance) ? 1 : 0;
+    }
+^
 
 See_Also: L<Test::STDmaker::tg1> ^
 
