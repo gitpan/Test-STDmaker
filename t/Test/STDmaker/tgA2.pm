@@ -10,15 +10,15 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE );
-$VERSION = '0.05';
-$DATE = '2004/05/18';
+$VERSION = '0.06';
+$DATE = '2004/05/21';
 $FILE = __FILE__;
 
 ########
 # The Test::STDmaker module uses the data after the __DATA__ 
 # token to automatically generate the this file.
 #
-# Don't edit anything before __DATA_. Edit instead
+# Do not edit anything before __DATA_. Edit instead
 # the data after the __DATA__ token.
 #
 # ANY CHANGES MADE BEFORE the  __DATA__ token WILL BE LOST

@@ -14,8 +14,8 @@ use warnings::register;
 # Connect up with the event log.
 #
 use vars qw( $VERSION $DATE $FILE);
-$VERSION = '0.07';
-$DATE = '2004/05/20';
+$VERSION = '0.08';
+$DATE = '2004/05/21';
 $FILE = __FILE__;
 
 use vars qw(@ISA @EXPORT_OK);
@@ -253,7 +253,7 @@ LAST:
      #########
      # Drop leading empty strings
      #
-     while (@strs && !defined($strs[0]) && $strs[0] !~ /^\s*\S/) {
+     while (@strs && (!defined($strs[0]) || $strs[0] !~ /^\s*\S/)) {
           shift @strs;
      }
      @strs = ('') unless(@strs); # do not shift @strs out of existance

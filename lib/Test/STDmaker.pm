@@ -15,8 +15,8 @@ use File::AnySpec;
 use File::Where;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.16';
-$DATE = '2004/05/20';
+$VERSION = '1.17';
+$DATE = '2004/05/21';
 
 use vars qw(@ISA @EXPORT_OK);
 @ISA = qw();
@@ -229,8 +229,8 @@ sub get_date
 # To prevent this, use the return from the below instead of perl
 #
 sub perl_command {
-    my $OS; 
-    unless ($OS = $^O) {   # on some perls $^O is not defined
+    my $OS = $^O; 
+    unless ($OS) {   # on some perls $^O is not defined
 	require Config;
 	$OS = $Config::Config{'osname'};
     }
@@ -3526,13 +3526,15 @@ ANY WAY OUT OF THE POSSIBILITY OF SUCH DAMAGE.
 
 =item L<Test::Tech|Test::Tech> 
 
-=item L<Test|Test> 
+=item L<Test|Test>
 
-=item L<File::Package|File::Package>
+=item L<Data::Secs2|Data::Secs2> 
 
-=item L<Pod::Checker|Pod::Checker>
+=item L<Data::Str2Num|Data::Str2Num> 
 
 =item L<Test::Harness|Test::Harness> 
+
+=item L<Test::STD::PerlSTD|Test::STD::PerlSTD>
 
 =item L<Test::STDmaker::STD|Test::STDmaker::STD>
 
