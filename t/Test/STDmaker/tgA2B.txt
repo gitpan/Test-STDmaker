@@ -1,11 +1,11 @@
 1..16 todo 2 5;
 # Running under perl version 5.006001 for MSWin32
 # Win32::BuildNumber 631
-# Current time local: Fri Jun 20 22:38:04 2003
-# Current time GMT:   Sat Jun 21 02:38:04 2003
-# Using Test.pm version 1.24
+# Current time local: Mon Jun 23 18:53:08 2003
+# Current time GMT:   Mon Jun 23 22:53:08 2003
+# Using Test.pm version 1.23
 # Number Storage: string
-# Test::Tech    : 1.07
+# Test::Tech    : 1.08
 # Data::Dumper  : 2.102
 # =cut 
 # Pass test
@@ -26,15 +26,12 @@ not ok 5
 ok 6
 # Test loop
 ok 7
-# Test loop
 ok 8
 # Test loop
 ok 9
-# Test loop
 ok 10
 # Test loop
 ok 11
-# Test loop
 ok 12
 # Failed test that skips the rest
 not ok 13

@@ -13,27 +13,25 @@ use Pod::Usage;
 
 use vars qw($VERSION $DATE);
 $VERSION = '1.03';
-$DATE = '2003/06/14';
+$DATE = '2003/07/04';
 
 my $output = 'all';
 my $man = '0';
 my $help = '0';
 my %options;
-my $list_file;
 
 unless ( GetOptions( 
             'output=s' => \$output,
             'help|?!' => \$help,
             'man!' => \$man,
-            'list_file=s' => $list_file,
-            'output=s' => \$options{output},
+            'pm=s' => \$options{pm},
             'replace!' => \$options{replace},
             'nounlink!' => \$options{nounlink},
-            'fspec_out!' => \$options{fspec_out},
             'STD2167!' => \$options{STD2167},
             'verbose!' => \$options{verbose},
+            'test_verbose!' => \$options{test_verbose},
+            'fspec_out=s' => \$options{fspec_out},
             'perform|execute|run!' => \$options{run},
-            'file_out=s' => \$options{file_out},
            ) ) {
    pod2usage(1);
 }
@@ -44,40 +42,26 @@ unless ( GetOptions(
 # supply the perdoc system command directly that
 # pod2usage supplies. Actually faster and cleaner.
 #
-pod2usage(1) if ( $help || !@ARGV);
+pod2usage(1) if ( $help );
 if($man) {
    system "perldoc \"$0\"";
    exit 1;
 }
 
-
-my @files = @ARGV;
-if( $list_file ) {
-   if( open LIST, "< $list_file" ) {
-       my @list_files = <LIST>;
-       push @files,@list_files;
-       close LIST;
-   }
-   else {
-      warn( "Cannot open < $list_file\n");
-   }
-}
-
-
-
 #####
-# Generate test document.
+# General test documents and test scripts in accordance with the
+# Software Test Description files.
 #
-Test::STDmaker->fgenerate(@files, \%options);
+my $std = new Test::STDmaker(\%options);
+$std->tmake(@ARGV);
 
 __END__
 
 
 =head1 SYNOPSIS
  
- tg [-help|?] [-man] [-list_file=I<file>] [-out=I<list>] [-dir_path]
-    [-replace] [-nounlink] [-fspec_in=I<spec>] [-fspec_out=I<spec>]
-    [-verbose] {perform|execute|run] std ... std
+ tmake [-help|?] [-man] [-pm=I<list>] [-dir_path] [-replace] [-nounlink] 
+       [-verbose] {perform|execute|run] target ... target
 
 =DESCRIPTION
 
@@ -89,7 +73,7 @@ See L<STD::TestGen|STD::TestGen>
 
 =OPTIONS
 
-For all options not listed, see L<STD::TestGen|STD::TestGen/Options>
+For all options not listed, see L<Test::STDmaker|Test::STDmaker/Options>
 
 =over 4
 
@@ -105,9 +89,6 @@ This option tells C<sdbuild> to output all of this
 Plain Old Documentation (POD) 
 instead of its normal processing.
 
-=item C<-list_file>
-
-Add the files in the list file to the std .. std files.
 
 =back
 

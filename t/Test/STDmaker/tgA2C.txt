@@ -1,18 +1,14 @@
-SoftwareDiamonds.com - Harnessing the power of automation.
-
-~~~~
-Processing Test::STDmaker::tgA1
 ~~~~
 Running Tests
 
 E:\User\SoftwareDiamonds\installation\t\Test\STDmaker\tgA1.1..16 todo 2 5;
 # Running under perl version 5.006001 for MSWin32
 # Win32::BuildNumber 631
-# Current time local: Fri Jun 20 22:49:19 2003
-# Current time GMT:   Sat Jun 21 02:49:19 2003
+# Current time local: Mon Jun 23 20:36:40 2003
+# Current time GMT:   Tue Jun 24 00:36:40 2003
 # Using Test.pm version 1.24
 # Number Storage: string
-# Test::Tech    : 1.07
+# Test::Tech    : 1.08
 # Data::Dumper  : 2.102
 # =cut 
 # Pass test
@@ -33,15 +29,12 @@ not ok 5
 ok 6
 # Test loop
 ok 7
-# Test loop
 ok 8
 # Test loop
 ok 9
-# Test loop
 ok 10
 # Test loop
 ok 11
-# Test loop
 ok 12
 # Failed test that skips the rest
 not ok 13
@@ -62,6 +55,6 @@ Failed Test                      Status Wstat Total Fail  Failed  List of Failed
 
   (1 subtest UNEXPECTEDLY SUCCEEDED), 4 subtests skipped.
 Failed 1/1 test scripts, 0.00% okay. 2/16 subtests failed, 87.50% okay.
-****
-Finish Processing
-****
+~~~~
+Finished running Tests
+

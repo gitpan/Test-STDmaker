@@ -11,11 +11,12 @@ use warnings;
 use warnings::register;
 
 use File::Spec;
+use File::AnySpec;
 use Test::Harness;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.05';
-$DATE = '2003/06/21';
+$VERSION = '1.06';
+$DATE = '2003/07/04';
 
 ########
 # Inherit Test::STD::FileGen
@@ -60,13 +61,18 @@ sub post_generate
 {
      my ($self) = @_;
 
-     return 1 unless $self->{options}->{run};
-
      my $module = ref($self);
-
-     print( "~~~~\nRunning Tests\n\n" ) if $self->{options}->{verbose};
-
-     $Test::Harness::verbose = $self->{options}->{verbose};
+     unless ($self->{options}->{run}) {
+         @{$self->{$module}->{generated_files}} = ();
+         return 1 
+     }
+     if( $self->{options}->{test_verbose} ) {
+         print( "~~~~\nRunning Tests\n\n" );
+         $Test::Harness::verbose = 1;
+     }
+     else {
+         $Test::Harness::verbose = 0;
+     } 
 
      ########
      # Run under eval because runtests is loaded with dies
@@ -74,6 +80,8 @@ sub post_generate
      eval 'runtests( @{$self->{$module}->{generated_files}} )';
      print $@ if $@; # send any die messages to standard out
      @{$self->{$module}->{generated_files}} = ();
+
+     print( "~~~~\nFinished running Tests\n\n" ) if $self->{options}->{test_verbose};
 
 }
 
@@ -115,7 +123,7 @@ sub T
     # Build reference files
     #
     my (undef,undef,$test_script) = File::Spec->splitpath( $self->{Verify} );
-    my $uut = File::FileUtil->fspec2pm($self->{File_Spec},  $self->{UUT}  );
+    my $uut = File::AnySpec->fspec2pm($self->{File_Spec},  $self->{UUT}  );
 
 
     << "EOF";
@@ -136,7 +144,7 @@ use Test::Tech;
 use Getopt::Long;
 use Cwd;
 use File::Spec;
-use File::FileUtil;
+use File::TestPath;
 
 ##### Test Script ####
 #
@@ -171,14 +179,14 @@ BEGIN {
    # Working directory is that of the script file
    #
    $__restore_dir__ = cwd();
-   my ($vol, $dirs, undef) = File::Spec->splitpath( __FILE__ );
+   my ($vol, $dirs, undef) = File::Spec->splitpath(__FILE__);
    chdir $vol if $vol;
    chdir $dirs if $dirs;
 
    #######
    # Add the library of the unit under test (UUT) to \@INC
    #
-   \@__restore_inc__ = File::FileUtil->test_lib2inc();
+   \@__restore_inc__ = File::TestPath->test_lib2inc();
 
    unshift \@INC, File::Spec->catdir( cwd(), 'lib' ); 
 
@@ -406,9 +414,9 @@ ok(  $module_db->{actual}, # actual results
 
 EOF
        }
-       $self->{test_name} = '';
    }
 
+   $module_db->{test_name} = '';
    $msg;
 
 }

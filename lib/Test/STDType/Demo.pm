@@ -12,11 +12,12 @@ use warnings::register;
 use File::Spec;
 use File::Glob ':glob';
 use File::Spec;
-use File::FileUtil;
+use File::AnySpec;
+use File::SmartNL;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.04';
-$DATE = '2003/06/21';
+$VERSION = '1.05';
+$DATE = '2003/07/04';
 
 
 ########
@@ -48,7 +49,7 @@ sub start
 
 
     my (undef,undef,$demo_script) = File::Spec->splitpath( $self->{Demo} );
-    my $uut = File::FileUtil->fspec2pm($self->{File_Spec}, $self->{UUT}  );
+    my $uut = File::AnySpec->fspec2pm($self->{File_Spec}, $self->{UUT}  );
 
     << "EOF";
 #!perl
@@ -88,28 +89,39 @@ $DATE = '$self->{Date}';
 #
 # The working directory is the directory of the generated file
 #
-use vars qw($__restore_dir__);
+use vars qw($__restore_dir__ \@__restore_inc__ );
 
 BEGIN {
     use Cwd;
     use File::Spec;
+    use File::TestPath;
     use Test::Tech qw(tech_config plan demo);
 
     ########
     # Working directory is that of the script file
     #
     $__restore_dir__ = cwd();
-    my ($vol, $dirs, undef) = File::Spec->splitpath( \$0 );
+    my ($vol, $dirs, undef) = File::Spec->splitpath(__FILE__);
     chdir $vol if $vol;
     chdir $dirs if $dirs;
+
+    #######
+    # Add the library of the unit under test (UUT) to \@INC
+    #
+    \@__restore_inc__ = File::TestPath->test_lib2inc();
+
+    unshift \@INC, File::Spec->catdir( cwd(), 'lib' ); 
+
 }
 
 END {
 
-    #########
-    # Restore working directory back to when enter script
-    #
-    chdir $__restore_dir__;
+   #########
+   # Restore working directory and \@INC back to when enter script
+   #
+   \@INC = \@__restore_inc__;
+   chdir $__restore_dir__;
+
 }
 
 print << 'MSG';
@@ -155,10 +167,13 @@ sub post_print
 {
      my ($self) = @_;
 
-     return 1 unless $self->{options}->{replace};
- 
      my $module = ref($self);
 
+     unless ($self->{options}->{replace}) {
+         @{$self->{$module}->{generated_files}} = ();
+         return 1;
+     }
+ 
      my $demo_script = shift @{$self->{$module}->{generated_files}};
      @{$self->{$module}->{generated_files}} = ();
     
@@ -182,11 +197,11 @@ sub post_print
          return undef;
      }
      
-     my ($uut_file) = File::FileUtil->find_in_path($^O, File::FileUtil->pm2require($uut));
+     my ($uut_file) = File::PM2File->pm2file($uut);
      return undef unless $uut_file && -e $uut_file;
-     my $uut_contents = File::FileUtil->fin( $uut_file );
+     my $uut_contents = File::SmartNL->fin( $uut_file );
      $uut_contents =~ s/(\n=head\d\s+Demonstration).*?\n=/$1\n$demo\n=/si;
-     File::FileUtil->fout( $uut_file, $uut_contents);
+     File::SmartNL->fout( $uut_file, $uut_contents);
  
      1   
 
@@ -301,13 +316,13 @@ sub perl_podgen
     my $module = ref($self);
 
     my (undef,undef,$demo_script) = File::Spec->splitpath( $self->{'Demo'} );
-    my $uut = File::FileUtil->fspec2pm($self->{File_Spec}, $self->{UUT});
+    my $pm = File::AnySpec->fspec2pm($self->{File_Spec}, $self->{UUT});
 
     << "EOF";
 
 =head1 NAME
 
-$demo_script - demostration script for $uut
+$demo_script - demostration script for $pm
 
 =head1 SYNOPSIS
 

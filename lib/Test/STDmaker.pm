@@ -11,119 +11,111 @@ use warnings::register;
 
 use File::Spec;
 use Cwd;
-use File::FileUtil;
+use File::AnySpec;
+use File::TestPath;
+use File::SubPM;
+use File::PM2File;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.05';
-$DATE = '2003/06/21';
+$VERSION = '1.06';
+$DATE = '2003/07/04';
 
-#####
-# Gen data and write data to an output file
+use DataPort::Maker;
+use vars qw(@ISA);
+@ISA = qw( DataPort::Maker );  # inherit the new and make_pm methods
+
+my %targets = (
+    all => [ [qw(generate Demo)], [qw(generate STD)], [qw(generate Verify)] ],
+    Demo => [ [qw(generate Demo)] ],
+    STD => [ [qw(generate STD)] ],
+    Verify => [ [qw(generate Verify)] ],
+    __no_target__ => [ qw(target_error) ],
+);
+
+
+######
+# Write out files
 #
-sub fgenerate
+sub tmake
 {
-     my (undef, @std) = @_;
-     my $self = {};
+     my ($self, @targets) = @_;
 
-     ########
-     # Have hash pointer, have options
-     # Normally $self is not blessed and not a hash so cannot
-     # drop %options into the $self hash
-     # 
-     my $options = {}; 
-     $options = pop @std if ref($std[-1]) eq 'HASH';
+     $self->{options} = pop @targets if ref($targets[-1]) eq 'HASH';
 
-     #######
-     # Take care of the file input
-     #
-     unless( @std ) {
-         warn( "No files specified.\n" );
-         return undef;
-     }
-     $options->{output} = 'all' unless $options->{output};
-     my $output_type = $options->{output};
+     my $restore_class = ref($self);
+     my $options = $self->{options};
 
-     my @output_type=();
-     $output_type = join ' ',@$output_type if ref($output_type) eq 'ARRAY';
-     if( ref($output_type) ) {
-         my $type = ref($output_type);
-         warn( "Cannot process output_type referenced to a $type\n" );
-         return undef;
-     }
+     print( "SoftwareDiamonds.com - Harnessing the power of automation.\n\n" ) if $options->{verbose};
+
 
      ########
      # Load output generators
      #
-     my @generators = File::FileUtil->sub_modules( __FILE__, 'STDtype');
-     my $error;
-     foreach my $generator (@generators) {
-          $error = File::FileUtil->load_package( "Test::STDtype::$generator" );
+     my @generators = File::SubPM->sub_modules( __FILE__, 'STDtype');
+     my ($error,$generator);
+     foreach $generator (@generators) {
+          $error = File::Package->load_package( "Test::STDtype::$generator" );
           if( $error ) {
              warn "\t$error\n";
              next;
           }
      }
      $self->{generators} = \@generators;
+     @targets = @generators if 0 == @targets || (join ' ',@targets) =~ /all/;
+
+     ##########
+     # Santize targets
+     #     
+     for my $target (@targets) {
+         next if ref($target);
+         $generator = File::SubPM->is_module($target, @generators );
+         $target = ($generator) ? $generator : lc($target);         
+     }
 
      ########
-     # Determine output types
+     # Default FormDB program module is "STD"
      #
-     ($output_type) = $output_type =~ /^\s*(.*)\s*$/;
-     if ( $output_type =~ /all/i ) {
-        my $all = join ' ',@generators;
-        $output_type =~ s/all/$all/i;
-     }
-     @output_type = split /(?: |,|;)+/, $output_type;  # have list of outputs
-     while (!$output_type[0]) {shift @output_type};
-     $options->{output_type} = join (' ', @output_type);
+     $options->{pm} = 'STD' unless $options->{pm}; 
+     my @t_inc = File::TestPath->find_t_roots( );
+     $self->{Load_INC} = \@t_inc ;
+     my $success = $self->make_pm( \%targets, @targets);
 
-     #######
-     # Take care of the case where there is two files
-     #
-     #  @file =>   $file_in $file_out
-     #
-     $options->{file_out} = '' unless( @output_type == 1 && @std == 1);
-
-     my $success = 1;
-     my $gen_success = 1;
-     print( "SoftwareDiamonds.com - Harnessing the power of automation.\n\n" ) if $options->{verbose};
-
-     my ($generator);
-     foreach my $std_in (@std) {
-
-         print( "~~~~\nProcessing $std_in\n" ) if $options->{verbose};
-
-         ########
-         # Create a new blessed TestGen object
-         #
-         $self->{options}=$options;
-         foreach $output_type (@output_type) {
-
-             $output_type = File::FileUtil->is_module( $output_type, @generators );
-             $generator = "Test::STDtype::$output_type";
-
-             ######
-             # The driver database is sub database of $self
-             #
-             $self = $generator->new( $self );  
-             last unless $self->load_std( $std_in );
-             next unless defined ($gen_success = $self->generate($output_type));
-             $success &&= $gen_success;
-             next unless $gen_success;
-             $self->print();
+     if( $success ) {
+         my $target;
+         foreach $target (@targets) {
+             $self = bless $self, "Test::STDtype::$target";
+             $self->post_generate( ) if $self->can( 'post_generate');
          }
-
-     }
-
-     foreach $output_type (@output_type) {
-         $output_type = File::FileUtil->is_module( $output_type, @generators );
-         $self = bless $self, "Test::STDtype::$output_type";
-         $self->post_generate( ) if $self->can( 'post_generate');
      }
 
      print( "****\nFinish Processing\n****\n" ) if $options->{verbose};
 
+     $self = bless($self, $restore_class);
+
      return $success;
+}
+
+
+sub target_error
+{
+     my $self = shift @_;
+     warn "Bad target $self->{target}\n";
+}
+
+
+sub generate
+{
+     my ($self, $output_type) = @_;
+     my $restore_class = ref($self);
+
+     my $generator = "Test::STDtype::$output_type";
+     $self = $generator->new( $self );  
+     last unless $self->load_std( $self->{FormDB_PM} );
+     return undef unless defined ($self->generate($output_type));
+     $self->print();
+
+     $self = bless($self, $restore_class);
+
 }
 
 
@@ -140,7 +132,12 @@ Test::STDmaker - generates test scripts, demo scripts and STD program module sec
 
  use Test::STDmaker
 
- $success = Test::STDmaker->fgenerate($std_pm ... $std_pm [\%options])
+ $std = new Test::STDmaker( @options );
+ $std = new Test::STDmaker( \%options );
+
+ $std->tmake( @targets, \%options ); 
+ $std->tmake( @targets ); 
+ $std->tmake( \%options  ); 
 
 =head1 DESCRIPTION
 
@@ -180,11 +177,11 @@ Thus the program module name for the Unit Under
 Test (UUT) and the UUT STD program module
 are always different.
 
-Use the "tg.pl" (test generate) cover script for 
+Use the "tmake.pl" (test generate) cover script for 
 L<Test::STDmaker|Test::STDmaker> to process a STD database
 module as follows:
 
-  tg t::MyTopLevel::MyUnitUnderTest
+  tmake -pm=t::MyTopLevel::MyUnitUnderTest
   perl -d root_dir/t/MyTopLevel/MyUnitUnderTest.t
   perl -d root_dir/t/MyTopLevel/MyUnitUnderTest.d
 
@@ -613,8 +610,8 @@ An example of a STD FormDB follows:
  STD2167_Template: ^
  Detail_Template: ^
  Classification: None^
- Demo: STD/t/TestGen1.d^
- Verify: STD/t/TestGen1.t^
+ Demo: TestGen1.d^
+ Verify: TestGen1.t^
 
   T: 0^
 
@@ -1213,7 +1210,8 @@ follow on the next lines. For example,
  =>     use vars qw($loaded);
  =>     use File::Glob ':glob';
  =>     use File::Copy;
- =>     use File::FileUtil;
+ =>     use File::Package;
+ =>     use File::SmartNL;
  =>     use Test::STD::Scrub;
  =>  
  =>     #########
@@ -1223,7 +1221,8 @@ follow on the next lines. For example,
  =>     my $restore_testerr = tech_config( 'Test.TESTERR', \*STDOUT );   
 
  =>     my $internal_number = tech_config('Internal_Number');
- =>     my $fu = 'File::FileUtil';
+ =>     my $fp = 'File::Package';
+ =>     my $snl = 'File::SmartNL';
  =>     my $s = 'Test::STD::Scrub';
  =>     my $tgB0_pm = ($internal_number eq 'string') ? 'tgB0s.pm' : 'tgB0n.pm';
  =>     my $tgB2_pm = ($internal_number eq 'string') ? 'tgB2s.pm' : 'tgB2n.pm';
@@ -1232,11 +1231,11 @@ follow on the next lines. For example,
  =>     my $test_results;
  =>     my $loaded = 0;
  =>     my @outputs;
- => my $errors = $fu->load_package( 'Test::STDmaker' )
+ => my $errors = $fp->load_package( 'Test::STDmaker' )
  => $errors
  ''
 
- => $fu->fin('tgA0.pm')
+ => $snl->fin('tgA0.pm')
  '#!perl
  #
  # The copyright notice and plain old documentation (POD)
@@ -1249,8 +1248,8 @@ follow on the next lines. For example,
  use warnings::register;
 
  use vars qw($VERSION $DATE $FILE );
- $VERSION = '0.01';
- $DATE = '2003/06/14';
+ $VERSION = '0.02';
+ $DATE = '2003/06/21';
  $FILE = __FILE__;
 
  __DATA__
@@ -1382,8 +1381,9 @@ follow on the next lines. For example,
  ~-~'
 
  =>     copy 'tgA0.pm', 'tgA1.pm';
- =>     Test::STDmaker->fgenerate('t::Test::STDmaker::tgA1', {output=>'STD'});
- => $s->scrub_date_version($fu->fin('tgA1.pm'))
+ =>     my $tmaker = new Test::STDmaker(pm =>'t::Test::STDmaker::tgA1');
+ =>     $tmaker->tmake( 'STD' );
+ => $s->scrub_date_version($snl->fin('tgA1.pm'))
  '#!perl
  #
  # The copyright notice and plain old documentation (POD)
@@ -1795,7 +1795,7 @@ follow on the next lines. For example,
  ~-~
  '
 
- => $fu->fin('tgB0n.pm')
+ => $snl->fin('tgB0n.pm')
  '#!perl
  #
  # The copyright notice and plain old documentation (POD)
@@ -1809,7 +1809,7 @@ follow on the next lines. For example,
 
  use vars qw($VERSION $DATE $FILE );
  $VERSION = '0.01';
- $DATE = '2003/06/14';
+ $DATE = '2003/06/21';
  $FILE = __FILE__;
 
  ########
@@ -1883,8 +1883,8 @@ follow on the next lines. For example,
  '
 
  =>     copy $tgB0_pm, 'tgB1.pm';
- =>     Test::STDmaker->fgenerate('t::Test::STDmaker::tgB1', {output=>'STD verify'});
- => $s->scrub_date_version($fu->fin('tgB1.pm'))
+ =>     $tmaker->tmake('STD', 'verify', {pm => 't::Test::STDmaker::tgB1'} );
+ => $s->scrub_date_version($snl->fin('tgB1.pm'))
  '#!perl
  #
  # The copyright notice and plain old documentation (POD)
@@ -2105,7 +2105,7 @@ follow on the next lines. For example,
  '
 
  =>     $test_results = `perl tgB1.t`;
- =>     $fu->fout('tgB1.txt', $test_results);
+ =>     $snl->fout('tgB1.txt', $test_results);
  => $s->scrub_probe($s->scrub_file_line($test_results))
  '1..2
  ok 1
@@ -2116,7 +2116,7 @@ follow on the next lines. For example,
  #   Expected: ''5','2''
  '
 
- => $fu->fin( 'tg0.pm'  )
+ => $snl->fin( 'tg0.pm'  )
  '#!perl
  #
  # Documentation, copyright and license is at the end of this file.
@@ -2197,9 +2197,9 @@ follow on the next lines. For example,
  =>     pop @cwd;
  =>     pop @cwd;
  =>     unshift @INC, File::Spec->catdir( @cwd );  # put UUT in lib path
- =>     Test::STDmaker->fgenerate('t::Test::STDmaker::tgA1', { output=>'demo', replace => 1});
+ =>     $tmaker->tmake('demo', { pm => 't::Test::STDmaker::tgA1', replace => 1});
  =>     shift @INC;
- => $s->scrub_date_version($fu->fin('tg1.pm'))
+ => $s->scrub_date_version($snl->fin('tg1.pm'))
  '#!perl
  #
  # Documentation, copyright and license is at the end of this file.
@@ -2336,7 +2336,7 @@ follow on the next lines. For example,
  =>     open SAVEOUT, ">&STDOUT";
  =>     use warnings;
  =>     open STDOUT, ">tgA1.txt";
- =>     Test::STDmaker->fgenerate('t::Test::STDmaker::tgA1', { output=>'verify', run=>1, verbose=>1});
+ =>     $tmaker->tmake('verify', { pm => 't::Test::STDmaker::tgA1', run => 1, test_verbose => 1});
  =>     close STDOUT;
  =>     open STDOUT, ">&SAVEOUT";
  =>     
@@ -2346,12 +2346,12 @@ follow on the next lines. For example,
  =>     # Also the script name is absolute which is site dependent.
  =>     # Take it out of the comparision.
  =>     #
- =>     $test_results = $fu->fin('tgA1.txt');
+ =>     $test_results = $snl->fin('tgA1.txt');
  =>     $test_results =~ s/.*?1..9/1..9/; 
  =>     $test_results =~ s/------.*?\n(\s*\()/\n $1/s;
- =>     $fu->fout('tgA1.txt',$test_results);
+ =>     $snl->fout('tgA1.txt',$test_results);
  => $s->scrub_probe($s->scrub_test_file($s->scrub_file_line($test_results)))
- 'SoftwareDiamonds.com - Harnessing the power of automation.
+ '~~~~
  # Pass test
  ok 1
  # Todo test that passes
@@ -2370,15 +2370,12 @@ follow on the next lines. For example,
  ok 6
  # Test loop
  ok 7
- # Test loop
  ok 8
  # Test loop
  ok 9
- # Test loop
  ok 10
  # Test loop
  ok 11
- # Test loop
  ok 12
  # Failed test that skips the rest
  not ok 13
@@ -2399,12 +2396,12 @@ follow on the next lines. For example,
 
    (1 subtest UNEXPECTEDLY SUCCEEDED), 4 subtests skipped.
  Failed 1/1 test scripts, 0.00% okay. 2/16 subtests failed, 87.50% okay.
- ****
- Finish Processing
- ****
+ ~~~~
+ Finished running Tests
+
  '
 
- => $fu->fin('tgC0.pm')
+ => $snl->fin('tgC0.pm')
  '#!perl
  #
  # The copyright notice and plain old documentation (POD)
@@ -2417,8 +2414,8 @@ follow on the next lines. For example,
  use warnings::register;
 
  use vars qw($VERSION $DATE $FILE );
- $VERSION = '0.01';
- $DATE = '2003/06/14';
+ $VERSION = '0.02';
+ $DATE = '2003/06/21';
  $FILE = __FILE__;
 
  ########
@@ -2484,8 +2481,8 @@ follow on the next lines. For example,
  '
 
  =>     copy 'tgC0.pm', 'tgC1.pm';
- =>     Test::STDmaker->fgenerate('t::Test::STDmaker::tgC1', {fspec_out=>'os2',  output=>'STD'});
- => $s->scrub_date_version($fu->fin('tgC1.pm'))
+ =>     $tmaker->tmake('STD', { pm => 't::Test::STDmaker::tgC1', fspec_out=>'os2'});
+ => $s->scrub_date_version($snl->fin('tgC1.pm'))
  '#!perl
  #
  # The copyright notice and plain old documentation (POD)
@@ -2724,9 +2721,9 @@ run the generated test script,
 run the demonstration script,
 execute the following in any directory:
 
- tg -verbose -replace -run  t::Test::STDmaker::STDmaker
+ tmake -verbose -replace -run -pm=t::Test::STDmaker::STDmaker
 
-Note that F<tg.pl> must be in the execution path C<$ENV{PATH}>
+Note that F<tmake.pl> must be in the execution path C<$ENV{PATH}>
 and the "t" directory on the same level as the "lib" that
 contains the "Test::STDmaker" module.
 
@@ -2792,13 +2789,21 @@ ANY WAY OUT OF THE POSSIBILITY OF SUCH DAMAGE.
 
 =head1 SEE ALSO
 
- L<Test|Test> 
- L<Test::Harness|Test::Harness> 
- L<tg|STD::t::tg>
- L<STD|Docs::US_DOD::STD>
- L<SVD|Docs::US_DOD::SVD>
- L<DOD STD 490A|Docs::US_DOD::STD490A>
- L<DOD STD 2167A|Docs::US_DOD::STD2167A>
+=over 4
+
+=item L<Test|Test> 
+
+=item L<Test::Harness|Test::Harness> 
+
+=item  L<tg|STD::t::tg>
+
+=item  L<STD|Docs::US_DOD::STD>
+
+=item  L<DOD STD 490A|Docs::US_DOD::STD490A>
+
+=item  L<DOD STD 2167A|Docs::US_DOD::STD2167A>
+
+=back
 
 =for html
 <hr>

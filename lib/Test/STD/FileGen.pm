@@ -10,14 +10,15 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.04';
-$DATE = '2003/06/21';
+$VERSION = '1.05';
+$DATE = '2003/07/04';
 
 use File::Spec;
 use Cwd;
 use DataPort::FileType::FormDB;
 use Test::STD::Check;
-use File::FileUtil;
+use File::AnySpec;
+use File::SmartNL;
 use Test::STD::STDutil;
 
 #####
@@ -45,7 +46,7 @@ sub load_std
        warn "No file specified\n";
        return undef;
     } 
-    return 1 if $self->{std_pm} && $self->{std_pm} eq $std_pm;  # $file_in all ready loaded
+    return 1 if $self->{std_pm} && $self->{std_pm} eq $std_pm;  # $file_in all cleaned
 
     $self->{std_db} = '';
     $self->{std_pm} = $std_pm;
@@ -54,48 +55,14 @@ sub load_std
     $self->{vol} = '';
     $self->{dir} = '';
     
-    ######
-    # Find the test include path
-    #
-    my @INC_restore = @INC;
-    unshift @INC, File::FileUtil->find_t_roots( );
- 
-    #####
-    # load the STD program module
-    #
-    my $error = File::FileUtil->load_package( $std_pm );
-    if( $error ) {
-        warn($error);
-        return undef;
-    }
-
-    ######
-    # Bring the FormDB into memory as @std_db
-    #
-    my ($std_file);
-    no strict;
-    $std_file = ${"${std_pm}::FILE"};
-    use strict;
-
-    my $fh = File::FileUtil->pm2datah( $std_pm  );
-    my $dbh = new DataPort::FileType::FormDB( file => $fh );
-    return undef unless( $dbh );
-    my @std_db;
-    my $record;
-    return undef unless $dbh->get(\@std_db, \$record);
-    return undef unless $dbh->encode_record( \$record );
-    $dbh->finish( );
-
-    @INC = @INC_restore;
-
     #########
     # Record file load stats in the object database
     #
-    $self->{std_db} = \@std_db;
+    $self->{std_db} = $self->{FormDB};
     $self->{Date} = Test::STD::STDutil->get_date( );
-    $self->{Record} = $record;
-    $self->{std_file} = $std_file;
-    ($self->{vol}, $self->{dir}, $self->{file}) = File::Spec->splitpath( $std_file );
+    $self->{Record} = $self->{FormDB_Record};
+    $self->{std_file} = $self->{FormDB_File};
+    ($self->{vol}, $self->{dir}, $self->{file}) = File::Spec->splitpath( $self->{FormDB_File});
 
     #######
     # Clean up and standardize the file database.
@@ -222,7 +189,7 @@ sub print
         #####
         # Does not work without parens around $file_out
         #
-        ($file_out) = File::FileUtil->fspec2os( $self->{File_Spec}, $file_out );
+        ($file_out) = File::AnySpec->fspec2os( $self->{File_Spec}, $file_out );
     }
 
     ######
@@ -232,12 +199,19 @@ sub print
     my $restore_dir = cwd();
     chdir $self->{vol} if $self->{vol};
     chdir $self->{dir} if $self->{dir};
-    File::FileUtil->fout( $file_out, $$data_out_p ) if $file_out && $data_out_p && $$data_out_p;
+    File::SmartNL->fout( $file_out, $$data_out_p ) if $file_out && $data_out_p && $$data_out_p;
     $self->{$type}->{generated_files} = [] unless $self->{$type}->{generated_files};
     push  @{$self->{$type}->{generated_files}},File::Spec->rel2abs($file_out);
     $self->{$type}->{data_out} = undef;  # do not want to send 2nd time
 
     $success = $self->post_print( ) if $self->can( 'post_print');
+
+    ###########
+    # Sometimes have untentional unlinks
+    # 
+    unless( $success && !$self->{options}->{nounlink}) {
+        File::SmartNL->fout( $file_out, $$data_out_p ) if $file_out && $data_out_p && $$data_out_p;
+    }
 
     chdir $restore_dir;
 

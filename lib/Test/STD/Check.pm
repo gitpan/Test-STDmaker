@@ -14,10 +14,10 @@ use warnings::register;
 use File::Spec;
 use vars qw($VERSION $DATE);
 use Cwd;
-use File::FileUtil;
+use File::AnySpec;
 
-$VERSION = '1.05';
-$DATE = '2003/06/21';
+$VERSION = '1.06';
+$DATE = '2003/07/04';
 
 ########
 # Inherit STD::FileGen
@@ -59,32 +59,41 @@ sub start
 #!perl
 #
 #
-use Cwd;
-use File::Spec;
-use Test::Tech qw(plan ok skip skip_tests tech_config);
 
 BEGIN { 
 
-   use vars qw(%__tests__ $__test__ $__restore_dir__);
+    use Cwd;
+    use Test::Tech qw(plan ok skip skip_tests tech_config);
+    use File::Spec;
+    use File::TestPath;
+    use vars qw(%__tests__ $__test__ $__restore_dir__);
+    
 
-   $__test__ = 0;
-   %__tests__ = ();
+    $__test__ = 0;
+    %__tests__ = ();
 
-   ########
-   # Working directory is that of the script file
-   #
-   $__restore_dir__ = cwd();
-   my ($vol, $dirs, undef) = File::Spec->splitpath( \$0 );
-   chdir $vol if $vol;
-   chdir $dirs if $dirs;
+    ########
+    # Working directory is that of the script file
+    #
+    $__restore_dir__ = cwd();
+    my ($vol, $dirs, undef) = File::Spec->splitpath( \$0 );
+    chdir $vol if $vol;
+    chdir $dirs if $dirs;
 
+    #######
+    # Add the library of the unit under test (UUT) to \@INC
+    #
+    \@__restore_inc__ = File::TestPath->test_lib2inc();
+
+    unshift \@INC, File::Spec->catdir( cwd(), 'lib' ); 
 }
 
 END {
 
    #########
-   # Restore working directory back to when enter script
+   # Restore working directory and \@INC back to when enter script
    #
+   \@INC = \@__restore_inc__;
    chdir $__restore_dir__;
 }
 
@@ -154,7 +163,7 @@ sub finish
        # Change generator spec to current operating system spec
        #
        elsif( $self->{options}->{fspec_out} ) {
-           $self->{$generator} = File::FileUtil->fspec2os( 
+           $self->{$generator} = File::AnySpec->fspec2os( 
                    $self->{File_Spec}, $self->{$generator} );
        }
        $self->{$package}->{file_out} = $self->{$generator};

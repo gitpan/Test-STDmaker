@@ -8,15 +8,13 @@ lib/Test/STDType/STD.pm
 lib/Test/STDType/Verify.pm
 lib/Test/STD/Check.pm
 lib/Test/STD/FileGen.pm
-lib/Test/STD/PerlSTD.pm
-lib/Test/STD/Scrub.pm
 lib/Test/STD/STD2167.pm
 lib/Test/STD/STDgen.pm
-lib/Test/STD/STDutil.pm
 t/Test/STDmaker/FileGenI.pm
 t/Test/STDmaker/STDmaker.d
 t/Test/STDmaker/STDmaker.pm
 t/Test/STDmaker/STDmaker.t
+t/Test/STDmaker/temp0.pl
 t/Test/STDmaker/tg0.pm
 t/Test/STDmaker/tg2.pm
 t/Test/STDmaker/tgA0.pm
@@ -36,6 +34,4 @@ t/Test/STDmaker/tgB2s.txt
 t/Test/STDmaker/tgC0.pm
 t/Test/STDmaker/tgC1.pm
 t/Test/STDmaker/tgC2.pm
-t/Test/STDmaker/lib/Test.pm
-t/Test/STDmaker/lib/Data/Dumper.pm
-bin/tg.pl
+bin/tmake.pl

@@ -12,12 +12,14 @@ use warnings;
 use warnings::register;
 
 use DataPort::FileType::FormDB;
-use File::FileUtil;
+use File::AnySpec;
 use Test::STD::STDutil;
+use File::Package;
+use File::Data;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.04';
-$DATE = '2003/06/21';
+$VERSION = '1.05';
+$DATE = '2003/07/04';
 
 ########
 # Inherit Test::STD::FileGen
@@ -55,7 +57,7 @@ sub start
              next;
         }
         elsif( $item eq 'Temp') {
-            $file_out = File::FileUtil->fspec2os($fspec_out, $self->{Temp});
+            $file_out = File::AnySpec->fspec2os($fspec_out, $self->{Temp});
             $dbh->encode_field( ['Temp', $file_out], \$fields);
             next;
         }
@@ -69,7 +71,7 @@ sub start
     foreach my $generator (@{$self->{generators}}) {
         $package = "Test::STDtype::" . $generator;        
         next if $package->can( 'file_out' );
-        $file_out = File::FileUtil->fspec2os($fspec_out, $self->{$generator});
+        $file_out = File::AnySpec->fspec2os($fspec_out, $self->{$generator});
         $dbh->encode_field( [$generator, $file_out], \$fields);
     }
 
@@ -159,8 +161,8 @@ EOF
     #  
     my ($error, $template_contents);
     if( $self->{Detail_Template} ) {
-        $error = File::FileUtil->load_package( $self->{Detail_Template} );
-        $template_contents = File::FileUtil->pm2data( $self->{Detail_Template} );
+        $error = File::Package->load_package( $self->{Detail_Template} );
+        $template_contents = File::Data->pm2data( $self->{Detail_Template} );
     }
     $template_contents = default_template() unless $template_contents;
 

@@ -10,8 +10,8 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE );
-$VERSION = '0.02';
-$DATE = '2003/06/21';
+$VERSION = '0.03';
+$DATE = '2003/07/04';
 $FILE = __FILE__;
 
 ########
@@ -40,7 +40,7 @@ $FILE = __FILE__;
 
  Version: 
 
- Date: 2003/06/21
+ Date: 2003/07/04
 
  Prepared for: General Public 
 
@@ -80,7 +80,7 @@ L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description 
 
 =head2 Test Plan
 
- T: 13^
+ T: 12^
 
 =head2 ok: 1
 
@@ -89,7 +89,8 @@ L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description 
      use vars qw($loaded);
      use File::Glob ':glob';
      use File::Copy;
-     use File::FileUtil;
+     use File::Package;
+     use File::SmartNL;
      use Test::STD::Scrub;
   
      #########
@@ -98,7 +99,8 @@ L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description 
      #
      my $restore_testerr = tech_config( 'Test.TESTERR', \*STDOUT );   
      my $internal_number = tech_config('Internal_Number');
-     my $fu = 'File::FileUtil';
+     my $fp = 'File::Package';
+     my $snl = 'File::SmartNL';
      my $s = 'Test::STD::Scrub';
      my $tgB0_pm = ($internal_number eq 'string') ? 'tgB0s.pm' : 'tgB0n.pm';
      my $tgB2_pm = ($internal_number eq 'string') ? 'tgB2s.pm' : 'tgB2n.pm';
@@ -136,7 +138,7 @@ L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description 
      #
  ^
   N: UUT not loaded^
-  A: $loaded = $fu->is_package_loaded('Test::STDmaker')^
+  A: $loaded = $fp->is_package_loaded('Test::STDmaker')^
   E:  ''^
  ok: 1^
 
@@ -145,28 +147,42 @@ L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description 
   N: Load UUT^
   R: L<Test::STDmaker/load [1]>^
   S: $loaded^
-  C: my $errors = $fu->load_package( 'Test::STDmaker' )^
+  C: my $errors = $fp->load_package( 'Test::STDmaker' )^
   A: $errors^
  SE: ''^
  ok: 2^
 
 =head2 ok: 3
 
- VO: ^
-  N: No pod errors^
-  R: L<Test::STDmaker/pod check [2]>^
-  A: $fu->pod_errors( 'Test::STDmaker')^
-  E: 0^
+ DO: ^
+  A: $snl->fin('tgA0.pm')^
+
+  C:
+     copy 'tgA0.pm', 'tgA1.pm';
+     my $tmaker = new Test::STDmaker(pm =>'t::Test::STDmaker::tgA1');
+     $tmaker->tmake( 'STD' );
+ ^
+
+  R:
+     L<Test::STDmaker/clean FormDB [1]>
+     L<Test::STDmaker/clean FormDB [2]>
+     L<Test::STDmaker/clean FormDB [3]>
+     L<Test::STDmaker/clean FormDB [4]>
+     L<Test::STDmaker/file_out option [1]>
+ ^
+  A: $s->scrub_date_version($snl->fin('tgA1.pm'))^
+  N: Clean STD pm with a todo list^
+  E: $s->scrub_date_version($snl->fin('tgA2.pm'))^
  ok: 3^
 
 =head2 ok: 4
 
  DO: ^
-  A: $fu->fin('tgA0.pm')^
+  A: $snl->fin('tgB0n.pm')^
 
   C:
-     copy 'tgA0.pm', 'tgA1.pm';
-     Test::STDmaker->fgenerate('t::Test::STDmaker::tgA1', {output=>'STD'});
+     copy $tgB0_pm, 'tgB1.pm';
+     $tmaker->tmake('STD', 'verify', {pm => 't::Test::STDmaker::tgB1'} );
  ^
 
   R:
@@ -176,46 +192,24 @@ L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description 
      L<Test::STDmaker/clean FormDB [4]>
      L<Test::STDmaker/file_out option [1]>
  ^
-  A: $s->scrub_date_version($fu->fin('tgA1.pm'))^
-  N: Clean STD pm with a todo list^
-  E: $s->scrub_date_version($fu->fin('tgA2.pm'))^
+  A: $s->scrub_date_version($snl->fin('tgB1.pm'))^
+  N: clean STD pm without a todo list^
+  E: $s->scrub_date_version($snl->fin($tgB2_pm))^
  ok: 4^
 
 =head2 ok: 5
 
- DO: ^
-  A: $fu->fin('tgB0n.pm')^
-
-  C:
-     copy $tgB0_pm, 'tgB1.pm';
-     Test::STDmaker->fgenerate('t::Test::STDmaker::tgB1', {output=>'STD verify'});
- ^
-
-  R:
-     L<Test::STDmaker/clean FormDB [1]>
-     L<Test::STDmaker/clean FormDB [2]>
-     L<Test::STDmaker/clean FormDB [3]>
-     L<Test::STDmaker/clean FormDB [4]>
-     L<Test::STDmaker/file_out option [1]>
- ^
-  A: $s->scrub_date_version($fu->fin('tgB1.pm'))^
-  N: clean STD pm without a todo list^
-  E: $s->scrub_date_version($fu->fin($tgB2_pm))^
- ok: 5^
-
-=head2 ok: 6
-
 
   C:
      $test_results = `perl tgB1.t`;
-     $fu->fout('tgB1.txt', $test_results);
+     $snl->fout('tgB1.txt', $test_results);
  ^
   A: $s->scrub_probe($s->scrub_file_line($test_results))^
   N: Generated and execute the test script^
-  E: $s->scrub_probe($s->scrub_file_line($fu->fin($tgB2_txt)))^
- ok: 6^
+  E: $s->scrub_probe($s->scrub_file_line($snl->fin($tgB2_txt)))^
+ ok: 5^
 
-=head2 ok: 7
+=head2 ok: 6
 
  VO: ^
 
@@ -227,7 +221,8 @@ L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description 
      @outputs = bsd_glob( 'tg*1.*' );
      unlink @outputs;
      copy 'tgA0.pm', 'tgA1.pm';
-     Test::STDmaker->fgenerate('t::Test::STDmaker::tgA1')
+     $tmaker = new Test::STDmaker( {pm => 't::Test::STDmaker::tgA1'} );
+     $tmaker->tmake();
  ^
 
   R:
@@ -237,12 +232,12 @@ L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description 
      L<Test::STDmaker/clean FormDB [4]>
      L<Test::STDmaker/STD PM POD [1]>
  ^
-  A: $s->scrub_date_version($fu->fin('tgA1.pm'))^
+  A: $s->scrub_date_version($snl->fin('tgA1.pm'))^
   N: Cleaned tgA1.pm^
-  E: $s->scrub_date_version($fu->fin('tgA2.pm'))^
- ok: 7^
+  E: $s->scrub_date_version($snl->fin('tgA2.pm'))^
+ ok: 6^
 
-=head2 ok: 8
+=head2 ok: 7
 
  VO: ^
 
@@ -253,14 +248,14 @@ L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description 
 
   C:
      $test_results = `perl tgA1.d`;
-     $fu->fout('tgA1.txt', $test_results);
+     $snl->fout('tgA1.txt', $test_results);
  ^
   A: $test_results^
   N: Demonstration script^
-  E: $fu->fin('tgA2A.txt')^
- ok: 8^
+  E: $snl->fin('tgA2A.txt')^
+ ok: 7^
 
-=head2 ok: 9
+=head2 ok: 8
 
  VO: ^
 
@@ -272,17 +267,17 @@ L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description 
 
   C:
      $test_results = `perl tgA1.t`;
-     $fu->fout('tgA1.txt', $test_results);
+     $snl->fout('tgA1.txt', $test_results);
  ^
   A: $s->scrub_probe($s->scrub_file_line($test_results))^
   N: Generated and execute the test script^
-  E: $s->scrub_probe($s->scrub_file_line($fu->fin('tgA2B.txt')))^
- ok: 9^
+  E: $s->scrub_probe($s->scrub_file_line($snl->fin('tgA2B.txt')))^
+ ok: 8^
 
-=head2 ok: 10
+=head2 ok: 9
 
  DO: ^
-  A: $fu->fin( 'tg0.pm'  )^
+  A: $snl->fin( 'tg0.pm'  )^
 
   C:
      #########
@@ -302,15 +297,15 @@ L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description 
      pop @cwd;
      pop @cwd;
      unshift @INC, File::Spec->catdir( @cwd );  # put UUT in lib path
-     Test::STDmaker->fgenerate('t::Test::STDmaker::tgA1', { output=>'demo', replace => 1});
+     $tmaker->tmake('demo', { pm => 't::Test::STDmaker::tgA1', replace => 1});
      shift @INC;
  ^
-  A: $s->scrub_date_version($fu->fin('tg1.pm'))^
+  A: $s->scrub_date_version($snl->fin('tg1.pm'))^
   N: Generate and replace a demonstration^
-  E: $s->scrub_date_version($fu->fin('tg2.pm'))^
- ok: 10^
+  E: $s->scrub_date_version($snl->fin('tg2.pm'))^
+ ok: 9^
 
-=head2 ok: 11
+=head2 ok: 10
 
 
   R:
@@ -327,7 +322,7 @@ L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description 
      open SAVEOUT, ">&STDOUT";
      use warnings;
      open STDOUT, ">tgA1.txt";
-     Test::STDmaker->fgenerate('t::Test::STDmaker::tgA1', { output=>'verify', run=>1, verbose=>1});
+     $tmaker->tmake('verify', { pm => 't::Test::STDmaker::tgA1', run => 1, test_verbose => 1});
      close STDOUT;
      open STDOUT, ">&SAVEOUT";
      
@@ -337,17 +332,17 @@ L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description 
      # Also the script name is absolute which is site dependent.
      # Take it out of the comparision.
      #
-     $test_results = $fu->fin('tgA1.txt');
+     $test_results = $snl->fin('tgA1.txt');
      $test_results =~ s/.*?1..9/1..9/; 
      $test_results =~ s/------.*?\n(\s*\()/\n $1/s;
-     $fu->fout('tgA1.txt',$test_results);
+     $snl->fout('tgA1.txt',$test_results);
  ^
   A: $s->scrub_probe($s->scrub_test_file($s->scrub_file_line($test_results)))^
   N: Generate and verbose test harness run test script^
-  E: $s->scrub_probe($s->scrub_test_file($s->scrub_file_line($fu->fin('tgA2C.txt'))))^
- ok: 11^
+  E: $s->scrub_probe($s->scrub_test_file($s->scrub_file_line($snl->fin('tgA2C.txt'))))^
+ ok: 10^
 
-=head2 ok: 12
+=head2 ok: 11
 
  VO: ^
 
@@ -364,7 +359,7 @@ L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description 
      use warnings;
      open STDOUT, ">tgA1.txt";
      $main::SIG{__WARN__}=\&__warn__; # kill pesty Format STDOUT and Format STDOUT_TOP redefined
-     Test::STDmaker->fgenerate('t::Test::STDmaker::tgA1', { output=>'verify', run=>1});
+     $tmaker->tmake('verify', { pm => 't::Test::STDmaker::tgA1', run => 1});
      $main::SIG{__WARN__}=\&CORE::warn;
      close STDOUT;
      open STDOUT, ">&SAVEOUT";
@@ -374,30 +369,30 @@ L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description 
      # Also with absolute file, the file is chopped off, and see
      # stuff that is site dependent. Need to take it out also.
      #
-     $test_results = $fu->fin('tgA1.txt');
+     $test_results = $snl->fin('tgA1.txt');
      $test_results =~ s/.*?FAILED/FAILED/; 
      $test_results =~ s/(\)\s*\n).*?\n(\s*\()/$1$2/s;
-     $fu->fout('TgA1.txt',$test_results);
+     $snl->fout('TgA1.txt',$test_results);
  ^
   A: $test_results^
   N: Generate and test harness run test script^
-  E: $fu->fin('tgA2D.txt')^
- ok: 12^
+  E: $snl->fin('tgA2D.txt')^
+ ok: 11^
 
-=head2 ok: 13
+=head2 ok: 12
 
  DO: ^
-  A: $fu->fin('tgC0.pm')^
+  A: $snl->fin('tgC0.pm')^
 
   C:
      copy 'tgC0.pm', 'tgC1.pm';
-     Test::STDmaker->fgenerate('t::Test::STDmaker::tgC1', {fspec_out=>'os2',  output=>'STD'});
+     $tmaker->tmake('STD', { pm => 't::Test::STDmaker::tgC1', fspec_out=>'os2'});
  ^
-  A: $s->scrub_date_version($fu->fin('tgC1.pm'))^
+  A: $s->scrub_date_version($snl->fin('tgC1.pm'))^
   N: Change File Spec^
   R: L<Test::STDmaker/fspec_out option [6]>^
-  E: $s->scrub_date_version($fu->fin('tgC2.pm'))^
- ok: 13^
+  E: $s->scrub_date_version($snl->fin('tgC2.pm'))^
+ ok: 12^
 
 
 
@@ -411,76 +406,74 @@ L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description 
 
   Requirement                                                      Test
  ---------------------------------------------------------------- ----------------------------------------------------------------
- L<Test::STDmaker/STD PM POD [1]>                                 L<t::Test::STDmaker::STDmaker/ok: 7>
+ L<Test::STDmaker/STD PM POD [1]>                                 L<t::Test::STDmaker::STDmaker/ok: 6>
+ L<Test::STDmaker/clean FormDB [1]>                               L<t::Test::STDmaker::STDmaker/ok: 3>
  L<Test::STDmaker/clean FormDB [1]>                               L<t::Test::STDmaker::STDmaker/ok: 4>
- L<Test::STDmaker/clean FormDB [1]>                               L<t::Test::STDmaker::STDmaker/ok: 5>
- L<Test::STDmaker/clean FormDB [1]>                               L<t::Test::STDmaker::STDmaker/ok: 7>
+ L<Test::STDmaker/clean FormDB [1]>                               L<t::Test::STDmaker::STDmaker/ok: 6>
+ L<Test::STDmaker/clean FormDB [2]>                               L<t::Test::STDmaker::STDmaker/ok: 3>
  L<Test::STDmaker/clean FormDB [2]>                               L<t::Test::STDmaker::STDmaker/ok: 4>
- L<Test::STDmaker/clean FormDB [2]>                               L<t::Test::STDmaker::STDmaker/ok: 5>
- L<Test::STDmaker/clean FormDB [2]>                               L<t::Test::STDmaker::STDmaker/ok: 7>
+ L<Test::STDmaker/clean FormDB [2]>                               L<t::Test::STDmaker::STDmaker/ok: 6>
+ L<Test::STDmaker/clean FormDB [3]>                               L<t::Test::STDmaker::STDmaker/ok: 3>
  L<Test::STDmaker/clean FormDB [3]>                               L<t::Test::STDmaker::STDmaker/ok: 4>
- L<Test::STDmaker/clean FormDB [3]>                               L<t::Test::STDmaker::STDmaker/ok: 5>
- L<Test::STDmaker/clean FormDB [3]>                               L<t::Test::STDmaker::STDmaker/ok: 7>
+ L<Test::STDmaker/clean FormDB [3]>                               L<t::Test::STDmaker::STDmaker/ok: 6>
+ L<Test::STDmaker/clean FormDB [4]>                               L<t::Test::STDmaker::STDmaker/ok: 3>
  L<Test::STDmaker/clean FormDB [4]>                               L<t::Test::STDmaker::STDmaker/ok: 4>
- L<Test::STDmaker/clean FormDB [4]>                               L<t::Test::STDmaker::STDmaker/ok: 5>
- L<Test::STDmaker/clean FormDB [4]>                               L<t::Test::STDmaker::STDmaker/ok: 7>
- L<Test::STDmaker/demo file [1]>                                  L<t::Test::STDmaker::STDmaker/ok: 8>
- L<Test::STDmaker/demo file [2]>                                  L<t::Test::STDmaker::STDmaker/ok: 8>
+ L<Test::STDmaker/clean FormDB [4]>                               L<t::Test::STDmaker::STDmaker/ok: 6>
+ L<Test::STDmaker/demo file [1]>                                  L<t::Test::STDmaker::STDmaker/ok: 7>
+ L<Test::STDmaker/demo file [2]>                                  L<t::Test::STDmaker::STDmaker/ok: 7>
+ L<Test::STDmaker/execute [3]>                                    L<t::Test::STDmaker::STDmaker/ok: 10>
  L<Test::STDmaker/execute [3]>                                    L<t::Test::STDmaker::STDmaker/ok: 11>
- L<Test::STDmaker/execute [3]>                                    L<t::Test::STDmaker::STDmaker/ok: 12>
- L<Test::STDmaker/execute [4]>                                    L<t::Test::STDmaker::STDmaker/ok: 11>
+ L<Test::STDmaker/execute [4]>                                    L<t::Test::STDmaker::STDmaker/ok: 10>
+ L<Test::STDmaker/file_out option [1]>                            L<t::Test::STDmaker::STDmaker/ok: 3>
  L<Test::STDmaker/file_out option [1]>                            L<t::Test::STDmaker::STDmaker/ok: 4>
- L<Test::STDmaker/file_out option [1]>                            L<t::Test::STDmaker::STDmaker/ok: 5>
- L<Test::STDmaker/fspec_out option [6]>                           L<t::Test::STDmaker::STDmaker/ok: 13>
+ L<Test::STDmaker/fspec_out option [6]>                           L<t::Test::STDmaker::STDmaker/ok: 12>
  L<Test::STDmaker/load [1]>                                       L<t::Test::STDmaker::STDmaker/ok: 2>
- L<Test::STDmaker/pod check [2]>                                  L<t::Test::STDmaker::STDmaker/ok: 3>
+ L<Test::STDmaker/verify file [1]>                                L<t::Test::STDmaker::STDmaker/ok: 10>
  L<Test::STDmaker/verify file [1]>                                L<t::Test::STDmaker::STDmaker/ok: 11>
- L<Test::STDmaker/verify file [1]>                                L<t::Test::STDmaker::STDmaker/ok: 12>
- L<Test::STDmaker/verify file [1]>                                L<t::Test::STDmaker::STDmaker/ok: 9>
+ L<Test::STDmaker/verify file [1]>                                L<t::Test::STDmaker::STDmaker/ok: 8>
+ L<Test::STDmaker/verify file [2]>                                L<t::Test::STDmaker::STDmaker/ok: 10>
  L<Test::STDmaker/verify file [2]>                                L<t::Test::STDmaker::STDmaker/ok: 11>
- L<Test::STDmaker/verify file [2]>                                L<t::Test::STDmaker::STDmaker/ok: 12>
- L<Test::STDmaker/verify file [2]>                                L<t::Test::STDmaker::STDmaker/ok: 9>
+ L<Test::STDmaker/verify file [2]>                                L<t::Test::STDmaker::STDmaker/ok: 8>
+ L<Test::STDmaker/verify file [3]>                                L<t::Test::STDmaker::STDmaker/ok: 10>
  L<Test::STDmaker/verify file [3]>                                L<t::Test::STDmaker::STDmaker/ok: 11>
- L<Test::STDmaker/verify file [3]>                                L<t::Test::STDmaker::STDmaker/ok: 12>
- L<Test::STDmaker/verify file [3]>                                L<t::Test::STDmaker::STDmaker/ok: 9>
- L<Test::STDmaker/verify file [4]>                                L<t::Test::STDmaker::STDmaker/ok: 11>
+ L<Test::STDmaker/verify file [3]>                                L<t::Test::STDmaker::STDmaker/ok: 8>
+ L<Test::STDmaker/verify file [4]>                                L<t::Test::STDmaker::STDmaker/ok: 10>
 
 
   Test                                                             Requirement
  ---------------------------------------------------------------- ----------------------------------------------------------------
+ L<t::Test::STDmaker::STDmaker/ok: 10>                            L<Test::STDmaker/execute [3]>
+ L<t::Test::STDmaker::STDmaker/ok: 10>                            L<Test::STDmaker/execute [4]>
+ L<t::Test::STDmaker::STDmaker/ok: 10>                            L<Test::STDmaker/verify file [1]>
+ L<t::Test::STDmaker::STDmaker/ok: 10>                            L<Test::STDmaker/verify file [2]>
+ L<t::Test::STDmaker::STDmaker/ok: 10>                            L<Test::STDmaker/verify file [3]>
+ L<t::Test::STDmaker::STDmaker/ok: 10>                            L<Test::STDmaker/verify file [4]>
  L<t::Test::STDmaker::STDmaker/ok: 11>                            L<Test::STDmaker/execute [3]>
- L<t::Test::STDmaker::STDmaker/ok: 11>                            L<Test::STDmaker/execute [4]>
  L<t::Test::STDmaker::STDmaker/ok: 11>                            L<Test::STDmaker/verify file [1]>
  L<t::Test::STDmaker::STDmaker/ok: 11>                            L<Test::STDmaker/verify file [2]>
  L<t::Test::STDmaker::STDmaker/ok: 11>                            L<Test::STDmaker/verify file [3]>
- L<t::Test::STDmaker::STDmaker/ok: 11>                            L<Test::STDmaker/verify file [4]>
- L<t::Test::STDmaker::STDmaker/ok: 12>                            L<Test::STDmaker/execute [3]>
- L<t::Test::STDmaker::STDmaker/ok: 12>                            L<Test::STDmaker/verify file [1]>
- L<t::Test::STDmaker::STDmaker/ok: 12>                            L<Test::STDmaker/verify file [2]>
- L<t::Test::STDmaker::STDmaker/ok: 12>                            L<Test::STDmaker/verify file [3]>
- L<t::Test::STDmaker::STDmaker/ok: 13>                            L<Test::STDmaker/fspec_out option [6]>
+ L<t::Test::STDmaker::STDmaker/ok: 12>                            L<Test::STDmaker/fspec_out option [6]>
  L<t::Test::STDmaker::STDmaker/ok: 2>                             L<Test::STDmaker/load [1]>
- L<t::Test::STDmaker::STDmaker/ok: 3>                             L<Test::STDmaker/pod check [2]>
+ L<t::Test::STDmaker::STDmaker/ok: 3>                             L<Test::STDmaker/clean FormDB [1]>
+ L<t::Test::STDmaker::STDmaker/ok: 3>                             L<Test::STDmaker/clean FormDB [2]>
+ L<t::Test::STDmaker::STDmaker/ok: 3>                             L<Test::STDmaker/clean FormDB [3]>
+ L<t::Test::STDmaker::STDmaker/ok: 3>                             L<Test::STDmaker/clean FormDB [4]>
+ L<t::Test::STDmaker::STDmaker/ok: 3>                             L<Test::STDmaker/file_out option [1]>
  L<t::Test::STDmaker::STDmaker/ok: 4>                             L<Test::STDmaker/clean FormDB [1]>
  L<t::Test::STDmaker::STDmaker/ok: 4>                             L<Test::STDmaker/clean FormDB [2]>
  L<t::Test::STDmaker::STDmaker/ok: 4>                             L<Test::STDmaker/clean FormDB [3]>
  L<t::Test::STDmaker::STDmaker/ok: 4>                             L<Test::STDmaker/clean FormDB [4]>
  L<t::Test::STDmaker::STDmaker/ok: 4>                             L<Test::STDmaker/file_out option [1]>
- L<t::Test::STDmaker::STDmaker/ok: 5>                             L<Test::STDmaker/clean FormDB [1]>
- L<t::Test::STDmaker::STDmaker/ok: 5>                             L<Test::STDmaker/clean FormDB [2]>
- L<t::Test::STDmaker::STDmaker/ok: 5>                             L<Test::STDmaker/clean FormDB [3]>
- L<t::Test::STDmaker::STDmaker/ok: 5>                             L<Test::STDmaker/clean FormDB [4]>
- L<t::Test::STDmaker::STDmaker/ok: 5>                             L<Test::STDmaker/file_out option [1]>
- L<t::Test::STDmaker::STDmaker/ok: 7>                             L<Test::STDmaker/STD PM POD [1]>
- L<t::Test::STDmaker::STDmaker/ok: 7>                             L<Test::STDmaker/clean FormDB [1]>
- L<t::Test::STDmaker::STDmaker/ok: 7>                             L<Test::STDmaker/clean FormDB [2]>
- L<t::Test::STDmaker::STDmaker/ok: 7>                             L<Test::STDmaker/clean FormDB [3]>
- L<t::Test::STDmaker::STDmaker/ok: 7>                             L<Test::STDmaker/clean FormDB [4]>
- L<t::Test::STDmaker::STDmaker/ok: 8>                             L<Test::STDmaker/demo file [1]>
- L<t::Test::STDmaker::STDmaker/ok: 8>                             L<Test::STDmaker/demo file [2]>
- L<t::Test::STDmaker::STDmaker/ok: 9>                             L<Test::STDmaker/verify file [1]>
- L<t::Test::STDmaker::STDmaker/ok: 9>                             L<Test::STDmaker/verify file [2]>
- L<t::Test::STDmaker::STDmaker/ok: 9>                             L<Test::STDmaker/verify file [3]>
+ L<t::Test::STDmaker::STDmaker/ok: 6>                             L<Test::STDmaker/STD PM POD [1]>
+ L<t::Test::STDmaker::STDmaker/ok: 6>                             L<Test::STDmaker/clean FormDB [1]>
+ L<t::Test::STDmaker::STDmaker/ok: 6>                             L<Test::STDmaker/clean FormDB [2]>
+ L<t::Test::STDmaker::STDmaker/ok: 6>                             L<Test::STDmaker/clean FormDB [3]>
+ L<t::Test::STDmaker::STDmaker/ok: 6>                             L<Test::STDmaker/clean FormDB [4]>
+ L<t::Test::STDmaker::STDmaker/ok: 7>                             L<Test::STDmaker/demo file [1]>
+ L<t::Test::STDmaker::STDmaker/ok: 7>                             L<Test::STDmaker/demo file [2]>
+ L<t::Test::STDmaker::STDmaker/ok: 8>                             L<Test::STDmaker/verify file [1]>
+ L<t::Test::STDmaker::STDmaker/ok: 8>                             L<Test::STDmaker/verify file [2]>
+ L<t::Test::STDmaker::STDmaker/ok: 8>                             L<Test::STDmaker/verify file [3]>
 
 
 =cut
@@ -603,14 +596,15 @@ Demo: STDmaker.d^
 Verify: STDmaker.t^
 
 
- T: 13^
+ T: 12^
 
 
  C:
     use vars qw($loaded);
     use File::Glob ':glob';
     use File::Copy;
-    use File::FileUtil;
+    use File::Package;
+    use File::SmartNL;
     use Test::STD::Scrub;
  
     #########
@@ -620,7 +614,8 @@ Verify: STDmaker.t^
     my $restore_testerr = tech_config( 'Test.TESTERR', \*STDOUT );   
 
     my $internal_number = tech_config('Internal_Number');
-    my $fu = 'File::FileUtil';
+    my $fp = 'File::Package';
+    my $snl = 'File::SmartNL';
     my $s = 'Test::STD::Scrub';
     my $tgB0_pm = ($internal_number eq 'string') ? 'tgB0s.pm' : 'tgB0n.pm';
     my $tgB2_pm = ($internal_number eq 'string') ? 'tgB2s.pm' : 'tgB2n.pm';
@@ -663,31 +658,25 @@ VO: ^
 ^
 
  N: UUT not loaded^
- A: $loaded = $fu->is_package_loaded('Test::STDmaker')^
+ A: $loaded = $fp->is_package_loaded('Test::STDmaker')^
  E:  ''^
 ok: 1^
 
  N: Load UUT^
  R: L<Test::STDmaker/load [1]>^
  S: $loaded^
- C: my $errors = $fu->load_package( 'Test::STDmaker' )^
+ C: my $errors = $fp->load_package( 'Test::STDmaker' )^
  A: $errors^
 SE: ''^
 ok: 2^
 
-VO: ^
- N: No pod errors^
- R: L<Test::STDmaker/pod check [2]>^
- A: $fu->pod_errors( 'Test::STDmaker')^
- E: 0^
-ok: 3^
-
 DO: ^
- A: $fu->fin('tgA0.pm')^
+ A: $snl->fin('tgA0.pm')^
 
  C:
     copy 'tgA0.pm', 'tgA1.pm';
-    Test::STDmaker->fgenerate('t::Test::STDmaker::tgA1', {output=>'STD'});
+    my $tmaker = new Test::STDmaker(pm =>'t::Test::STDmaker::tgA1');
+    $tmaker->tmake( 'STD' );
 ^
 
 
@@ -699,17 +688,17 @@ DO: ^
     L<Test::STDmaker/file_out option [1]>
 ^
 
- A: $s->scrub_date_version($fu->fin('tgA1.pm'))^
+ A: $s->scrub_date_version($snl->fin('tgA1.pm'))^
  N: Clean STD pm with a todo list^
- E: $s->scrub_date_version($fu->fin('tgA2.pm'))^
-ok: 4^
+ E: $s->scrub_date_version($snl->fin('tgA2.pm'))^
+ok: 3^
 
 DO: ^
- A: $fu->fin('tgB0n.pm')^
+ A: $snl->fin('tgB0n.pm')^
 
  C:
     copy $tgB0_pm, 'tgB1.pm';
-    Test::STDmaker->fgenerate('t::Test::STDmaker::tgB1', {output=>'STD verify'});
+    $tmaker->tmake('STD', 'verify', {pm => 't::Test::STDmaker::tgB1'} );
 ^
 
 
@@ -721,21 +710,21 @@ DO: ^
     L<Test::STDmaker/file_out option [1]>
 ^
 
- A: $s->scrub_date_version($fu->fin('tgB1.pm'))^
+ A: $s->scrub_date_version($snl->fin('tgB1.pm'))^
  N: clean STD pm without a todo list^
- E: $s->scrub_date_version($fu->fin($tgB2_pm))^
-ok: 5^
+ E: $s->scrub_date_version($snl->fin($tgB2_pm))^
+ok: 4^
 
 
  C:
     $test_results = `perl tgB1.t`;
-    $fu->fout('tgB1.txt', $test_results);
+    $snl->fout('tgB1.txt', $test_results);
 ^
 
  A: $s->scrub_probe($s->scrub_file_line($test_results))^
  N: Generated and execute the test script^
- E: $s->scrub_probe($s->scrub_file_line($fu->fin($tgB2_txt)))^
-ok: 6^
+ E: $s->scrub_probe($s->scrub_file_line($snl->fin($tgB2_txt)))^
+ok: 5^
 
 VO: ^
 
@@ -747,7 +736,8 @@ VO: ^
     @outputs = bsd_glob( 'tg*1.*' );
     unlink @outputs;
     copy 'tgA0.pm', 'tgA1.pm';
-    Test::STDmaker->fgenerate('t::Test::STDmaker::tgA1')
+    $tmaker = new Test::STDmaker( {pm => 't::Test::STDmaker::tgA1'} );
+    $tmaker->tmake();
 ^
 
 
@@ -759,10 +749,10 @@ VO: ^
     L<Test::STDmaker/STD PM POD [1]>
 ^
 
- A: $s->scrub_date_version($fu->fin('tgA1.pm'))^
+ A: $s->scrub_date_version($snl->fin('tgA1.pm'))^
  N: Cleaned tgA1.pm^
- E: $s->scrub_date_version($fu->fin('tgA2.pm'))^
-ok: 7^
+ E: $s->scrub_date_version($snl->fin('tgA2.pm'))^
+ok: 6^
 
 VO: ^
 
@@ -774,13 +764,13 @@ VO: ^
 
  C:
     $test_results = `perl tgA1.d`;
-    $fu->fout('tgA1.txt', $test_results);
+    $snl->fout('tgA1.txt', $test_results);
 ^
 
  A: $test_results^
  N: Demonstration script^
- E: $fu->fin('tgA2A.txt')^
-ok: 8^
+ E: $snl->fin('tgA2A.txt')^
+ok: 7^
 
 VO: ^
 
@@ -793,16 +783,16 @@ VO: ^
 
  C:
     $test_results = `perl tgA1.t`;
-    $fu->fout('tgA1.txt', $test_results);
+    $snl->fout('tgA1.txt', $test_results);
 ^
 
  A: $s->scrub_probe($s->scrub_file_line($test_results))^
  N: Generated and execute the test script^
- E: $s->scrub_probe($s->scrub_file_line($fu->fin('tgA2B.txt')))^
-ok: 9^
+ E: $s->scrub_probe($s->scrub_file_line($snl->fin('tgA2B.txt')))^
+ok: 8^
 
 DO: ^
- A: $fu->fin( 'tg0.pm'  )^
+ A: $snl->fin( 'tg0.pm'  )^
 
  C:
     #########
@@ -822,14 +812,14 @@ DO: ^
     pop @cwd;
     pop @cwd;
     unshift @INC, File::Spec->catdir( @cwd );  # put UUT in lib path
-    Test::STDmaker->fgenerate('t::Test::STDmaker::tgA1', { output=>'demo', replace => 1});
+    $tmaker->tmake('demo', { pm => 't::Test::STDmaker::tgA1', replace => 1});
     shift @INC;
 ^
 
- A: $s->scrub_date_version($fu->fin('tg1.pm'))^
+ A: $s->scrub_date_version($snl->fin('tg1.pm'))^
  N: Generate and replace a demonstration^
- E: $s->scrub_date_version($fu->fin('tg2.pm'))^
-ok: 10^
+ E: $s->scrub_date_version($snl->fin('tg2.pm'))^
+ok: 9^
 
 
  R:
@@ -847,7 +837,7 @@ ok: 10^
     open SAVEOUT, ">&STDOUT";
     use warnings;
     open STDOUT, ">tgA1.txt";
-    Test::STDmaker->fgenerate('t::Test::STDmaker::tgA1', { output=>'verify', run=>1, verbose=>1});
+    $tmaker->tmake('verify', { pm => 't::Test::STDmaker::tgA1', run => 1, test_verbose => 1});
     close STDOUT;
     open STDOUT, ">&SAVEOUT";
     
@@ -857,16 +847,16 @@ ok: 10^
     # Also the script name is absolute which is site dependent.
     # Take it out of the comparision.
     #
-    $test_results = $fu->fin('tgA1.txt');
+    $test_results = $snl->fin('tgA1.txt');
     $test_results =~ s/.*?1..9/1..9/; 
     $test_results =~ s/------.*?\n(\s*\()/\n $1/s;
-    $fu->fout('tgA1.txt',$test_results);
+    $snl->fout('tgA1.txt',$test_results);
 ^
 
  A: $s->scrub_probe($s->scrub_test_file($s->scrub_file_line($test_results)))^
  N: Generate and verbose test harness run test script^
- E: $s->scrub_probe($s->scrub_test_file($s->scrub_file_line($fu->fin('tgA2C.txt'))))^
-ok: 11^
+ E: $s->scrub_probe($s->scrub_test_file($s->scrub_file_line($snl->fin('tgA2C.txt'))))^
+ok: 10^
 
 VO: ^
 
@@ -884,7 +874,7 @@ VO: ^
     use warnings;
     open STDOUT, ">tgA1.txt";
     $main::SIG{__WARN__}=\&__warn__; # kill pesty Format STDOUT and Format STDOUT_TOP redefined
-    Test::STDmaker->fgenerate('t::Test::STDmaker::tgA1', { output=>'verify', run=>1});
+    $tmaker->tmake('verify', { pm => 't::Test::STDmaker::tgA1', run => 1});
     $main::SIG{__WARN__}=\&CORE::warn;
     close STDOUT;
     open STDOUT, ">&SAVEOUT";
@@ -895,30 +885,30 @@ VO: ^
     # Also with absolute file, the file is chopped off, and see
     # stuff that is site dependent. Need to take it out also.
     #
-    $test_results = $fu->fin('tgA1.txt');
+    $test_results = $snl->fin('tgA1.txt');
     $test_results =~ s/.*?FAILED/FAILED/; 
     $test_results =~ s/(\)\s*\n).*?\n(\s*\()/$1$2/s;
-    $fu->fout('TgA1.txt',$test_results);
+    $snl->fout('TgA1.txt',$test_results);
 ^
 
  A: $test_results^
  N: Generate and test harness run test script^
- E: $fu->fin('tgA2D.txt')^
-ok: 12^
+ E: $snl->fin('tgA2D.txt')^
+ok: 11^
 
 DO: ^
- A: $fu->fin('tgC0.pm')^
+ A: $snl->fin('tgC0.pm')^
 
  C:
     copy 'tgC0.pm', 'tgC1.pm';
-    Test::STDmaker->fgenerate('t::Test::STDmaker::tgC1', {fspec_out=>'os2',  output=>'STD'});
+    $tmaker->tmake('STD', { pm => 't::Test::STDmaker::tgC1', fspec_out=>'os2'});
 ^
 
- A: $s->scrub_date_version($fu->fin('tgC1.pm'))^
+ A: $s->scrub_date_version($snl->fin('tgC1.pm'))^
  N: Change File Spec^
  R: L<Test::STDmaker/fspec_out option [6]>^
- E: $s->scrub_date_version($fu->fin('tgC2.pm'))^
-ok: 13^
+ E: $s->scrub_date_version($snl->fin('tgC2.pm'))^
+ok: 12^
 
 
  C:
@@ -944,25 +934,25 @@ ok: 13^
 See_Also:
 \over 4
 
-\=item L<STD Automated Generation|Test::STDmaker>
+=item L<STD Automated Generation|Test::STDmaker>
 
-\=item L<File::FileUtil|File::FileUtil>
+=item L<File::FileUtil|File::FileUtil>
 
-\=item L<Test::STD::STDutil|Test::STD::STDutil>
+=item L<Test::STD::STDutil|Test::STD::STDutil>
 
-\=item L<Test::STD::Scrub|Test::STD::Scrub>
+=item L<Test::STD::Scrub|Test::STD::Scrub>
 
-\=item L<DataPort::FileType::FormDB|DataPort::FileType::FormDB>
+=item L<DataPort::FileType::FormDB|DataPort::FileType::FormDB>
 
-\=item L<Software Development Standard|Docs::US_DOD::STD2167A>
+=item L<Software Development Standard|Docs::US_DOD::STD2167A>
 
-\=item L<Specification Practices|Docs::US_DOD::STD490A>
+=item L<Specification Practices|Docs::US_DOD::STD490A>
 
-\=item L<STD DID|US_DOD::STD>
+=item L<STD DID|US_DOD::STD>
 
-\=item L<Test Harness|Test::Harness>
+=item L<Test Harness|Test::Harness>
 
-\=back
+=back
 ^
 
 
@@ -974,15 +964,15 @@ and use in source and binary forms, with or
 without modification, provided that the 
 following conditions are met: 
 
-\=over 4
+=over 4
 
-\=item 1
+=item 1
 
 Redistributions of source code, modified or unmodified
 must retain the above copyright notice, this list of
 conditions and the following disclaimer. 
 
-\=item 2
+=item 2
 
 Redistributions in binary form must 
 reproduce the above copyright notice,
@@ -991,7 +981,7 @@ disclaimer in the documentation and/or
 other materials provided with the
 distribution.
 
-\=back
+=back
 
 SOFTWARE DIAMONDS, http://www.SoftwareDiamonds.com,
 PROVIDES THIS SOFTWARE 
