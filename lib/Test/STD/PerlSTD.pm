@@ -10,8 +10,8 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.07';
-$DATE = '2004/05/18';
+$VERSION = '1.08';
+$DATE = '2004/05/19';
 
 1
 
@@ -19,7 +19,7 @@ __END__
 
 =head1 NAME
 
-STD::PerlSTD - General Perl Software Test Description (STD)
+Test::STD::PerlSTD - General Perl Software Test Description (STD)
 
 =head1 TITLE PAGE
 

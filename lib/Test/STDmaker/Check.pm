@@ -16,8 +16,8 @@ use vars qw($VERSION $DATE);
 use Cwd;
 use File::AnySpec;
 
-$VERSION = '1.1';
-$DATE = '2004/05/18';
+$VERSION = '1.11';
+$DATE = '2004/05/19';
 
 ########
 # Inherit classes
@@ -371,7 +371,6 @@ BEGIN {
     use Cwd;
     use FindBin;
     use File::Spec;
-    use Test::Tech qw( finish is_skip ok plan skip skip_tests tech_config);
     use vars qw(%__tests__ $__test__ $__restore_dir__);
     
     $__test__ = 0;
@@ -397,6 +396,22 @@ BEGIN {
     # modules in the same directory as this test script.
     #
     use lib \$FindBin::Bin;
+
+    ########
+    # Using Test::Tech, a very light layer over the module "Test" to
+    # conduct the tests.  The big feature of the "Test::Tech: module
+    # is that it takes expected and actual references and stringify
+    # them by using "Data::Secs2" before passing them to the "&Test::ok"
+    # Thus, almost any time of Perl data structures may be
+    # compared by passing a reference to them to Test::Tech::ok
+    #
+    # Create the test plan by supplying the number of tests
+    # and the todo tests
+    #
+    require Test::Tech;
+    Test::Tech->import( qw(finish is_skip ok ok_sub plan skip 
+                          skip_sub skip_tests tech_config) );
+
 }
 
 END {

@@ -15,8 +15,8 @@ use File::AnySpec;
 use File::Where;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.14';
-$DATE = '2004/05/18';
+$VERSION = '1.15';
+$DATE = '2004/05/19';
 
 use vars qw(@ISA @EXPORT_OK);
 @ISA = qw();
@@ -419,9 +419,9 @@ Test::STDmaker - generate test scripts, demo scripts from a test description sho
  $std->tmake( \%options  );
 
  ######
- # Internal Methods
+ # Internal (Private) Methods
  #
- $success = $std->build($output_type);
+ $success = $std->build($std_driver_class);
  $success = $std->generate();
  $success = $std->print($file_out);
 
@@ -945,18 +945,15 @@ data as follows:
  A: actual-expression 
 
 This is the actual Perl expression under test and used for
-the following:
-
- L<STD 4.x.y.3 Test inputs.|Docs::US_DOD::STD/4.x.y.3 Test inputs.> 
+the L<STD 4.x.y.3 Test inputs.|Docs::US_DOD::STD/4.x.y.3 Test inputs.> 
 
 =head2 E
  
  E: expected-expression 
 
 This is the expected results. This should be raw Perl
-values and used for the following:
-
- L<STD 4.x.y.4 Expected test results.|Docs::US_DOD::STD/4.x.y.4 Expected test results.>
+values and used for the 
+<STD 4.x.y.4 Expected test results.|Docs::US_DOD::STD/4.x.y.4 Expected test results.>
 
 This field triggers processing of the previous fields as a test.
 It must always be the last field of a test.
@@ -967,9 +964,8 @@ On failure, testing continues.
   C: code
 
 The C<code> field data is free form Perl code.
-This field is generally used for the following:
-
- L<STD 4.x.y.2 Prerequisite conditions.|Docs::US_DOD::STD/4.x.y.2 Prerequisite conditions.> 
+This field is generally used for 
+L<STD 4.x.y.2 Prerequisite conditions.|Docs::US_DOD::STD/4.x.y.2 Prerequisite conditions.> 
 
 =head2 DO
 
@@ -1023,10 +1019,8 @@ but will not print it out.
 The I<requirement_data> cites a binding requirement
 that is verified by the test.
 The test software uses the I<requirement_data> to automatically generate
-tracebility information that conforms to the
-following:
-
- L<STD 4.x.y.1 Requirements addressed.|STD/Docs::US_DOD::4.x.y.1 Requirements addressed.> 
+tracebility information that conforms to
+L<STD 4.x.y.1 Requirements addressed.|STD/Docs::US_DOD::4.x.y.1 Requirements addressed.> 
 
 Many times the relationship between binding requirements and
 the a test is vague and can even stretch the imagination.
@@ -1120,7 +1114,7 @@ The subroutine adds the following to the object hash, C<$std>:
  hash
  key     description 
  ----------------------------------------------------------
- std_db  ordered name,data pairs from from $std_pm database
+ std_db  ordered name,data pairs from the $std_pm database
  Record  complete $std_pm database record
  std_pm  $std_pm;
  Date    date using $std->get_date()
@@ -1139,35 +1133,17 @@ first the C<generate> method and then the C<print> method
 herein which in turn use the methods from the C<Test::STDmaker::Check>
 class.
 
-=head2 find_t_roots subroutine
+=head2 find_t_roots
 
  @t_path = find_t_paths()
 
-This method operates on the assumption that the test files are a subtree to
+The C<find_t_roots> subroutine operates on the assumption that the 
+test files are a subtree to
 a directory named I<t> and the I<t> directories are on the same level as
 the last directory of each directory tree specified in I<@INC>.
 If this assumption is not true, this method most likely will not behave
 very well.
   
-=head2 generate
-
- $sucess = $std->generate();
-
-The c<generat> is the workhose. It takes each ordered
-C<$name,$data> pair from the C<@{$std->{std_pm}}> array
-and uses the execute the method C<$name> with C<$data>.
-The C<$name> variable are the C<A> C<E> and so on, 
-L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description Fields>
-with its associated data.
-The method definitions varies depending upon the class that inherits
-the C<Test::STDmaker> class.  Typically the child class is one of the
-following:
-
- C<Test::STDmaker::Check>
- C<Test::STDmaker::Demo>
- C<Test::STDmaker::STD>
- C<Test::STDmaker::Verify>
-
 =head2 get_date
 
  $date = $std->get_date();
@@ -1194,12 +1170,11 @@ based on the targets as follows:
  Demo      generates demo script
  Verify    generates a test script
  STD       generates and replaces the STD PM POD
- generate
- test
+ Check     checks test description database
 
 No target is the same as the C<all> target.
 
-The C<@options]> are as follows:
+The C<@options> are as follows:
 
 =over 4
 
@@ -1273,20 +1248,41 @@ and the driver packages in the C<Test::STDmaker::> repository.
 
 =head2 build
 
- $success = $std->build($output_type);
+ $success = $std->build($std_driver_class);
 
 The C<$output_type> is the name of a driver in the
 C<Test::STDmaker> repository. 
 The C<build> subroutine takes C<$output_type> and
-recast the C<$std> class to C<Test::STDmaker::$output_type>.
+recast the C<$std> class to C<Test::STDmaker::$std_driver_class>
+driver class
 The C<bless> subroutine does do class recasting as follows:
 
  $std_driver = bless $std, Test::STDmaker::$output_type
 
+Typically the recasted class is one of the following:
+
+=over 4
+
+=item L<Test::STDmaker::Check|Test::STDmaker::Check>
+
+=item L<Test::STDmaker::Demo|Test::STDmaker::Demo>
+
+=item L<Test::STDmaker::STD|Test::STDmaker::STD>
+
+=item L<Test::STDmaker::Verify|Test::STDmaker::Verify>
+
+=back
+
+New drivers class may be added by including them in
+the C<Test::STDmaker::> repository and thus expand
+the above list. 
+The C<Test::STDmaker> methods will automatically find the new 
+driver classes.
+
 The C<build> subroutine then uses the recast object to
 call the C<generate> method followed by the C<print> methods
 described below. 
-Since the object is now of the C<Test::STDmaker::$output_type>
+Since the object is now of the C<Test::STDmaker::$std_driver_class>
 class which inherits the C<Test::STDmaker> class,
 it used the C<&Test::STDmaker::generate> and C<&Test::STDmaker::print>
 methods to communicate with the methods in the 
@@ -1296,20 +1292,12 @@ C<Test::STDmaker::$output_type> class.
 
  $sucess = $std_driver->generate();
 
-The c<generat> is the workhose. It takes each ordered
+The c<generate> subroutine is the work horse. 
+It takes each ordered
 C<$name,$data> pair from the C<@{$std->{std_pm}}> array
-and uses the execute the method C<$name> with C<$data>.
-The C<$name> variable are the C<A> C<E> and so on, 
-L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description Fields>
-with its associated data.
-The method definitions varies depending upon the class that inherits
-the C<Test::STDmaker> class.  Typically the child class is one of the
-following:
-
- C<Test::STDmaker::Check>
- C<Test::STDmaker::Demo>
- C<Test::STDmaker::STD>
- C<Test::STDmaker::Verify>
+and executes the method C<$name> with C<$name,$data> as arguments.
+The C<$name> variable is the test description short hands C<A> C<E> and so on, 
+L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Database Test Description Fields>.
 
 =head2 print
 
@@ -1501,7 +1489,7 @@ fields.
 
 =back
 
-The C<Test::STDmaker> package methos will generate fields for merging with
+The C<Test::STDmaker> package methods will generate fields for merging with
 the template file as follows:
 
 =over
@@ -1550,7 +1538,8 @@ This template is in the L<STD|Docs::US_DOD::STD> format
 as tailored by L<STDtailor|STD::STDtailor>.
 
 =head2 Options requirements
-The C<fgenerate> option processing requirements are as follows:
+
+The C<tmake> option processing requirements are as follows:
 
 =over 
 
@@ -1594,7 +1583,7 @@ Specifying the options
  { run => 1, test_verbose => 1 }
 
 with the c<@targets> containg C<Verify>, 
-shall[4] cause the C<fgenerate> method to run the
+shall[4] cause the C<tmake> method to run the
 C<Test::Harness> with the test script in verbose mode.
 
 =item fspec_out option [5]
@@ -3503,6 +3492,10 @@ ANY WAY OUT OF THE POSSIBILITY OF SUCH DAMAGE.
 =item L<Test::Tech|Test::Tech> 
 
 =item L<Test|Test> 
+
+=item L<File::Package|File::Package>
+
+=item L<Pod::Checker|Pod::Checker>
 
 =item L<Test::Harness|Test::Harness> 
 

@@ -18,8 +18,8 @@ use File::Package;
 use Tie::Form;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.09';
-$DATE = '2004/05/18';
+$VERSION = '1.1';
+$DATE = '2004/05/19';
 
 ########
 # Inherit classes
@@ -446,8 +446,7 @@ __END__
 
 =head1 NAME
 
-Test::STDmaker::STD - generates a STD POD from the STD database
-
+Test::STDmaker::STD - generates a STD POD from a test description short hand
 
 =head1 DESCRIPTION
 

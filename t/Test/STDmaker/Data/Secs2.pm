@@ -11,8 +11,8 @@ use warnings::register;
 use attributes;
 
 use vars qw($VERSION $DATE $FILE);
-$VERSION = '1.23';
-$DATE = '2004/05/14';
+$VERSION = '1.24';
+$DATE = '2004/05/19';
 $FILE = __FILE__;
 
 use Data::SecsPack 0.04;
@@ -54,11 +54,6 @@ sub new
 }
 
 
-######
-# WARNING: For some unknow reason that needs investigation
-# the use of SelfLoader causes massive failures, particular
-# in the regards to interface with SecsPack
-#
 # use SelfLoader;
 
 # 1
@@ -896,7 +891,7 @@ sub secs_elementify
                  $body .= ' ' . (join ' ' , @$cells) if @$cells;
              }
              else {
-                 $body .= ' ' . $cells if defined($cells);
+                 $body .= ' ' . $cells if $cells;
              }
          }
          elsif ($format =~ /[AJB]/) {
@@ -1214,10 +1209,10 @@ sub transify
      $event .= Dumper(@open_list, [$list_location, $list_close_char, $item_count, $counted_list] );
 
 EVENT:
+    $event .= "\tSubroutine: Data::Secs2::transify $VERSION\n";
     $event .= "\tascii_secs:\n" . $ascii_secs;
     $event .= "\tSECS object:\n";
     $event .= Dumper(@secs_obj);
-    $event .= "\tSubroutine: Data::Secs2::transify $VERSION\n";
     if($options->{warnings} ) {
         warn($event);
     }
@@ -1318,7 +1313,7 @@ nested list between machines is SEMI E5-94.
 
 The L<Data::Secs2|Data::Secs2> program module
 facilitates the secsification of the nested data in accordance with 
-SEMI, http://www.semi.org,  E5-94,
+L<SEMI|http://www.semiconductor-intl.org> E5-94,
 Semiconductor Equipment Communications Standard 2 (SECS-II),
 pronounced 'sex two' with gussto and a perverted smile. 
 The SEMI E4 SECS-I standard addresses transmitting SECSII messages from one machine to
@@ -1371,7 +1366,7 @@ Tony Blair not only SECS-II but SECS-I and High-Speed SECS.
 
 The nested data linear format used by the
 L<Data::Secs2|Data::Secs2> suroutines is in accordance with 
-SEMI, http://www.semi.org, E5-94,
+L<SEMI|http://http://www.semiconductor-intl.org> E5-94,
 Semiconductor Equipment Communications Standard 2 (SECS-II),
 pronounced 'sex two' with gussto and a perverted smile. 
 This industry standard is copyrighted and cannot be
@@ -1387,7 +1382,8 @@ from
  Mountain View, CA 94043-4080 USA
  (415) 964-5111
  Easylink: 62819945
- http://www.semi.org
+ http://www.semiconductor-intl.org
+ http://www.reed-electronics.com/semiconductor/
 
 Other important SEMI standards address message transfer protocol of SECSII messages.
 They are the SEMI E4 SECS-I for transmitting SECSII messages from one machine to
@@ -2261,8 +2257,206 @@ follow on the next lines as comments. For example,
  my $test_data7 = 'a50150010541004105' . unpack('H*','ARRAY') . 
                   'a5034e2d19' .  'a90402000400' . 'b104000186a0';
 
+ #######
+ # multicell numberics, Perl Secs Object
+ #
+ my $test_data8 =
+ 'U1[1] 80
+ L[5]
+   A[0]
+   A[5] ARRAY
+   U1[3] 78 45 25
+   U2[2] 512 1024
+   U4[1] 100000
+ ';
+
+ #######
+ # Strict Perl numberics, Perl Secs Object
+ #
+ my $test_data9 =
+ 'U1[1] 80
+ L[5]
+   A[0]
+   A[5] ARRAY
+   N[3] 78 45 25
+   N[2] 512 1024
+   N 100000
+ ';
+
+ my $test_data10 =
+ 'U1[1] 80
+ L[3]
+   A[0]
+   A[5] ARRAY
+   L[5]
+     A[0]
+     A[5] ARRAY
+     N 2
+     A[5] hello
+     N 4
+ ';
+
+ my $test_data11 =
+ 'U1[1] 80
+ L[3]
+   A[0]
+   A[5] ARRAY
+   L[6]
+     A[0]
+     A[4] HASH
+     A[4] body
+     A[5] hello
+     A[6] header
+     A[9] To: world
+ ';
+
+ my $test_data12 =
+ 'U1[1] 80
+ L[5]
+   A[0]
+   A[5] ARRAY
+   N 2
+   L[4]
+     A[0]
+     A[5] ARRAY
+     A[5] hello
+     A[5] world
+   N 512
+ ';
+
+ my $test_data13 =
+ 'U1[1] 80
+ L[4]
+   A[0]
+   A[5] ARRAY
+   N 2
+   L[6]
+     A[0]
+     A[4] HASH
+     A[6] header
+     L[6]
+       A[11] Class::None
+       A[4] HASH
+       A[4] From
+       A[6] nobody
+       A[2] To
+       A[6] nobody
+     A[3] msg
+     L[4]
+       A[0]
+       A[5] ARRAY
+       A[5] hello
+       A[5] world
+ ';
+
+ my $test_data14 =
+ 'U1[1] 80
+ L[4]
+   A[0]
+   A[5] ARRAY
+   L[6]
+     A[0]
+     A[4] HASH
+     A[6] header
+     L[6]
+       A[11] Class::None
+       A[4] HASH
+       A[4] From
+       A[6] nobody
+       A[2] To
+       A[6] nobody
+     A[3] msg
+     L[4]
+       A[0]
+       A[5] ARRAY
+       A[5] hello
+       A[5] world
+   L[6]
+     A[0]
+     A[4] HASH
+     A[6] header
+     L[3]
+       A[0]
+       A[5] Index
+       N 16
+     A[3] msg
+     L[3]
+       A[0]
+       A[5] ARRAY
+       A[4] body
+ ';
+
+ my $test_data15 =
+ 'U1[1] 80
+ U1[1] 2
+ L[6]
+   A[0]
+   A[4] HASH
+   A[6] header
+   L[6]
+     A[11] Class::None
+     A[4] HASH
+     A[4] From
+     A[6] nobody
+     A[2] To
+     A[6] nobody
+   A[3] msg
+   L[4]
+     A[0]
+     A[5] ARRAY
+     A[5] hello
+     A[5] world
+ ';
+
+ my $test_data16 =
+ 'U1[1] 80
+ L[6]
+   A[0]
+   A[4] HASH
+   A[6] header
+   L[6]
+     A[11] Class::None
+     A[4] HASH
+     A[4] From
+     A[6] nobody
+     A[2] To
+     A[6] nobody
+   A[3] msg
+   L[4]
+     A[0]
+     A[5] ARRAY
+     A[5] hello
+     A[5] world
+ L[6]
+   A[0]
+   A[4] HASH
+   A[6] header
+   L[3]
+     A[0]
+     A[5] Index
+     U1 10
+   A[3] msg
+   L[3]
+     A[0]
+     A[5] ARRAY
+     A[4] body
+ ';
+
  my $test_data17 = 'a50150010541004105' . unpack('H*','ARRAY') . 
                   'a5034e2d19' .  'a90402000400' . 'b0000186a0';
+
+ #######
+ # multicell numberics, Perl Secs Object
+ #
+ my $test_data18 =
+ 'U1[1] 80
+ L[5]
+   A[0]
+   A[5] ARRAY
+   U1[3] 78 45 25
+   U2[2] 512 1024
+   U4 100000
+ ';
 
  ##################
  # stringify an array
@@ -2298,17 +2492,15 @@ follow on the next lines as comments. For example,
  # ascii secsify lisfication of test_data1 an array reference
  # 
 
- secsify( listify( ['2', 'hello', 4, 0, undef] ) )
+ secsify( listify( ['2', 'hello', 4] ) )
 
  # 'U1[1] 80
- #L[7]
+ #L[5]
  #  A[0]
  #  A[5] ARRAY
  #  N 2
  #  A[5] hello
  #  N 4
- #  N 0
- #  L[0]
  #'
  #
 
@@ -2457,7 +2649,7 @@ follow on the next lines as comments. For example,
 
  unpack('H*',secsify( listify( ['2', 'hello', 4] ), {type => 'binary'}))
 
- # '0101500105010001054152524159010102010568656c6c6f010104'
+ # 'a501500105410041054152524159a50102410568656c6c6fa50104'
  #
 
  ##################
@@ -2466,7 +2658,7 @@ follow on the next lines as comments. For example,
 
  unpack('H*',secsify( listify( $test_data6 ), [type => 'binary']))
 
- # '010150010501000105415252415901034e2d190104020004000104000186a0'
+ # 'a501500105410041054152524159a5034e2d19a90402000400b104000186a0'
  #
 
  ##################
@@ -2475,7 +2667,7 @@ follow on the next lines as comments. For example,
 
  unpack('H*',secsify( listify( ['2', 'hello', 4] ), {type => 'binary', scalar => 1}))
 
- # '01015001050100010541525241590002010568656c6c6f0004'
+ # 'a501500105410041054152524159a402410568656c6c6fa404'
  #
 
  ##################
@@ -2484,7 +2676,7 @@ follow on the next lines as comments. For example,
 
  unpack('H*',secsify( listify( $test_data6 ), type => 'binary', scalar => 1))
 
- # '010150010501000105415252415901034e2d1901040200040000000186a0'
+ # 'a501500105410041054152524159a5034e2d19a90402000400b0000186a0'
  #
 
  ##################
@@ -2518,7 +2710,26 @@ follow on the next lines as comments. For example,
 
  secsify(neuterify (pack('H*',$big_secs2)))
 
- # ''
+ # 'U1[1] 80
+ #U1[1] 2
+ #L[6]
+ #  A[0]
+ #  A[4] HASH
+ #  A[6] header
+ #  L[6]
+ #    A[11] Class::None
+ #    A[4] HASH
+ #    A[4] From
+ #    A[6] nobody
+ #    A[2] To
+ #    A[6] nobody
+ #  A[3] msg
+ #  L[4]
+ #    A[0]
+ #    A[5] ARRAY
+ #    A[5] hello
+ #    A[5] world
+ #'
  #
 
  ##################
@@ -2527,7 +2738,14 @@ follow on the next lines as comments. For example,
 
  secsify(neuterify (pack('H*',$test_data7)))
 
- # ''
+ # 'U1[1] 80
+ #L[5]
+ #  A[0]
+ #  A[5] ARRAY
+ #  U1[3] 78 45 25
+ #  U2[2] 512 1024
+ #  U4[1] 100000
+ #'
  #
 
  ##################
@@ -2539,7 +2757,7 @@ follow on the next lines as comments. For example,
     while(chomp($event)) { };
  $event
 
- # 'Unknown SECSII format, '
+ # 'Format byte length size field is zero.'
  #
 
  ##################
@@ -2549,7 +2767,7 @@ follow on the next lines as comments. For example,
  $event = neuterify (pack('H*',$test_data17), scalar => 1)
  ref($event)
 
- # ''
+ # 'ARRAY'
  #
 
  ##################
@@ -2558,7 +2776,14 @@ follow on the next lines as comments. For example,
 
  secsify($event)
 
- # ''
+ # 'U1[1] 80
+ #L[5]
+ #  A[0]
+ #  A[5] ARRAY
+ #  U1[3] 78 45 25
+ #  U2[2] 512 1024
+ #  U4 100000
+ #'
  #
 
  ##################
@@ -2665,6 +2890,7 @@ follow on the next lines as comments. For example,
  #          2,
  #          4
  #        ]
+ #	Subroutine: Data::Secs2::transify 1.18
  #	ascii_secs:
  #	SECS object:
  #'L'
@@ -2677,7 +2903,6 @@ follow on the next lines as comments. For example,
  #''
  #'A'
  #'world'
- #	Subroutine: Data::Secs2::transify 1.22
  #'
  #
 
@@ -2815,21 +3040,6 @@ disclaimer in the documentation and/or
 other materials provided with the
 distribution.
 
-=item 3
-
-Commercial installation of the binary or source
-must visually present to the installer 
-the above copyright notice,
-this list of conditions intact,
-that the original source is available
-at http://softwarediamonds.com
-and provide means
-for the installer to actively accept
-the list of conditions; 
-otherwise, a license fee must be paid to
-Softwareware Diamonds.
-
-
 =back
 
 SOFTWARE DIAMONDS, http://www.softwarediamonds.com,
@@ -2854,8 +3064,6 @@ ANY WAY OUT OF THE POSSIBILITY OF SUCH DAMAGE.
 =over 4
 
 =item L<Data::SecsPack|Data::SecsPack> 
-
-=item SEMI, http://www.semi.org,
 
 =item L<Docs::Site_SVD::Data_Secs2|Docs::Site_SVD::Data_Secs2>
 

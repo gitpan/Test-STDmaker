@@ -23,7 +23,7 @@ my $tests = join ' ',unix2os('t/Test/STDmaker/STDmaker.t');
 WriteMakefile(
     NAME => 'Test::STDmaker',
     DISTNAME => 'Test-STDmaker',
-    VERSION  => '0.11',
+    VERSION  => '0.12',
     dist     => {COMPRESS => 'gzip',
                 'gz' => 'gz'},
     test     => {TESTS => $tests},
@@ -42,8 +42,7 @@ WriteMakefile(
 
     ($] >= 5.005 ?     
         (AUTHOR    => 'SoftwareDiamonds.com E<lt>support@SoftwareDiamonds.comE<gt>',
-        ABSTRACT  => 'Generates Software Test Description (STD) documents, test scripts and 
-demo scripts from a text FormDB database file.', ) : ()),
+        ABSTRACT  => 'generate test scripts, demo scripts from a test description short hand.', ) : ()),
 );
 
 

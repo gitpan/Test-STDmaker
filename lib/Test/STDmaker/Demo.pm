@@ -16,8 +16,8 @@ use File::AnySpec;
 use File::SmartNL;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.11';
-$DATE = '2004/05/18';
+$VERSION = '1.12';
+$DATE = '2004/05/19';
 
 
 ########
@@ -383,7 +383,6 @@ BEGIN {
     use Cwd;
     use File::Spec;
     use FindBin;
-    use Test::Tech qw(demo is_skip plan skip_tests tech_config );
 
     ########
     # The working directory for this script file is the directory where
@@ -407,7 +406,20 @@ BEGIN {
     #
     use lib \$FindBin::Bin;
 
-    unshift \@INC, File::Spec->catdir( cwd(), 'lib' ); 
+    ########
+    # Using Test::Tech, a very light layer over the module "Test" to
+    # conduct the tests.  The big feature of the "Test::Tech: module
+    # is that it takes expected and actual references and stringify
+    # them by using "Data::Secs2" before passing them to the "&Test::ok"
+    # Thus, almost any time of Perl data structures may be
+    # compared by passing a reference to them to Test::Tech::ok
+    #
+    # Create the test plan by supplying the number of tests
+    # and the todo tests
+    #
+    require Test::Tech;
+    Test::Tech->import( qw(demo finish is_skip ok ok_sub plan skip 
+                          skip_sub skip_tests tech_config) );
 
 }
 
@@ -445,7 +457,7 @@ __END__
 
 =head1 NAME
 
-Test::STDmaker::Demo - generate demo scripts from a test description short hand
+Test::STDmaker::Demo - generates demo scripts from a test description short hand
 
 =head1 DESCRIPTION
 

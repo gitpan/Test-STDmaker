@@ -10,46 +10,48 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE );
-$VERSION = '0.11';
-$DATE = '2004/05/18';
+$VERSION = '0.12';
+$DATE = '2004/05/19';
 $FILE = __FILE__;
 
 use vars qw(%INVENTORY);
 %INVENTORY = (
-    'lib/Docs/Site_SVD/Test_STDmaker.pm' => [qw(0.11 2004/05/18), 'revised 0.10'],
-    'MANIFEST' => [qw(0.11 2004/05/18), 'generated, replaces 0.10'],
-    'Makefile.PL' => [qw(0.11 2004/05/18), 'generated, replaces 0.10'],
-    'README' => [qw(0.11 2004/05/18), 'generated, replaces 0.10'],
-    'lib/Test/STDmaker.pm' => [qw(1.14 2004/05/18), 'revised 1.13'],
-    'lib/Test/STDmaker/Check.pm' => [qw(1.1 2004/05/18), 'revised 1.09'],
-    'lib/Test/STDmaker/Demo.pm' => [qw(1.11 2004/05/18), 'revised 1.1'],
-    'lib/Test/STDmaker/STD.pm' => [qw(1.09 2004/05/18), 'revised 1.08'],
-    'lib/Test/STDmaker/Verify.pm' => [qw(1.11 2004/05/18), 'revised 1.1'],
-    'lib/Test/STD/PerlSTD.pm' => [qw(1.07 2004/05/18), 'new'],
-    't/Test/STDmaker/STDmaker.d' => [qw(0.12 2004/05/18), 'revised 0.11'],
-    't/Test/STDmaker/STDmaker.pm' => [qw(0.1 2004/05/18), 'revised 0.09'],
-    't/Test/STDmaker/STDmaker.t' => [qw(0.12 2004/05/18), 'revised 0.11'],
+    'lib/Docs/Site_SVD/Test_STDmaker.pm' => [qw(0.12 2004/05/19), 'revised 0.11'],
+    'MANIFEST' => [qw(0.12 2004/05/19), 'generated, replaces 0.11'],
+    'Makefile.PL' => [qw(0.12 2004/05/19), 'generated, replaces 0.11'],
+    'README' => [qw(0.12 2004/05/19), 'generated, replaces 0.11'],
+    'lib/Test/STDmaker.pm' => [qw(1.15 2004/05/19), 'revised 1.14'],
+    'lib/Test/STDmaker/Check.pm' => [qw(1.11 2004/05/19), 'revised 1.1'],
+    'lib/Test/STDmaker/Demo.pm' => [qw(1.12 2004/05/19), 'revised 1.11'],
+    'lib/Test/STDmaker/STD.pm' => [qw(1.1 2004/05/19), 'revised 1.09'],
+    'lib/Test/STDmaker/Verify.pm' => [qw(1.12 2004/05/19), 'revised 1.11'],
+    'lib/Test/STD/PerlSTD.pm' => [qw(1.08 2004/05/19), 'revised 1.07'],
+    't/Test/STDmaker/STDmaker.d' => [qw(0.12 2004/05/18), 'unchanged'],
+    't/Test/STDmaker/STDmaker.pm' => [qw(0.1 2004/05/18), 'unchanged'],
+    't/Test/STDmaker/STDmaker.t' => [qw(0.12 2004/05/18), 'unchanged'],
     't/Test/STDmaker/tg0.pm' => [qw(0.03 2004/04/09), 'unchanged'],
     't/Test/STDmaker/tg2A.pm' => [qw(0.03 2004/05/14), 'unchanged'],
     't/Test/STDmaker/tg2B.pm' => [qw(0.04 2004/05/14), 'unchanged'],
-    't/Test/STDmaker/tgA0.pm' => [qw(0.05 2004/05/18), 'revised 0.04'],
-    't/Test/STDmaker/tgA2.pm' => [qw(0.05 2004/05/18), 'revised 0.04'],
+    't/Test/STDmaker/tgA0.pm' => [qw(0.05 2004/05/18), 'unchanged'],
+    't/Test/STDmaker/tgA1.pm' => [qw(0.05 2004/05/19), 'new'],
+    't/Test/STDmaker/tgA2.pm' => [qw(0.05 2004/05/18), 'unchanged'],
     't/Test/STDmaker/tgA2A2.txt' => [qw(0.1 2004/05/14), 'unchanged'],
     't/Test/STDmaker/tgA2A3.txt' => [qw(0.10 2004/05/14), 'unchanged'],
     't/Test/STDmaker/tgA2B.txt' => [qw(0.08 2004/05/14), 'unchanged'],
     't/Test/STDmaker/tgA2C.txt' => [qw(0.09 2004/05/14), 'unchanged'],
-    't/Test/STDmaker/tgB0.pm' => [qw(0.02 2004/05/18), 'revised 0.01'],
-    't/Test/STDmaker/tgB2.pm' => [qw(0.02 2004/05/18), 'revised 0.01'],
+    't/Test/STDmaker/tgB0.pm' => [qw(0.02 2004/05/18), 'unchanged'],
+    't/Test/STDmaker/tgB1.pm' => [qw(0.01 2004/05/19), 'new'],
+    't/Test/STDmaker/tgB2.pm' => [qw(0.02 2004/05/18), 'unchanged'],
     't/Test/STDmaker/tgB2.txt' => [qw(0.09 2004/05/14), 'unchanged'],
-    't/Test/STDmaker/tgC0.pm' => [qw(0.04 2004/05/18), 'revised 0.03'],
-    't/Test/STDmaker/tgC2.pm' => [qw(0.04 2004/05/18), 'revised 0.03'],
-    't/Test/STDmaker/tmake.pl' => [qw(1.06 2004/05/18), 'unchanged'],
-    't/Test/STDmaker/Text/Scrub.pm' => [qw(1.13 2004/05/18), 'unchanged'],
-    't/Test/STDmaker/Test/Tech.pm' => [qw(1.25 2004/05/18), 'unchanged'],
-    't/Test/STDmaker/Data/Secs2.pm' => [qw(1.23 2004/05/18), 'unchanged'],
-    't/Test/STDmaker/Data/SecsPack.pm' => [qw(0.08 2004/05/18), 'unchanged'],
-    't/Test/Data/SecsPack.pm' => [qw(0.08 2004/05/18), 'unchanged'],
-    't/Test/Data/Startup.pm' => [qw(0.06 2004/05/18), 'unchanged'],
+    't/Test/STDmaker/tgC0.pm' => [qw(0.04 2004/05/18), 'unchanged'],
+    't/Test/STDmaker/tgC1.pm' => [qw(0.01 2004/05/19), 'new'],
+    't/Test/STDmaker/tgC2.pm' => [qw(0.04 2004/05/18), 'unchanged'],
+    't/Test/STDmaker/tmake.pl' => [qw(1.06 2004/05/19), 'unchanged'],
+    't/Test/STDmaker/Text/Scrub.pm' => [qw(1.13 2004/05/19), 'unchanged'],
+    't/Test/STDmaker/Test/Tech.pm' => [qw(1.26 2004/05/19), 'revised 1.25'],
+    't/Test/STDmaker/Data/Secs2.pm' => [qw(1.24 2004/05/19), 'revised 1.23'],
+    't/Test/STDmaker/Data/Str2Num.pm' => [qw(0.05 2004/05/19), 'new'],
+    't/Test/STDmaker/Data/Startup.pm' => [qw(0.06 2004/05/19), 'new'],
 
 );
 
@@ -70,7 +72,7 @@ use vars qw(%INVENTORY);
 
 =head1 NAME
 
-Docs::Site_SVD::Test_STDmaker - Test Scripts, Demo Scripts and Software Test Description (STD) Automation
+Docs::Site_SVD::Test_STDmaker - generate test scripts, demo scripts from a test description short hand
 
 =head1 Title Page
 
@@ -78,13 +80,13 @@ Docs::Site_SVD::Test_STDmaker - Test Scripts, Demo Scripts and Software Test Des
 
  for
 
- Docs::Site_SVD::Test_STDmaker - Test Scripts, Demo Scripts and Software Test Description (STD) Automation
+ Docs::Site_SVD::Test_STDmaker - generate test scripts, demo scripts from a test description short hand
 
- Revision: K
+ Revision: L
 
- Version: 0.11
+ Version: 0.12
 
- Date: 2004/05/18
+ Date: 2004/05/19
 
  Prepared for: General Public 
 
@@ -175,7 +177,7 @@ further detail on the text database fields and the processing.
 
 =head2 1.3 Document overview.
 
-This document releases Test::STDmaker version 0.11
+This document releases Test::STDmaker version 0.12
 providing description of the inventory, installation
 instructions and other information necessary to
 utilize and track this release.
@@ -190,7 +192,7 @@ system file specification.
 
 This document releases the file 
 
- Test-STDmaker-0.11.tar.gz
+ Test-STDmaker-0.12.tar.gz
 
 found at the following repository(s):
 
@@ -277,40 +279,42 @@ consists of the following files:
 
  file                                                         version date       comment
  ------------------------------------------------------------ ------- ---------- ------------------------
- lib/Docs/Site_SVD/Test_STDmaker.pm                           0.11    2004/05/18 revised 0.10
- MANIFEST                                                     0.11    2004/05/18 generated, replaces 0.10
- Makefile.PL                                                  0.11    2004/05/18 generated, replaces 0.10
- README                                                       0.11    2004/05/18 generated, replaces 0.10
- lib/Test/STDmaker.pm                                         1.14    2004/05/18 revised 1.13
- lib/Test/STDmaker/Check.pm                                   1.1     2004/05/18 revised 1.09
- lib/Test/STDmaker/Demo.pm                                    1.11    2004/05/18 revised 1.1
- lib/Test/STDmaker/STD.pm                                     1.09    2004/05/18 revised 1.08
- lib/Test/STDmaker/Verify.pm                                  1.11    2004/05/18 revised 1.1
- lib/Test/STD/PerlSTD.pm                                      1.07    2004/05/18 new
- t/Test/STDmaker/STDmaker.d                                   0.12    2004/05/18 revised 0.11
- t/Test/STDmaker/STDmaker.pm                                  0.1     2004/05/18 revised 0.09
- t/Test/STDmaker/STDmaker.t                                   0.12    2004/05/18 revised 0.11
+ lib/Docs/Site_SVD/Test_STDmaker.pm                           0.12    2004/05/19 revised 0.11
+ MANIFEST                                                     0.12    2004/05/19 generated, replaces 0.11
+ Makefile.PL                                                  0.12    2004/05/19 generated, replaces 0.11
+ README                                                       0.12    2004/05/19 generated, replaces 0.11
+ lib/Test/STDmaker.pm                                         1.15    2004/05/19 revised 1.14
+ lib/Test/STDmaker/Check.pm                                   1.11    2004/05/19 revised 1.1
+ lib/Test/STDmaker/Demo.pm                                    1.12    2004/05/19 revised 1.11
+ lib/Test/STDmaker/STD.pm                                     1.1     2004/05/19 revised 1.09
+ lib/Test/STDmaker/Verify.pm                                  1.12    2004/05/19 revised 1.11
+ lib/Test/STD/PerlSTD.pm                                      1.08    2004/05/19 revised 1.07
+ t/Test/STDmaker/STDmaker.d                                   0.12    2004/05/18 unchanged
+ t/Test/STDmaker/STDmaker.pm                                  0.1     2004/05/18 unchanged
+ t/Test/STDmaker/STDmaker.t                                   0.12    2004/05/18 unchanged
  t/Test/STDmaker/tg0.pm                                       0.03    2004/04/09 unchanged
  t/Test/STDmaker/tg2A.pm                                      0.03    2004/05/14 unchanged
  t/Test/STDmaker/tg2B.pm                                      0.04    2004/05/14 unchanged
- t/Test/STDmaker/tgA0.pm                                      0.05    2004/05/18 revised 0.04
- t/Test/STDmaker/tgA2.pm                                      0.05    2004/05/18 revised 0.04
+ t/Test/STDmaker/tgA0.pm                                      0.05    2004/05/18 unchanged
+ t/Test/STDmaker/tgA1.pm                                      0.05    2004/05/19 new
+ t/Test/STDmaker/tgA2.pm                                      0.05    2004/05/18 unchanged
  t/Test/STDmaker/tgA2A2.txt                                   0.1     2004/05/14 unchanged
  t/Test/STDmaker/tgA2A3.txt                                   0.10    2004/05/14 unchanged
  t/Test/STDmaker/tgA2B.txt                                    0.08    2004/05/14 unchanged
  t/Test/STDmaker/tgA2C.txt                                    0.09    2004/05/14 unchanged
- t/Test/STDmaker/tgB0.pm                                      0.02    2004/05/18 revised 0.01
- t/Test/STDmaker/tgB2.pm                                      0.02    2004/05/18 revised 0.01
+ t/Test/STDmaker/tgB0.pm                                      0.02    2004/05/18 unchanged
+ t/Test/STDmaker/tgB1.pm                                      0.01    2004/05/19 new
+ t/Test/STDmaker/tgB2.pm                                      0.02    2004/05/18 unchanged
  t/Test/STDmaker/tgB2.txt                                     0.09    2004/05/14 unchanged
- t/Test/STDmaker/tgC0.pm                                      0.04    2004/05/18 revised 0.03
- t/Test/STDmaker/tgC2.pm                                      0.04    2004/05/18 revised 0.03
- t/Test/STDmaker/tmake.pl                                     1.06    2004/05/18 unchanged
- t/Test/STDmaker/Text/Scrub.pm                                1.13    2004/05/18 unchanged
- t/Test/STDmaker/Test/Tech.pm                                 1.25    2004/05/18 unchanged
- t/Test/STDmaker/Data/Secs2.pm                                1.23    2004/05/18 unchanged
- t/Test/STDmaker/Data/SecsPack.pm                             0.08    2004/05/18 unchanged
- t/Test/Data/SecsPack.pm                                      0.08    2004/05/18 unchanged
- t/Test/Data/Startup.pm                                       0.06    2004/05/18 unchanged
+ t/Test/STDmaker/tgC0.pm                                      0.04    2004/05/18 unchanged
+ t/Test/STDmaker/tgC1.pm                                      0.01    2004/05/19 new
+ t/Test/STDmaker/tgC2.pm                                      0.04    2004/05/18 unchanged
+ t/Test/STDmaker/tmake.pl                                     1.06    2004/05/19 unchanged
+ t/Test/STDmaker/Text/Scrub.pm                                1.13    2004/05/19 unchanged
+ t/Test/STDmaker/Test/Tech.pm                                 1.26    2004/05/19 revised 1.25
+ t/Test/STDmaker/Data/Secs2.pm                                1.24    2004/05/19 revised 1.23
+ t/Test/STDmaker/Data/Str2Num.pm                              0.05    2004/05/19 new
+ t/Test/STDmaker/Data/Startup.pm                              0.06    2004/05/19 new
 
 
 =head2 3.3 Changes
@@ -496,6 +500,18 @@ Added code that will add the appropriate directory to @INC for these test condit
 For regression tests, the POD describes the relationship between the 'lib' and the 't'
 directories so that the C<Test::STDmaker> package can find the STD PM.
 
+=item Test-STDmaker-0.12
+
+Problems with CPAN picking up wrong NAME for C<Test::STDmaker::Verify> and 
+C<Test::STD::PerlSTD>. Fixed
+
+Use lastest C<Data::Secs2> that does not use C<Data::SecsPack> unless needed.
+Some of the sites having trouble loading C<Data::SecsPack> GMP libraray.
+
+Changed C<Test::STDmaker::Demo> and C<Test::STDmaker::Check> so they load
+C<Test::Tech> after setting up C<@INC>. Else missing finding some
+test library modules because they are not in the C<INC> path.
+
 =back
 
 =head2 3.4 Adaptation data.
@@ -534,13 +550,13 @@ Enter one of the following repositories in a web browser:
   http://www.softwarediamonds/packages/
   http://www.perl.com/CPAN/authors/id/S/SO/SOFTDIA/
 
-Right click on 'Test-STDmaker-0.11.tar.gz' and download to a temporary
+Right click on 'Test-STDmaker-0.12.tar.gz' and download to a temporary
 installation directory.
 Enter the following where $make is 'nmake' for microsoft
 windows; otherwise 'make'.
 
- gunzip Test-STDmaker-0.11.tar.gz
- tar -xf Test-STDmaker-0.11.tar
+ gunzip Test-STDmaker-0.12.tar.gz
+ tar -xf Test-STDmaker-0.12.tar
  perl Makefile.PL
  $make test
  $make install
@@ -692,20 +708,16 @@ __DATA__
 DISTNAME: Test-STDmaker^
 REPOSITORY_DIR: packages^
 
-VERSION : 0.11^
+VERSION : 0.12^
 FREEZE: 1^
-PREVIOUS_RELEASE: 0.10^
-REVISION: K^
+PREVIOUS_RELEASE: 0.11^
+REVISION: L^
 
 PREVIOUS_DISTNAME:  ^
 AUTHOR  : SoftwareDiamonds.com E<lt>support@SoftwareDiamonds.comE<gt>^
 
-ABSTRACT: 
-Generates Software Test Description (STD) documents, test scripts and 
-demo scripts from a text FormDB database file.
-^
-
-TITLE   : Docs::Site_SVD::Test_STDmaker - Test Scripts, Demo Scripts and Software Test Description (STD) Automation^
+ABSTRACT: generate test scripts, demo scripts from a test description short hand.^
+TITLE   : Docs::Site_SVD::Test_STDmaker - generate test scripts, demo scripts from a test description short hand^
 END_USER: General Public^
 COPYRIGHT: copyright © 2003 Software Diamonds^
 CLASSIFICATION: NONE^
@@ -723,7 +735,7 @@ COMPRESS: gzip^
 COMPRESS_SUFFIX: gz^
 
 RESTRUCTURE:  ^
-CHANGE2CURRENT :  ^
+CHANGE2CURRENT:  ^
 
 AUTO_REVISE:
 lib/Test/STDmaker.pm
@@ -736,9 +748,8 @@ bin/tmake.pl => t/Test/STDmaker/tmake.pl
 lib/Text/Scrub.pm => t/Test/STDmaker/Text/Scrub.pm
 lib/Test/Tech.pm => t/Test/STDmaker/Test/Tech.pm
 lib/Data/Secs2.pm => t/Test/STDmaker/Data/Secs2.pm
-lib/Data/SecsPack.pm => t/Test/STDmaker/Data/SecsPack.pm
-lib/Data/SecsPack.pm => t/Test/Data/SecsPack.pm
-lib/Data/Startup.pm => t/Test/Data/Startup.pm
+lib/Data/Str2Num.pm => t/Test/STDmaker/Data/Str2Num.pm
+lib/Data/Startup.pm => t/Test/STDmaker/Data/Startup.pm
 ^
 
 PREREQ_PM:
@@ -1009,6 +1020,18 @@ Added code that will add the appropriate directory to @INC for these test condit
 For regression tests, the POD describes the relationship between the 'lib' and the 't'
 directories so that the C<Test::STDmaker> package can find the STD PM.
 
+\=item Test-STDmaker-0.12
+
+Problems with CPAN picking up wrong NAME for C<Test::STDmaker::Verify> and 
+C<Test::STD::PerlSTD>. Fixed
+
+Use lastest C<Data::Secs2> that does not use C<Data::SecsPack> unless needed.
+Some of the sites having trouble loading C<Data::SecsPack> GMP libraray.
+
+Changed C<Test::STDmaker::Demo> and C<Test::STDmaker::Check> so they load
+C<Test::Tech> after setting up C<@INC>. Else missing finding some
+test library modules because they are not in the C<INC> path.
+
 \=back
 
 ^
@@ -1218,6 +1241,16 @@ HTML:
 <p><br>
 ^
 ~-~
+
+
+
+
+
+
+
+
+
+
 
 
 

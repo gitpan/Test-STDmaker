@@ -16,8 +16,8 @@ use File::Where;
 use Test::Harness 2.42;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.11';
-$DATE = '2004/05/18';
+$VERSION = '1.12';
+$DATE = '2004/05/19';
 
 ########
 # Inherit classes
@@ -479,7 +479,7 @@ sub finish
 
 __END__
 
-=head1 NAME
+\=head1 NAME
 
 $test_script - test script for $self->{UUT}
 

@@ -27,9 +27,9 @@ SYNOPSIS
      $std->tmake( \%options  );
 
      ######
-     # Internal Methods
+     # Internal (Private) Methods
      #
-     $success = $std->build($output_type);
+     $success = $std->build($std_driver_class);
      $success = $std->generate();
      $success = $std->print($file_out);
 
@@ -442,19 +442,16 @@ STD PM Form Database Test Description Fields
 
      A: actual-expression 
 
-    This is the actual Perl expression under test and used for the
-    following:
-
-     L<STD 4.x.y.3 Test inputs.|Docs::US_DOD::STD/4.x.y.3 Test inputs.> 
+    This is the actual Perl expression under test and used for the STD
+    4.x.y.3 Test inputs.
 
   E
 
      E: expected-expression 
 
     This is the expected results. This should be raw Perl values and used
-    for the following:
-
-     L<STD 4.x.y.4 Expected test results.|Docs::US_DOD::STD/4.x.y.4 Expected test results.>
+    for the <STD 4.x.y.4 Expected test results.|Docs::US_DOD::STD/4.x.y.4
+    Expected test results.>
 
     This field triggers processing of the previous fields as a test. It must
     always be the last field of a test. On failure, testing continues.
@@ -464,9 +461,7 @@ STD PM Form Database Test Description Fields
       C: code
 
     The "code" field data is free form Perl code. This field is generally
-    used for the following:
-
-     L<STD 4.x.y.2 Prerequisite conditions.|Docs::US_DOD::STD/4.x.y.2 Prerequisite conditions.> 
+    used for STD 4.x.y.2 Prerequisite conditions.
 
   DO
 
@@ -513,9 +508,8 @@ STD PM Form Database Test Description Fields
 
     The *requirement_data* cites a binding requirement that is verified by
     the test. The test software uses the *requirement_data* to automatically
-    generate tracebility information that conforms to the following:
-
-     L<STD 4.x.y.1 Requirements addressed.|STD/Docs::US_DOD::4.x.y.1 Requirements addressed.> 
+    generate tracebility information that conforms to STD 4.x.y.1
+    Requirements addressed.
 
     Many times the relationship between binding requirements and the a test
     is vague and can even stretch the imagination. Perhaps by tracing the
@@ -594,7 +588,7 @@ METHODS
      hash
      key     description 
      ----------------------------------------------------------
-     std_db  ordered name,data pairs from from $std_pm database
+     std_db  ordered name,data pairs from the $std_pm database
      Record  complete $std_pm database record
      std_pm  $std_pm;
      Date    date using $std->get_date()
@@ -611,32 +605,15 @@ METHODS
     "generate" method and then the "print" method herein which in turn use
     the methods from the "Test::STDmaker::Check" class.
 
-  find_t_roots subroutine
+  find_t_roots
 
      @t_path = find_t_paths()
 
-    This method operates on the assumption that the test files are a subtree
-    to a directory named *t* and the *t* directories are on the same level
-    as the last directory of each directory tree specified in *@INC*. If
-    this assumption is not true, this method most likely will not behave
-    very well.
-
-  generate
-
-     $sucess = $std->generate();
-
-    The c<generat> is the workhose. It takes each ordered "$name,$data" pair
-    from the "@{$std-"{std_pm}}> array and uses the execute the method
-    "$name" with "$data". The "$name" variable are the "A" "E" and so on,
-    STD FormDB Test Description Fields with its associated data. The method
-    definitions varies depending upon the class that inherits the
-    "Test::STDmaker" class. Typically the child class is one of the
-    following:
-
-     C<Test::STDmaker::Check>
-     C<Test::STDmaker::Demo>
-     C<Test::STDmaker::STD>
-     C<Test::STDmaker::Verify>
+    The "find_t_roots" subroutine operates on the assumption that the test
+    files are a subtree to a directory named *t* and the *t* directories are
+    on the same level as the last directory of each directory tree specified
+    in *@INC*. If this assumption is not true, this method most likely will
+    not behave very well.
 
   get_date
 
@@ -661,12 +638,11 @@ METHODS
      Demo      generates demo script
      Verify    generates a test script
      STD       generates and replaces the STD PM POD
-     generate
-     test
+     Check     checks test description database
 
     No target is the same as the "all" target.
 
-    The "@options]" are as follows:
+    The "@options" are as follows:
 
     demo option
          demo => 1
@@ -723,18 +699,28 @@ INTERNAL METHODS
 
   build
 
-     $success = $std->build($output_type);
+     $success = $std->build($std_driver_class);
 
     The "$output_type" is the name of a driver in the "Test::STDmaker"
     repository. The "build" subroutine takes "$output_type" and recast the
-    "$std" class to "Test::STDmaker::$output_type". The "bless" subroutine
-    does do class recasting as follows:
+    "$std" class to "Test::STDmaker::$std_driver_class" driver class The
+    "bless" subroutine does do class recasting as follows:
 
      $std_driver = bless $std, Test::STDmaker::$output_type
 
+    Typically the recasted class is one of the following:
+
+    Test::STDmaker::Check
+    Test::STDmaker::Demo
+    Test::STDmaker::STD
+    Test::STDmaker::Verify
+    New drivers class may be added by including them in the
+    "Test::STDmaker::" repository and thus expand the above list. The
+    "Test::STDmaker" methods will automatically find the new driver classes.
+
     The "build" subroutine then uses the recast object to call the
     "generate" method followed by the "print" methods described below. Since
-    the object is now of the "Test::STDmaker::$output_type" class which
+    the object is now of the "Test::STDmaker::$std_driver_class" class which
     inherits the "Test::STDmaker" class, it used the
     "&Test::STDmaker::generate" and "&Test::STDmaker::print" methods to
     communicate with the methods in the "Test::STDmaker::$output_type"
@@ -744,18 +730,11 @@ INTERNAL METHODS
 
      $sucess = $std_driver->generate();
 
-    The c<generat> is the workhose. It takes each ordered "$name,$data" pair
-    from the "@{$std-"{std_pm}}> array and uses the execute the method
-    "$name" with "$data". The "$name" variable are the "A" "E" and so on,
-    STD FormDB Test Description Fields with its associated data. The method
-    definitions varies depending upon the class that inherits the
-    "Test::STDmaker" class. Typically the child class is one of the
-    following:
-
-     C<Test::STDmaker::Check>
-     C<Test::STDmaker::Demo>
-     C<Test::STDmaker::STD>
-     C<Test::STDmaker::Verify>
+    The c<generate> subroutine is the work horse. It takes each ordered
+    "$name,$data" pair from the "@{$std-"{std_pm}}> array and executes the
+    method "$name" with "$name,$data" as arguments. The "$name" variable is
+    the test description short hands "A" "E" and so on, STD PM Form Database
+    Test Description Fields.
 
   print
 
@@ -907,7 +886,7 @@ REQUIREMENTS
 
         fields.
 
-    The "Test::STDmaker" package methos will generate fields for merging
+    The "Test::STDmaker" package methods will generate fields for merging
     with the template file as follows:
 
     Date
@@ -944,7 +923,8 @@ REQUIREMENTS
     in the STD format as tailored by STDtailor.
 
   Options requirements
-The "fgenerate" option processing requirements are as follows:
+
+    The "tmake" option processing requirements are as follows:
 
     file_out option [1]
         When the c<@targets> has only target, specifying the option
@@ -981,9 +961,9 @@ The "fgenerate" option processing requirements are as follows:
 
          { run => 1, test_verbose => 1 }
 
-        with the c<@targets> containg "Verify", shall[4] cause the
-        "fgenerate" method to run the "Test::Harness" with the test script
-        in verbose mode.
+        with the c<@targets> containg "Verify", shall[4] cause the "tmake"
+        method to run the "Test::Harness" with the test script in verbose
+        mode.
 
     fspec_out option [5]
         Specifying the option
@@ -2850,6 +2830,8 @@ NOTES
 SEE ALSO
     Test::Tech
     Test
+    File::Package
+    Pod::Checker
     Test::Harness
     Test::STDmaker::STD
     Test::STDmaker::Verify
@@ -2859,21 +2841,21 @@ SEE ALSO
     Specification Practices
     Software Development
 NAME
-    Docs::Site_SVD::Test_STDmaker - Test Scripts, Demo Scripts and Software
-    Test Description (STD) Automation
+    Docs::Site_SVD::Test_STDmaker - generate test scripts, demo scripts from
+    a test description short hand
 
 Title Page
      Software Version Description
 
      for
 
-     Docs::Site_SVD::Test_STDmaker - Test Scripts, Demo Scripts and Software Test Description (STD) Automation
+     Docs::Site_SVD::Test_STDmaker - generate test scripts, demo scripts from a test description short hand
 
-     Revision: K
+     Revision: L
 
-     Version: 0.11
+     Version: 0.12
 
-     Date: 2004/05/18
+     Date: 2004/05/19
 
      Prepared for: General Public 
 
@@ -2933,7 +2915,7 @@ Title Page
 
   1.3 Document overview.
 
-    This document releases Test::STDmaker version 0.11 providing description
+    This document releases Test::STDmaker version 0.12 providing description
     of the inventory, installation instructions and other information
     necessary to utilize and track this release.
 
@@ -2945,7 +2927,7 @@ Title Page
 
     This document releases the file
 
-     Test-STDmaker-0.11.tar.gz
+     Test-STDmaker-0.12.tar.gz
 
     found at the following repository(s):
 
@@ -3002,40 +2984,42 @@ Title Page
 
      file                                                         version date       comment
      ------------------------------------------------------------ ------- ---------- ------------------------
-     lib/Docs/Site_SVD/Test_STDmaker.pm                           0.11    2004/05/18 revised 0.10
-     MANIFEST                                                     0.11    2004/05/18 generated, replaces 0.10
-     Makefile.PL                                                  0.11    2004/05/18 generated, replaces 0.10
-     README                                                       0.11    2004/05/18 generated, replaces 0.10
-     lib/Test/STDmaker.pm                                         1.14    2004/05/18 revised 1.13
-     lib/Test/STDmaker/Check.pm                                   1.1     2004/05/18 revised 1.09
-     lib/Test/STDmaker/Demo.pm                                    1.11    2004/05/18 revised 1.1
-     lib/Test/STDmaker/STD.pm                                     1.09    2004/05/18 revised 1.08
-     lib/Test/STDmaker/Verify.pm                                  1.11    2004/05/18 revised 1.1
-     lib/Test/STD/PerlSTD.pm                                      1.07    2004/05/18 new
-     t/Test/STDmaker/STDmaker.d                                   0.12    2004/05/18 revised 0.11
-     t/Test/STDmaker/STDmaker.pm                                  0.1     2004/05/18 revised 0.09
-     t/Test/STDmaker/STDmaker.t                                   0.12    2004/05/18 revised 0.11
+     lib/Docs/Site_SVD/Test_STDmaker.pm                           0.12    2004/05/19 revised 0.11
+     MANIFEST                                                     0.12    2004/05/19 generated, replaces 0.11
+     Makefile.PL                                                  0.12    2004/05/19 generated, replaces 0.11
+     README                                                       0.12    2004/05/19 generated, replaces 0.11
+     lib/Test/STDmaker.pm                                         1.15    2004/05/19 revised 1.14
+     lib/Test/STDmaker/Check.pm                                   1.11    2004/05/19 revised 1.1
+     lib/Test/STDmaker/Demo.pm                                    1.12    2004/05/19 revised 1.11
+     lib/Test/STDmaker/STD.pm                                     1.1     2004/05/19 revised 1.09
+     lib/Test/STDmaker/Verify.pm                                  1.12    2004/05/19 revised 1.11
+     lib/Test/STD/PerlSTD.pm                                      1.08    2004/05/19 revised 1.07
+     t/Test/STDmaker/STDmaker.d                                   0.12    2004/05/18 unchanged
+     t/Test/STDmaker/STDmaker.pm                                  0.1     2004/05/18 unchanged
+     t/Test/STDmaker/STDmaker.t                                   0.12    2004/05/18 unchanged
      t/Test/STDmaker/tg0.pm                                       0.03    2004/04/09 unchanged
      t/Test/STDmaker/tg2A.pm                                      0.03    2004/05/14 unchanged
      t/Test/STDmaker/tg2B.pm                                      0.04    2004/05/14 unchanged
-     t/Test/STDmaker/tgA0.pm                                      0.05    2004/05/18 revised 0.04
-     t/Test/STDmaker/tgA2.pm                                      0.05    2004/05/18 revised 0.04
+     t/Test/STDmaker/tgA0.pm                                      0.05    2004/05/18 unchanged
+     t/Test/STDmaker/tgA1.pm                                      0.05    2004/05/19 new
+     t/Test/STDmaker/tgA2.pm                                      0.05    2004/05/18 unchanged
      t/Test/STDmaker/tgA2A2.txt                                   0.1     2004/05/14 unchanged
      t/Test/STDmaker/tgA2A3.txt                                   0.10    2004/05/14 unchanged
      t/Test/STDmaker/tgA2B.txt                                    0.08    2004/05/14 unchanged
      t/Test/STDmaker/tgA2C.txt                                    0.09    2004/05/14 unchanged
-     t/Test/STDmaker/tgB0.pm                                      0.02    2004/05/18 revised 0.01
-     t/Test/STDmaker/tgB2.pm                                      0.02    2004/05/18 revised 0.01
+     t/Test/STDmaker/tgB0.pm                                      0.02    2004/05/18 unchanged
+     t/Test/STDmaker/tgB1.pm                                      0.01    2004/05/19 new
+     t/Test/STDmaker/tgB2.pm                                      0.02    2004/05/18 unchanged
      t/Test/STDmaker/tgB2.txt                                     0.09    2004/05/14 unchanged
-     t/Test/STDmaker/tgC0.pm                                      0.04    2004/05/18 revised 0.03
-     t/Test/STDmaker/tgC2.pm                                      0.04    2004/05/18 revised 0.03
-     t/Test/STDmaker/tmake.pl                                     1.06    2004/05/18 unchanged
-     t/Test/STDmaker/Text/Scrub.pm                                1.13    2004/05/18 unchanged
-     t/Test/STDmaker/Test/Tech.pm                                 1.25    2004/05/18 unchanged
-     t/Test/STDmaker/Data/Secs2.pm                                1.23    2004/05/18 unchanged
-     t/Test/STDmaker/Data/SecsPack.pm                             0.08    2004/05/18 unchanged
-     t/Test/Data/SecsPack.pm                                      0.08    2004/05/18 unchanged
-     t/Test/Data/Startup.pm                                       0.06    2004/05/18 unchanged
+     t/Test/STDmaker/tgC0.pm                                      0.04    2004/05/18 unchanged
+     t/Test/STDmaker/tgC1.pm                                      0.01    2004/05/19 new
+     t/Test/STDmaker/tgC2.pm                                      0.04    2004/05/18 unchanged
+     t/Test/STDmaker/tmake.pl                                     1.06    2004/05/19 unchanged
+     t/Test/STDmaker/Text/Scrub.pm                                1.13    2004/05/19 unchanged
+     t/Test/STDmaker/Test/Tech.pm                                 1.26    2004/05/19 revised 1.25
+     t/Test/STDmaker/Data/Secs2.pm                                1.24    2004/05/19 revised 1.23
+     t/Test/STDmaker/Data/Str2Num.pm                              0.05    2004/05/19 new
+     t/Test/STDmaker/Data/Startup.pm                              0.06    2004/05/19 new
 
   3.3 Changes
 
@@ -3197,6 +3181,18 @@ Title Page
         'lib' and the 't' directories so that the "Test::STDmaker" package
         can find the STD PM.
 
+    Test-STDmaker-0.12
+        Problems with CPAN picking up wrong NAME for
+        "Test::STDmaker::Verify" and "Test::STD::PerlSTD". Fixed
+
+        Use lastest "Data::Secs2" that does not use "Data::SecsPack" unless
+        needed. Some of the sites having trouble loading "Data::SecsPack"
+        GMP libraray.
+
+        Changed "Test::STDmaker::Demo" and "Test::STDmaker::Check" so they
+        load "Test::Tech" after setting up "@INC". Else missing finding some
+        test library modules because they are not in the "INC" path.
+
   3.4 Adaptation data.
 
     This installation requires that the installation site has the Perl
@@ -3230,12 +3226,12 @@ Title Page
           http://www.softwarediamonds/packages/
           http://www.perl.com/CPAN/authors/id/S/SO/SOFTDIA/
 
-        Right click on 'Test-STDmaker-0.11.tar.gz' and download to a
+        Right click on 'Test-STDmaker-0.12.tar.gz' and download to a
         temporary installation directory. Enter the following where $make is
         'nmake' for microsoft windows; otherwise 'make'.
 
-         gunzip Test-STDmaker-0.11.tar.gz
-         tar -xf Test-STDmaker-0.11.tar
+         gunzip Test-STDmaker-0.12.tar.gz
+         tar -xf Test-STDmaker-0.12.tar
          perl Makefile.PL
          $make test
          $make install

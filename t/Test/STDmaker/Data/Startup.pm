@@ -13,7 +13,7 @@ use attributes;
 
 use vars qw( $VERSION $DATE $FILE);
 $VERSION = '0.06';
-$DATE = '2004/05/14';
+$DATE = '2004/05/19';
 $FILE = __FILE__;
 
 #######
