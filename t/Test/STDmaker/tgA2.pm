@@ -10,8 +10,8 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE );
-$VERSION = '0.03';
-$DATE = '2004/04/09';
+$VERSION = '0.04';
+$DATE = '2004/05/14';
 $FILE = __FILE__;
 
 ########
@@ -40,7 +40,7 @@ $FILE = __FILE__;
 
  Version: 0.01
 
- Date: 2003/06/21
+ Date: 2004/05/12
 
  Prepared for: General Public 
 
@@ -80,7 +80,7 @@ L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description 
 
 =head2 Test Plan
 
- T: 16 - 2,5^
+ T: 19 - 5,8^
 
 =head2 ok: 1
 
@@ -92,23 +92,48 @@ L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description 
      #
      tech_config( 'Test.TESTERR', \*STDOUT );
  ^
+ QC: my $expected1 = 'hello world';^
+  N: Quiet Code^
+  A: 'hello world'^
+  E: $expected1^
+ ok: 1^
+
+=head2 ok: 2
+
+  N: ok subroutine^
+ TS: \&tolerance^
+  A: 99^
+  E: [100, 10]^
+ ok: 2^
+
+=head2 ok: 3
+
+  N: skip subroutine^
+  S: 0^
+ TS: \&tolerance^
+  A: 80^
+  E: [100, 10]^
+ ok: 3^
+
+=head2 ok: 4
+
   N: Pass test^
   R: L<Test::STDmaker::tg1/capability-A [1]>^
   C: my $x = 2^
   C: my $y = 3^
   A: $x + $y^
  SE: 5^
- ok: 1^
+ ok: 4^
 
-=head2 ok: 2
+=head2 ok: 5
 
   N: Todo test that passes^
   U: xy feature^
   A: $y-$x^
   E: 1^
- ok: 2^
+ ok: 5^
 
-=head2 ok: 3
+=head2 ok: 6
 
 
   R:
@@ -118,26 +143,26 @@ L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description 
   N: Test that fails^
   A: $x+4^
   E: 7^
- ok: 3^
+ ok: 6^
 
-=head2 ok: 4
+=head2 ok: 7
 
   N: Skipped tests^
   S: 1^
   A: $x*$y*2^
   E: 6^
- ok: 4^
+ ok: 7^
 
-=head2 ok: 5
+=head2 ok: 8
 
   N: Todo Test that Fails^
   U: zyw feature^
   S: 0^
   A: $x*$y*2^
   E: 6^
- ok: 5^
+ ok: 8^
 
-=head2 ok: 6
+=head2 ok: 9
 
   N: demo only^
  DO: ^
@@ -147,9 +172,9 @@ L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description 
  VO: ^
   A: $x^
   E: $x^
- ok: 6^
+ ok: 9^
 
-=head2 ok: 7,9,11
+=head2 ok: 10,12,14
 
   N: Test loop^
 
@@ -161,48 +186,48 @@ L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description 
   A: $i+200^
   R: L<Test::STDmaker::tg1/capability-C [1]>^
   E: $expected[$i]^
- ok: 7,9,11^
+ ok: 10,12,14^
 
-=head2 ok: 8,10,12
+=head2 ok: 11,13,15
 
   A: $i + ($x * 100)^
   R: L<Test::STDmaker::tg1/capability-B [4]>^
   E: $expected[$i]^
- ok: 8,10,12^
+ ok: 11,13,15^
 
-=head2 ok: 13
+=head2 ok: 16
 
   C:     };^
   N: Failed test that skips the rest^
   R: L<Test::STDmaker::tg1/capability-B [2]>^
   A: $x + $y^
  SE: 6^
- ok: 13^
+ ok: 16^
 
-=head2 ok: 14
+=head2 ok: 17
 
   N: A test to skip^
   A: $x + $y + $x^
   E: 9^
- ok: 14^
+ ok: 17^
 
-=head2 ok: 15
+=head2 ok: 18
 
   N: A not skip to skip^
   S: 0^
   R: L<Test::STDmaker::tg1/capability-B [3]>^
   A: $x + $y + $x + $y^
   E: 10^
- ok: 15^
+ ok: 18^
 
-=head2 ok: 16
+=head2 ok: 19
 
   N: A skip to skip^
   S: 1^
   R: L<Test::STDmaker::tg1/capability-B [3]>^
   A: $x + $y + $x + $y + $x^
   E: 10^
- ok: 16^
+ ok: 19^
 
 
 
@@ -216,26 +241,26 @@ L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description 
 
   Requirement                                                      Test
  ---------------------------------------------------------------- ----------------------------------------------------------------
- L<Test::STDmaker::tg1/capability-A [1]>                          L<t::Test::STDmaker::tgA1/ok: 1>
- L<Test::STDmaker::tg1/capability-A [2]>                          L<t::Test::STDmaker::tgA1/ok: 3>
- L<Test::STDmaker::tg1/capability-B [1]>                          L<t::Test::STDmaker::tgA1/ok: 3>
- L<Test::STDmaker::tg1/capability-B [2]>                          L<t::Test::STDmaker::tgA1/ok: 13>
- L<Test::STDmaker::tg1/capability-B [3]>                          L<t::Test::STDmaker::tgA1/ok: 15>
- L<Test::STDmaker::tg1/capability-B [3]>                          L<t::Test::STDmaker::tgA1/ok: 16>
- L<Test::STDmaker::tg1/capability-B [4]>                          L<t::Test::STDmaker::tgA1/ok: 8,10,12>
- L<Test::STDmaker::tg1/capability-C [1]>                          L<t::Test::STDmaker::tgA1/ok: 7,9,11>
+ L<Test::STDmaker::tg1/capability-A [1]>                          L<t::Test::STDmaker::tgA1/ok: 4>
+ L<Test::STDmaker::tg1/capability-A [2]>                          L<t::Test::STDmaker::tgA1/ok: 6>
+ L<Test::STDmaker::tg1/capability-B [1]>                          L<t::Test::STDmaker::tgA1/ok: 6>
+ L<Test::STDmaker::tg1/capability-B [2]>                          L<t::Test::STDmaker::tgA1/ok: 16>
+ L<Test::STDmaker::tg1/capability-B [3]>                          L<t::Test::STDmaker::tgA1/ok: 18>
+ L<Test::STDmaker::tg1/capability-B [3]>                          L<t::Test::STDmaker::tgA1/ok: 19>
+ L<Test::STDmaker::tg1/capability-B [4]>                          L<t::Test::STDmaker::tgA1/ok: 11,13,15>
+ L<Test::STDmaker::tg1/capability-C [1]>                          L<t::Test::STDmaker::tgA1/ok: 10,12,14>
 
 
   Test                                                             Requirement
  ---------------------------------------------------------------- ----------------------------------------------------------------
- L<t::Test::STDmaker::tgA1/ok: 13>                                L<Test::STDmaker::tg1/capability-B [2]>
- L<t::Test::STDmaker::tgA1/ok: 15>                                L<Test::STDmaker::tg1/capability-B [3]>
- L<t::Test::STDmaker::tgA1/ok: 16>                                L<Test::STDmaker::tg1/capability-B [3]>
- L<t::Test::STDmaker::tgA1/ok: 1>                                 L<Test::STDmaker::tg1/capability-A [1]>
- L<t::Test::STDmaker::tgA1/ok: 3>                                 L<Test::STDmaker::tg1/capability-A [2]>
- L<t::Test::STDmaker::tgA1/ok: 3>                                 L<Test::STDmaker::tg1/capability-B [1]>
- L<t::Test::STDmaker::tgA1/ok: 7,9,11>                            L<Test::STDmaker::tg1/capability-C [1]>
- L<t::Test::STDmaker::tgA1/ok: 8,10,12>                           L<Test::STDmaker::tg1/capability-B [4]>
+ L<t::Test::STDmaker::tgA1/ok: 10,12,14>                          L<Test::STDmaker::tg1/capability-C [1]>
+ L<t::Test::STDmaker::tgA1/ok: 11,13,15>                          L<Test::STDmaker::tg1/capability-B [4]>
+ L<t::Test::STDmaker::tgA1/ok: 16>                                L<Test::STDmaker::tg1/capability-B [2]>
+ L<t::Test::STDmaker::tgA1/ok: 18>                                L<Test::STDmaker::tg1/capability-B [3]>
+ L<t::Test::STDmaker::tgA1/ok: 19>                                L<Test::STDmaker::tg1/capability-B [3]>
+ L<t::Test::STDmaker::tgA1/ok: 4>                                 L<Test::STDmaker::tg1/capability-A [1]>
+ L<t::Test::STDmaker::tgA1/ok: 6>                                 L<Test::STDmaker::tg1/capability-A [2]>
+ L<t::Test::STDmaker::tgA1/ok: 6>                                 L<Test::STDmaker::tg1/capability-B [1]>
 
 
 =cut
@@ -259,23 +284,12 @@ This STD is public domain.
 
 =head1 SEE ALSO
 
- L<Test::STDmaker::tg1>
+L<Test::STDmaker::tg1>
 
 =back
 
 =for html
-<hr>
-<!-- /BLK -->
-<p><br>
-<!-- BLK ID="NOTICE" -->
-<!-- /BLK -->
-<p><br>
-<!-- BLK ID="OPT-IN" -->
-<!-- /BLK -->
-<p><br>
-<!-- BLK ID="LOG_CGI" -->
-<!-- /BLK -->
-<p><br>
+
 
 =cut
 
@@ -295,7 +309,7 @@ Demo: tgA1.d^
 Verify: tgA1.t^
 
 
- T: 16 - 2,5^
+ T: 19 - 5,8^
 
 
  C:
@@ -306,19 +320,40 @@ Verify: tgA1.t^
     tech_config( 'Test.TESTERR', \*STDOUT );
 ^
 
+QC: my $expected1 = 'hello world';^
+ N: Quiet Code^
+ A: 'hello world'^
+ E: $expected1^
+ok: 1^
+
+ N: ok subroutine^
+TS: \&tolerance^
+
+ A: 99^
+ E: [100, 10]^
+ok: 2^
+
+ N: skip subroutine^
+ S: 0^
+TS: \&tolerance^
+
+ A: 80^
+ E: [100, 10]^
+ok: 3^
+
  N: Pass test^
  R: L<Test::STDmaker::tg1/capability-A [1]>^
  C: my $x = 2^
  C: my $y = 3^
  A: $x + $y^
 SE: 5^
-ok: 1^
+ok: 4^
 
  N: Todo test that passes^
  U: xy feature^
  A: $y-$x^
  E: 1^
-ok: 2^
+ok: 5^
 
 
  R:
@@ -329,20 +364,20 @@ ok: 2^
  N: Test that fails^
  A: $x+4^
  E: 7^
-ok: 3^
+ok: 6^
 
  N: Skipped tests^
  S: 1^
  A: $x*$y*2^
  E: 6^
-ok: 4^
+ok: 7^
 
  N: Todo Test that Fails^
  U: zyw feature^
  S: 0^
  A: $x*$y*2^
  E: 6^
-ok: 5^
+ok: 8^
 
  N: demo only^
 DO: ^
@@ -352,7 +387,7 @@ DO: ^
 VO: ^
  A: $x^
  E: $x^
-ok: 6^
+ok: 9^
 
  N: Test loop^
 
@@ -365,58 +400,56 @@ ok: 6^
  A: $i+200^
  R: L<Test::STDmaker::tg1/capability-C [1]>^
  E: $expected[$i]^
-ok: 7,9,11^
+ok: 10,12,14^
 
  A: $i + ($x * 100)^
  R: L<Test::STDmaker::tg1/capability-B [4]>^
  E: $expected[$i]^
-ok: 8,10,12^
+ok: 11,13,15^
 
  C:     };^
  N: Failed test that skips the rest^
  R: L<Test::STDmaker::tg1/capability-B [2]>^
  A: $x + $y^
 SE: 6^
-ok: 13^
+ok: 16^
 
  N: A test to skip^
  A: $x + $y + $x^
  E: 9^
-ok: 14^
+ok: 17^
 
  N: A not skip to skip^
  S: 0^
  R: L<Test::STDmaker::tg1/capability-B [3]>^
  A: $x + $y + $x + $y^
  E: 10^
-ok: 15^
+ok: 18^
 
  N: A skip to skip^
  S: 1^
  R: L<Test::STDmaker::tg1/capability-B [3]>^
  A: $x + $y + $x + $y + $x^
  E: 10^
-ok: 16^
+ok: 19^
 
 
-See_Also:  L<Test::STDmaker::tg1>^
-Copyright: This STD is public domain.^
-
-HTML:
-<hr>
-<!-- /BLK -->
-<p><br>
-<!-- BLK ID="NOTICE" -->
-<!-- /BLK -->
-<p><br>
-<!-- BLK ID="OPT-IN" -->
-<!-- /BLK -->
-<p><br>
-<!-- BLK ID="LOG_CGI" -->
-<!-- /BLK -->
-<p><br>
+QC:
+    sub tolerance
+    {   
+        my ($actual,$expected) = @_;
+        my ($average, $tolerance) = @$expected;
+        use integer;
+        $actual = (($average - $actual) * 100) / $average;
+        no integer;
+        (-$tolerance < $actual) && ($actual < $tolerance) ? 1 : 0;
+    }
 ^
 
+
+See_Also: L<Test::STDmaker::tg1>^
+Copyright: This STD is public domain.^
+HTML: ^
 
 
 ~-~

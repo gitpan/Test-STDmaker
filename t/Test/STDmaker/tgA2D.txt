@@ -1,4 +1,0 @@
-FAILED tests 3, 13
-	Failed 2/16 tests, 87.50% okay (less 4 skipped tests: 10 okay, 62.50%)
- (1 subtest UNEXPECTEDLY SUCCEEDED), 4 subtests skipped.
-Failed 1/1 test scripts, 0.00% okay. 2/16 subtests failed, 87.50% okay.

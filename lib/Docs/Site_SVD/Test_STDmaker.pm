@@ -10,47 +10,48 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE );
-$VERSION = '0.08';
-$DATE = '2004/04/09';
+$VERSION = '0.10';
+$DATE = '2004/05/14';
 $FILE = __FILE__;
 
 use vars qw(%INVENTORY);
 %INVENTORY = (
-    'lib/Docs/Site_SVD/Test_STDmaker.pm' => [qw(0.08 2004/04/09), 'revised 0.07'],
-    'MANIFEST' => [qw(0.08 2004/04/09), 'generated, replaces 0.07'],
-    'Makefile.PL' => [qw(0.08 2004/04/09), 'generated, replaces 0.07'],
-    'README' => [qw(0.08 2004/04/09), 'generated, replaces 0.07'],
-    'lib/Test/STDmaker.pm' => [qw(1.11 2004/04/09), 'revised 1.1'],
-    'lib/Test/STDType/Demo.pm' => [qw(1.09 2004/04/09), 'revised 1.08'],
-    'lib/Test/STDType/STD.pm' => [qw(1.08 2004/04/09), 'unchanged'],
-    'lib/Test/STDType/Verify.pm' => [qw(1.09 2004/04/09), 'revised 1.08'],
-    'lib/Test/STD/Check.pm' => [qw(1.09 2004/04/09), 'revised 1.08'],
-    'lib/Test/STD/FileGen.pm' => [qw(1.07 2004/04/09), 'unchanged'],
-    'lib/Test/STD/STD2167.pm' => [qw(1.05 2004/04/09), 'unchanged'],
-    'lib/Test/STD/STDgen.pm' => [qw(1.05 2004/04/09), 'unchanged'],
-    't/Test/STDmaker/STDmaker.d' => [qw(0.09 2004/04/09), 'revised 0.08'],
-    't/Test/STDmaker/STDmaker.pm' => [qw(0.01 2004/04/09), 'unchanged'],
-    't/Test/STDmaker/STDmaker.t' => [qw(0.09 2004/04/09), 'revised 0.08'],
+    'lib/Docs/Site_SVD/Test_STDmaker.pm' => [qw(0.10 2004/05/14), 'revised 0.09'],
+    'MANIFEST' => [qw(0.10 2004/05/14), 'generated, replaces 0.09'],
+    'Makefile.PL' => [qw(0.10 2004/05/14), 'generated, replaces 0.09'],
+    'README' => [qw(0.10 2004/05/14), 'generated, replaces 0.09'],
+    'lib/Test/STDmaker.pm' => [qw(1.13 2004/05/14), 'revised 1.12'],
+    'lib/Test/STDmaker/Check.pm' => [qw(1.09 2004/05/14), 'new'],
+    'lib/Test/STDmaker/Demo.pm' => [qw(1.1 2004/05/14), 'new'],
+    'lib/Test/STDmaker/STD.pm' => [qw(1.08 2004/05/14), 'new'],
+    'lib/Test/STDmaker/Verify.pm' => [qw(1.1 2004/05/14), 'new'],
+    't/Test/STDmaker/STDmaker.d' => [qw(0.11 2004/05/14), 'revised 0.1'],
+    't/Test/STDmaker/STDmaker.pm' => [qw(0.09 2004/05/14), 'revised 0.08'],
+    't/Test/STDmaker/STDmaker.t' => [qw(0.11 2004/05/14), 'revised 0.1'],
     't/Test/STDmaker/tg0.pm' => [qw(0.03 2004/04/09), 'unchanged'],
-    't/Test/STDmaker/tg2.pm' => [qw(0.02 2004/04/09), 'unchanged'],
-    't/Test/STDmaker/tgA0.pm' => [qw(0.03 2004/04/09), 'unchanged'],
-    't/Test/STDmaker/tgA1.pm' => [qw(0.03 2004/04/09), 'new'],
-    't/Test/STDmaker/tgA2.pm' => [qw(0.03 2004/04/09), 'unchanged'],
-    't/Test/STDmaker/tgA2A.txt' => [qw(0.07 2004/04/09), 'unchanged'],
-    't/Test/STDmaker/tgA2B.txt' => [qw(0.06 2004/04/09), 'unchanged'],
-    't/Test/STDmaker/tgA2C.txt' => [qw(0.07 2004/04/09), 'unchanged'],
-    't/Test/STDmaker/tgA2D.txt' => [qw(0.03 2003/08/01), 'unchanged'],
+    't/Test/STDmaker/tg2A.pm' => [qw(0.03 2004/05/14), 'revised 0.02'],
+    't/Test/STDmaker/tg2B.pm' => [qw(0.04 2004/05/14), 'revised 0.03'],
+    't/Test/STDmaker/tgA0.pm' => [qw(0.04 2004/05/14), 'revised 0.03'],
+    't/Test/STDmaker/tgA1.pm' => [qw(0.04 2004/05/14), 'revised 0.03'],
+    't/Test/STDmaker/tgA2.pm' => [qw(0.04 2004/05/14), 'revised 0.03'],
+    't/Test/STDmaker/tgA2A2.txt' => [qw(0.1 2004/05/14), 'revised 0.09'],
+    't/Test/STDmaker/tgA2A3.txt' => [qw(0.10 2004/05/14), 'new'],
+    't/Test/STDmaker/tgA2B.txt' => [qw(0.08 2004/05/14), 'revised 0.07'],
+    't/Test/STDmaker/tgA2C.txt' => [qw(0.09 2004/05/14), 'revised 0.08'],
     't/Test/STDmaker/tgB0.pm' => [qw(0.01 2004/04/09), 'unchanged'],
-    't/Test/STDmaker/tgB1.pm' => [qw(0.01 2004/04/09), 'new'],
+    't/Test/STDmaker/tgB1.pm' => [qw(0.01 2004/04/09), 'unchanged'],
     't/Test/STDmaker/tgB2.pm' => [qw(0.01 2004/04/09), 'unchanged'],
-    't/Test/STDmaker/tgB2.txt' => [qw(0.07 2004/04/09), 'unchanged'],
+    't/Test/STDmaker/tgB2.txt' => [qw(0.09 2004/05/14), 'revised 0.08'],
     't/Test/STDmaker/tgC0.pm' => [qw(0.03 2004/04/09), 'unchanged'],
-    't/Test/STDmaker/tgC1.pm' => [qw(0.01 2004/04/09), 'new'],
+    't/Test/STDmaker/tgC1.pm' => [qw(0.01 2004/04/09), 'unchanged'],
     't/Test/STDmaker/tgC2.pm' => [qw(0.03 2004/04/09), 'unchanged'],
-    'bin/tmake.pl' => [qw(1.05 2003/08/01), 'unchanged'],
-    't/Test/STDmaker/Text/Scrub.pm' => [qw(1.11 2004/04/09), 'unchanged'],
-    't/Test/STDmaker/Test/Tech.pm' => [qw(1.17 2004/04/09), 'unchanged'],
-    't/Test/STDmaker/Data/Secs2.pm' => [qw(1.15 2004/04/09), 'unchanged'],
+    't/Test/STDmaker/tmake.pl' => [qw(1.06 2004/05/14), 'new'],
+    't/Test/STDmaker/Text/Scrub.pm' => [qw(1.13 2004/05/14), 'revised 1.11'],
+    't/Test/STDmaker/Test/Tech.pm' => [qw(1.25 2004/05/14), 'revised 1.19'],
+    't/Test/STDmaker/Data/Secs2.pm' => [qw(1.23 2004/05/14), 'revised 1.17'],
+    't/Test/STDmaker/Data/SecsPack.pm' => [qw(0.08 2004/05/14), 'revised 0.02'],
+    't/Test/Data/SecsPack.pm' => [qw(0.08 2004/05/14), 'new'],
+    't/Test/Data/Startup.pm' => [qw(0.06 2004/05/14), 'new'],
 
 );
 
@@ -69,19 +70,23 @@ use vars qw(%INVENTORY);
 
 
 
+=head1 NAME
+
+Docs::Site_SVD::Test_STDmaker - Test Scripts, Demo Scripts and Software Test Description (STD) Automation
+
 =head1 Title Page
 
  Software Version Description
 
  for
 
- Test::STDmaker - Test Scripts, Demo Scripts and Software Test Description (STD) Automation
+ Docs::Site_SVD::Test_STDmaker - Test Scripts, Demo Scripts and Software Test Description (STD) Automation
 
- Revision: G
+ Revision: J
 
- Version: 0.08
+ Version: 0.10
 
- Date: 2004/04/09
+ Date: 2004/05/14
 
  Prepared for: General Public 
 
@@ -116,35 +121,6 @@ program module.
 The __DATA__ section must contain STD
 forms text database in the
 L<DataPort::FileType::DataDB|DataPort::FileType::DataDB> format.
-
-The STD program modules should reside in a 't' subtree whose root
-is the same as the 'lib' subtree.
-
-For example,
- 
- root_dir   
-   lib
-     MyTopLevel
-       MyUnitUnderTest.pm  # code module
-   t
-     MyTopLevel
-       MyUnitUnderTest.pm  # std module
-
-When "Test::STDmaker" searches for a STD program module,
-it looks for it first under all the subtrees in @INC
-with the last directory removed.
-This means the package name must start with "t::".
-Thus the program module name for the Unit Under
-Test (UUT) and the UUT STD program module
-are always different.
-
-Use the "tg.pl" (test generate) cover script for 
-L<Test::STDmaker|Test::STDmaker> to process a STD database
-module as follows:
-
-  tg t::MyTopLevel::MyUnitUnderTest
-  perl -d root_dir/t/MyTopLevel/MyUnitUnderTest.t
-  perl -d root_dir/t/MyTopLevel/MyUnitUnderTest.d
 
 Using the data in the database, the
 "L<Test::STDmaker|Test::STDmaker>" module
@@ -181,36 +157,27 @@ Data Item Description (DID).
 
 =item 5
 
-Automate generation of test information required by
-(L<STD2167A|Docs::US_DOD::STD2167A>) from the STD file
-making it economical to provide this information 
-for even commercial projects.
-The ISO standards and certification are pushing
-commercial projects more and more toward
-using 2167 nomenclature and providing L<STD2167A|Docs::US_DOD::STD2167A> information.
-
 =back
+
+The C<Test::STDmaker> package relieves the designer
+and developer from the burden of filling
+out templates, counting oks, providing
+documentation examples, tracing tests to
+test requirments, and other such time
+consuming, boring, development tasks.
+Instead the designers and developrs need
+only to fill in an a form. 
+The C<Test::STDmaker> will take it from there
+and automatically and quickly generate
+the desired test scripts, demo scripts,
+and test description documents.
 
 See the L<Test::STDmaker|Test::STDmaker> POD for
 further detail on the text database fields and the processing.
 
-The "L<Test::STDmaker|Test::STDmaker>" program module is a high level
-use infterface (functional interface) program module in the US DOD STD2167A bundle.
-The dependency of the program modules in the US DOD STD2167A bundle is as follows:
- 
- File::Package File:SmartNL File::TestPath Text::Scrub
-
-     Test::Tech
-
-        DataPort::FileType::FormDB DataPort::DataFile DataPort::Maker 
-        File::AnySpec File::Data File::PM2File File::SubPM Text::Replace 
-        Text::Column
-
-            Test::STDmaker ExtUtils::SVDmaker
-
 =head2 1.3 Document overview.
 
-This document releases Test::STDmaker version 0.08
+This document releases Test::STDmaker version 0.10
 providing description of the inventory, installation
 instructions and other information necessary to
 utilize and track this release.
@@ -225,12 +192,12 @@ system file specification.
 
 This document releases the file 
 
- Test-STDmaker-0.08.tar.gz
+ Test-STDmaker-0.10.tar.gz
 
 found at the following repository(s):
 
   http://www.softwarediamonds/packages/
-  http://www.perl.com/CPAN-local/authors/id/S/SO/SOFTDIA/
+  http://www.perl.com/CPAN/authors/id/S/SO/SOFTDIA/
 
 Restrictions regarding duplication and license provisions
 are as follows:
@@ -278,6 +245,21 @@ disclaimer in the documentation and/or
 other materials provided with the
 distribution.
 
+=item 3
+
+Commercial installation of the binary or source
+must visually present to the installer 
+the above copyright notice,
+this list of conditions intact,
+that the original source is available
+at http://softwarediamonds.com
+and provide means
+for the installer to actively accept
+the list of conditions; 
+otherwise, a license fee must be paid to
+Softwareware Diamonds.
+
+
 =back
 
 SOFTWARE DIAMONDS, http://www.SoftwareDiamonds.com,
@@ -306,41 +288,42 @@ consists of the following files:
 
  file                                                         version date       comment
  ------------------------------------------------------------ ------- ---------- ------------------------
- lib/Docs/Site_SVD/Test_STDmaker.pm                           0.08    2004/04/09 revised 0.07
- MANIFEST                                                     0.08    2004/04/09 generated, replaces 0.07
- Makefile.PL                                                  0.08    2004/04/09 generated, replaces 0.07
- README                                                       0.08    2004/04/09 generated, replaces 0.07
- lib/Test/STDmaker.pm                                         1.11    2004/04/09 revised 1.1
- lib/Test/STDType/Demo.pm                                     1.09    2004/04/09 revised 1.08
- lib/Test/STDType/STD.pm                                      1.08    2004/04/09 unchanged
- lib/Test/STDType/Verify.pm                                   1.09    2004/04/09 revised 1.08
- lib/Test/STD/Check.pm                                        1.09    2004/04/09 revised 1.08
- lib/Test/STD/FileGen.pm                                      1.07    2004/04/09 unchanged
- lib/Test/STD/STD2167.pm                                      1.05    2004/04/09 unchanged
- lib/Test/STD/STDgen.pm                                       1.05    2004/04/09 unchanged
- t/Test/STDmaker/STDmaker.d                                   0.09    2004/04/09 revised 0.08
- t/Test/STDmaker/STDmaker.pm                                  0.01    2004/04/09 unchanged
- t/Test/STDmaker/STDmaker.t                                   0.09    2004/04/09 revised 0.08
+ lib/Docs/Site_SVD/Test_STDmaker.pm                           0.10    2004/05/14 revised 0.09
+ MANIFEST                                                     0.10    2004/05/14 generated, replaces 0.09
+ Makefile.PL                                                  0.10    2004/05/14 generated, replaces 0.09
+ README                                                       0.10    2004/05/14 generated, replaces 0.09
+ lib/Test/STDmaker.pm                                         1.13    2004/05/14 revised 1.12
+ lib/Test/STDmaker/Check.pm                                   1.09    2004/05/14 new
+ lib/Test/STDmaker/Demo.pm                                    1.1     2004/05/14 new
+ lib/Test/STDmaker/STD.pm                                     1.08    2004/05/14 new
+ lib/Test/STDmaker/Verify.pm                                  1.1     2004/05/14 new
+ t/Test/STDmaker/STDmaker.d                                   0.11    2004/05/14 revised 0.1
+ t/Test/STDmaker/STDmaker.pm                                  0.09    2004/05/14 revised 0.08
+ t/Test/STDmaker/STDmaker.t                                   0.11    2004/05/14 revised 0.1
  t/Test/STDmaker/tg0.pm                                       0.03    2004/04/09 unchanged
- t/Test/STDmaker/tg2.pm                                       0.02    2004/04/09 unchanged
- t/Test/STDmaker/tgA0.pm                                      0.03    2004/04/09 unchanged
- t/Test/STDmaker/tgA1.pm                                      0.03    2004/04/09 new
- t/Test/STDmaker/tgA2.pm                                      0.03    2004/04/09 unchanged
- t/Test/STDmaker/tgA2A.txt                                    0.07    2004/04/09 unchanged
- t/Test/STDmaker/tgA2B.txt                                    0.06    2004/04/09 unchanged
- t/Test/STDmaker/tgA2C.txt                                    0.07    2004/04/09 unchanged
- t/Test/STDmaker/tgA2D.txt                                    0.03    2003/08/01 unchanged
+ t/Test/STDmaker/tg2A.pm                                      0.03    2004/05/14 revised 0.02
+ t/Test/STDmaker/tg2B.pm                                      0.04    2004/05/14 revised 0.03
+ t/Test/STDmaker/tgA0.pm                                      0.04    2004/05/14 revised 0.03
+ t/Test/STDmaker/tgA1.pm                                      0.04    2004/05/14 revised 0.03
+ t/Test/STDmaker/tgA2.pm                                      0.04    2004/05/14 revised 0.03
+ t/Test/STDmaker/tgA2A2.txt                                   0.1     2004/05/14 revised 0.09
+ t/Test/STDmaker/tgA2A3.txt                                   0.10    2004/05/14 new
+ t/Test/STDmaker/tgA2B.txt                                    0.08    2004/05/14 revised 0.07
+ t/Test/STDmaker/tgA2C.txt                                    0.09    2004/05/14 revised 0.08
  t/Test/STDmaker/tgB0.pm                                      0.01    2004/04/09 unchanged
- t/Test/STDmaker/tgB1.pm                                      0.01    2004/04/09 new
+ t/Test/STDmaker/tgB1.pm                                      0.01    2004/04/09 unchanged
  t/Test/STDmaker/tgB2.pm                                      0.01    2004/04/09 unchanged
- t/Test/STDmaker/tgB2.txt                                     0.07    2004/04/09 unchanged
+ t/Test/STDmaker/tgB2.txt                                     0.09    2004/05/14 revised 0.08
  t/Test/STDmaker/tgC0.pm                                      0.03    2004/04/09 unchanged
- t/Test/STDmaker/tgC1.pm                                      0.01    2004/04/09 new
+ t/Test/STDmaker/tgC1.pm                                      0.01    2004/04/09 unchanged
  t/Test/STDmaker/tgC2.pm                                      0.03    2004/04/09 unchanged
- bin/tmake.pl                                                 1.05    2003/08/01 unchanged
- t/Test/STDmaker/Text/Scrub.pm                                1.11    2004/04/09 unchanged
- t/Test/STDmaker/Test/Tech.pm                                 1.17    2004/04/09 unchanged
- t/Test/STDmaker/Data/Secs2.pm                                1.15    2004/04/09 unchanged
+ t/Test/STDmaker/tmake.pl                                     1.06    2004/05/14 new
+ t/Test/STDmaker/Text/Scrub.pm                                1.13    2004/05/14 revised 1.11
+ t/Test/STDmaker/Test/Tech.pm                                 1.25    2004/05/14 revised 1.19
+ t/Test/STDmaker/Data/Secs2.pm                                1.23    2004/05/14 revised 1.17
+ t/Test/STDmaker/Data/SecsPack.pm                             0.08    2004/05/14 revised 0.02
+ t/Test/Data/SecsPack.pm                                      0.08    2004/05/14 new
+ t/Test/Data/Startup.pm                                       0.06    2004/05/14 new
 
 
 =head2 3.3 Changes
@@ -474,11 +457,38 @@ pass the tests for the Test::STDmaker program module.
    Platform:
      osname=linux, osvers=2.4.22-4tr, archname=i586-linux
 
-This is capitalization problem. The program module name is 'FindBin' not 'FindBIN' which
+This is a capitalization problem. The program module name is 'FindBin' not 'FindBIN' which
 is part of Perl. Microsoft does not care about capitalization differences while linux
 does. This error is in the test script automatically generated by C<Test::STDmaker>
 and was just introduced when moved test script libraries from C<tlib> to the directory
 of the test script. Repaired C<Test::STDmaker> and regenerated the distribution.
+
+=item Test-STDmaker-0.09
+
+Added the generated xxxx.d demo script prints out the test name as a comment.
+
+Added the C<report> option that automatically runs all tests scripts and
+replaces the UUT program module C<=headx Test Report> section with the
+output.
+
+The test software uses the lastest version of C<Test::Tech>. This impacted
+the expected values of the old tests slightly. Made the adjustments.
+
+=item Test-STDmaker-0.10
+
+Added the C<&Test::Tech::is_skip> subroutine.
+
+Added a left edge space column to the =\headx test report automatically
+generated section  so that POD formats it as code.
+
+Changed the look of the C<demo> subroutine output to better resemble Perl code. 
+Print the code straight forward without leading '=>'. Put a Perl comment '# ' in front of
+each result line instead of printing it straing forward.
+
+Added the C<QC:> that is same for the C<C:> field except for the demo script.
+The demo script silently executes a C<QC:>, quiet code, data.
+
+Recoded so that none of the modules uses C<File::Data> program module.
 
 =back
 
@@ -504,7 +514,7 @@ and installation support are as follows:
 
 =item Installation Instructions.
 
-To installed the release file, use the CPAN module
+To installed the release package, use the CPAN module
 pr PPM module in the Perl release
 or the INSTALL.PL script at the following web site:
 
@@ -516,15 +526,15 @@ If all else fails, the file may be manually installed.
 Enter one of the following repositories in a web browser:
 
   http://www.softwarediamonds/packages/
-  http://www.perl.com/CPAN-local/authors/id/S/SO/SOFTDIA/
+  http://www.perl.com/CPAN/authors/id/S/SO/SOFTDIA/
 
-Right click on 'Test-STDmaker-0.08.tar.gz' and download to a temporary
+Right click on 'Test-STDmaker-0.10.tar.gz' and download to a temporary
 installation directory.
 Enter the following where $make is 'nmake' for microsoft
 windows; otherwise 'make'.
 
- gunzip Test-STDmaker-0.08.tar.gz
- tar -xf Test-STDmaker-0.08.tar
+ gunzip Test-STDmaker-0.10.tar.gz
+ tar -xf Test-STDmaker-0.10.tar
  perl Makefile.PL
  $make test
  $make install
@@ -535,19 +545,29 @@ not install, download and install unxutils from
 
  http://packages.softwarediamonds.com
 
+VERY IMPORTANT:
+
+The distribution package contains the cover
+C<bin/tmake.pl> perl command script.
+Manually copy this into the execution path
+in order to use C<STDmaker> from the
+command line. Rename it if there is a
+name conflict or just do not like the name.
+
 =item Prerequistes.
 
  'File::AnySpec' => '1.1',
- 'File::Data' => '1.1',
  'File::Package' => '1.1',
  'File::Where' => '0.02',
  'File::SmartNL' => '1.1',
  'File::SubPM' => '1.1',
  'Text::Replace' => '1.08',
  'Text::Column' => '1.08',
- 'DataPort::FileType::FormDB' => '0.03',
- 'DataPort::Maker' => '1.04',
- 'DataPort::DataFile' => '0.04',
+ 'File::Maker' => '0.03',
+ 'Tie::Form' => '0.00',
+ 'Tie::Layers' => '0.00',
+ 'Test::Harness' => '2.42',
+ 'Data::Startup' => '0.02',
 
 
 =item Security, privacy, or safety precautions.
@@ -609,6 +629,7 @@ the execution of all paths in the software under test.
 
 The following are useful acronyms:
 
+
 =over 4
 
 =item .d
@@ -643,122 +664,32 @@ Software Version Description
 
 =head1 2.0 SEE ALSO
 
-Modules with end-user functional interfaces 
-relating to US DOD 2167A automation are
-as follows:
-
 =over 4
 
 =item L<Test::STDmaker|Test::STDmaker>
 
-=item L<ExtUtils::SVDmaker|ExtUtils::SVDmaker>
+=item L<Tie::FormD|Tie::Form>
 
-=item L<DataPort::FileType::FormDB|DataPort::FileType::FormDB>
-
-=item L<DataPort::DataFile|DataPort::DataFile>
 
 =item L<Test::Tech|Test::Tech>
 
 =item L<Test|Test>
 
-=item L<Data::Dumper|Data::Dumper>
+=item L<Data::Secs2|Data::Secs2>
 
-=item L<Test::STD::Scrub|Test::STD::Scrub>
+=item L<Test::STDmaker::Check|Test::STDmaker::Check>
 
-=item L<Test::STD::STDutil|Test::STD::STDutil>
+=item L<Test::STDmaker::Demo|Test::STDmaker::Demo>
 
-=item L<File::FileUtil|File::FileUtil>
+=item L<Test::STDmaker::STD|Test::STDmaker::STD>
 
-=back
-
-The design modules for L<Test::STDmaker|Test::STDmaker>
-have no other conceivable use then to support the
-L<Test::STDmaker|Test::STDmaker> functional interface. 
-The  L<Test::STDmaker|Test::STDmaker>
-design module are as follows:
-
-=over 4
-
-=item L<Test::STD::Check|Test::STD::Check>
-
-=item L<Test::STD::FileGen|Test::STD::FileGen>
-
-=item L<Test::STD::STD2167|Test::STD::STD2167>
-
-=item L<Test::STD::STDgen|Test::STD::STDgen>
-
-=item L<Test::STDtype::Demo|Test::STDtype::Demo>
-
-=item L<Test::STDtype::STD|Test::STDtype::STD>
-
-=item L<Test::STDtype::Verify|Test::STDtype::Verify>
-
-=back
-
-
-Some US DOD 2167A Software Development Standard, DIDs and
-other related documents that complement the 
-US DOD 2167A automation are as follows:
-
-=over 4
+=item L<Test::STDmaker::Verify|Test::STDmaker::Verify>
 
 =item L<US DOD Software Development Standard|Docs::US_DOD::STD2167A>
 
 =item L<US DOD Specification Practices|Docs::US_DOD::STD490A>
 
-=item L<Computer Operation Manual (COM) DID|Docs::US_DOD::COM>
-
-=item L<Computer Programming Manual (CPM) DID)|Docs::US_DOD::CPM>
-
-=item L<Computer Resources Integrated Support Document (CRISD) DID|Docs::US_DOD::CRISD>
-
-=item L<Computer System Operator's Manual (CSOM) DID|Docs::US_DOD::CSOM>
-
-=item L<Database Design Description (DBDD) DID|Docs::US_DOD::DBDD>
-
-=item L<Engineering Change Proposal (ECP) DID|Docs::US_DOD::ECP>
-
-=item L<Firmware support Manual (FSM) DID|Docs::US_DOD::FSM>
-
-=item L<Interface Design Document (IDD) DID|Docs::US_DOD::IDD>
-
-=item L<Interface Requirements Specification (IRS) DID|Docs::US_DOD::IRS>
-
-=item L<Operation Concept Description (OCD) DID|Docs::US_DOD::OCD>
-
-=item L<Specification Change Notice (SCN) DID|Docs::US_DOD::SCN>
-
-=item L<Software Design Specification (SDD) DID|Docs::US_DOD::SDD>
-
-=item L<Software Development Plan (SDP) DID|Docs::US_DOD::SDP> 
-
-=item L<Software Input and Output Manual (SIOM) DID|Docs::US_DOD::SIOM>
-
-=item L<Software Installation Plan (SIP) DID|Docs::US_DOD::SIP>
-
-=item L<Software Programmer's Manual (SPM) DID|Docs::US_DOD::SPM>
-
-=item L<Software Product Specification (SPS) DID|Docs::US_DOD::SPS>
-
-=item L<Software Requirements Specification (SRS) DID|Docs::US_DOD::SRS>
-
-=item L<System or Segment Design Document (SSDD) DID|Docs::US_DOD::SSDD>
-
-=item L<System or Subsystem Specification (SSS) DID|Docs::US_DOD::SSS>
-
 =item L<Software Test Description (STD) DID|Docs::US_DOD::STD>
-
-=item L<Software Test Plan (STP) DID|Docs::US_DOD::STP>
-
-=item L<Software Test Report (STR) DID|Docs::US_DOD::STR>
-
-=item L<Software Transition Plan (STrP) DID|Docs::US_DOD::STrP>
-
-=item L<Software User Manual (SUM) DID|Docs::US_DOD::SUM>
-
-=item L<Software Version Description (SVD) DID|Docs::US_DOD::SVD>
-
-=item L<Version Description Document (VDD) DID|Docs::US_DOD::VDD>
 
 =back
 
@@ -787,10 +718,10 @@ __DATA__
 DISTNAME: Test-STDmaker^
 REPOSITORY_DIR: packages^
 
-VERSION : 0.08^
+VERSION : 0.10^
 FREEZE: 1^
-PREVIOUS_RELEASE: 0.07^
-REVISION: G^
+PREVIOUS_RELEASE: 0.09^
+REVISION: J^
 
 PREVIOUS_DISTNAME:  ^
 AUTHOR  : SoftwareDiamonds.com E<lt>support@SoftwareDiamonds.comE<gt>^
@@ -800,7 +731,7 @@ Generates Software Test Description (STD) documents, test scripts and
 demo scripts from a text FormDB database file.
 ^
 
-TITLE   : Test::STDmaker - Test Scripts, Demo Scripts and Software Test Description (STD) Automation^
+TITLE   : Docs::Site_SVD::Test_STDmaker - Test Scripts, Demo Scripts and Software Test Description (STD) Automation^
 END_USER: General Public^
 COPYRIGHT: copyright © 2003 Software Diamonds^
 CLASSIFICATION: NONE^
@@ -810,7 +741,7 @@ SVD_FSPEC: Unix^
 
 REPOSITORY: 
   http://www.softwarediamonds/packages/
-  http://www.perl.com/CPAN-local/authors/id/S/SO/SOFTDIA/
+  http://www.perl.com/CPAN/authors/id/S/SO/SOFTDIA/
 ^
 
 
@@ -822,37 +753,37 @@ CHANGE2CURRENT :  ^
 
 AUTO_REVISE:
 lib/Test/STDmaker.pm
-lib/Test/STDType/*
-lib/Test/STD/Check.pm
-lib/Test/STD/FileGen.pm
-lib/Test/STD/STD2167.pm
-lib/Test/STD/STDgen.pm
+lib/Test/STDmaker/*
 t/Test/STDmaker/*
 t/Test/STDmaker/lib/*
 t/Test/STDmaker/lib/Data/*
-bin/tmake.pl
+bin/tmake.pl => t/Test/STDmaker/tmake.pl
 lib/Text/Scrub.pm => t/Test/STDmaker/Text/Scrub.pm
 lib/Test/Tech.pm => t/Test/STDmaker/Test/Tech.pm
 lib/Data/Secs2.pm => t/Test/STDmaker/Data/Secs2.pm
+lib/Data/SecsPack.pm => t/Test/STDmaker/Data/SecsPack.pm
+lib/Data/SecsPack.pm => t/Test/Data/SecsPack.pm
+lib/Data/Startup.pm => t/Test/Data/Startup.pm
 ^
 
 PREREQ_PM:
 'File::AnySpec' => '1.1',
-'File::Data' => '1.1',
 'File::Package' => '1.1',
 'File::Where' => '0.02',
 'File::SmartNL' => '1.1',
 'File::SubPM' => '1.1',
 'Text::Replace' => '1.08',
 'Text::Column' => '1.08',
-'DataPort::FileType::FormDB' => '0.03',
-'DataPort::Maker' => '1.04',
-'DataPort::DataFile' => '0.04',
+'File::Maker' => '0.03',
+'Tie::Form' => '0.00',
+'Tie::Layers' => '0.00',
+'Test::Harness' => '2.42',
+'Data::Startup' => '0.02',
 ^
 
+README_PODS: lib/Test/STDmaker.pm^
 TESTS: t/Test/STDmaker/STDmaker.t^
-
-EXE_FILES: bin/tmake.pl^
+EXE_FILES:  ^
 
 CAPABILITIES:
 The system is the Perl programming language software.
@@ -866,35 +797,6 @@ program module.
 The __DATA__ section must contain STD
 forms text database in the
 L<DataPort::FileType::DataDB|DataPort::FileType::DataDB> format.
-
-The STD program modules should reside in a 't' subtree whose root
-is the same as the 'lib' subtree.
-
-For example,
- 
- root_dir   
-   lib
-     MyTopLevel
-       MyUnitUnderTest.pm  # code module
-   t
-     MyTopLevel
-       MyUnitUnderTest.pm  # std module
-
-When "Test::STDmaker" searches for a STD program module,
-it looks for it first under all the subtrees in @INC
-with the last directory removed.
-This means the package name must start with "t::".
-Thus the program module name for the Unit Under
-Test (UUT) and the UUT STD program module
-are always different.
-
-Use the "tg.pl" (test generate) cover script for 
-L<Test::STDmaker|Test::STDmaker> to process a STD database
-module as follows:
-
-  tg t::MyTopLevel::MyUnitUnderTest
-  perl -d root_dir/t/MyTopLevel/MyUnitUnderTest.t
-  perl -d root_dir/t/MyTopLevel/MyUnitUnderTest.d
 
 Using the data in the database, the
 "L<Test::STDmaker|Test::STDmaker>" module
@@ -931,32 +833,23 @@ Data Item Description (DID).
 
 \=item 5
 
-Automate generation of test information required by
-(L<STD2167A|Docs::US_DOD::STD2167A>) from the STD file
-making it economical to provide this information 
-for even commercial projects.
-The ISO standards and certification are pushing
-commercial projects more and more toward
-using 2167 nomenclature and providing L<STD2167A|Docs::US_DOD::STD2167A> information.
-
 \=back
+
+The C<Test::STDmaker> package relieves the designer
+and developer from the burden of filling
+out templates, counting oks, providing
+documentation examples, tracing tests to
+test requirments, and other such time
+consuming, boring, development tasks.
+Instead the designers and developrs need
+only to fill in an a form. 
+The C<Test::STDmaker> will take it from there
+and automatically and quickly generate
+the desired test scripts, demo scripts,
+and test description documents.
 
 See the L<Test::STDmaker|Test::STDmaker> POD for
 further detail on the text database fields and the processing.
-
-The "L<Test::STDmaker|Test::STDmaker>" program module is a high level
-use infterface (functional interface) program module in the US DOD STD2167A bundle.
-The dependency of the program modules in the US DOD STD2167A bundle is as follows:
- 
- File::Package File:SmartNL File::TestPath Text::Scrub
-
-     Test::Tech
-
-        DataPort::FileType::FormDB DataPort::DataFile DataPort::Maker 
-        File::AnySpec File::Data File::PM2File File::SubPM Text::Replace 
-        Text::Column
-
-            Test::STDmaker ExtUtils::SVDmaker
 
 ^
 
@@ -1090,11 +983,38 @@ pass the tests for the Test::STDmaker program module.
    Platform:
      osname=linux, osvers=2.4.22-4tr, archname=i586-linux
 
-This is capitalization problem. The program module name is 'FindBin' not 'FindBIN' which
+This is a capitalization problem. The program module name is 'FindBin' not 'FindBIN' which
 is part of Perl. Microsoft does not care about capitalization differences while linux
 does. This error is in the test script automatically generated by C<Test::STDmaker>
 and was just introduced when moved test script libraries from C<tlib> to the directory
 of the test script. Repaired C<Test::STDmaker> and regenerated the distribution.
+
+\=item Test-STDmaker-0.09
+
+Added the generated xxxx.d demo script prints out the test name as a comment.
+
+Added the C<report> option that automatically runs all tests scripts and
+replaces the UUT program module C<=headx Test Report> section with the
+output.
+
+The test software uses the lastest version of C<Test::Tech>. This impacted
+the expected values of the old tests slightly. Made the adjustments.
+
+\=item Test-STDmaker-0.10
+
+Added the C<&Test::Tech::is_skip> subroutine.
+
+Added a left edge space column to the =\headx test report automatically
+generated section  so that POD formats it as code.
+
+Changed the look of the C<demo> subroutine output to better resemble Perl code. 
+Print the code straight forward without leading '=>'. Put a Perl comment '# ' in front of
+each result line instead of printing it straing forward.
+
+Added the C<QC:> that is same for the C<C:> field except for the demo script.
+The demo script silently executes a C<QC:>, quiet code, data.
+
+Recoded so that none of the modules uses C<File::Data> program module.
 
 \=back
 
@@ -1175,6 +1095,21 @@ disclaimer in the documentation and/or
 other materials provided with the
 distribution.
 
+\=item 3
+
+Commercial installation of the binary or source
+must visually present to the installer 
+the above copyright notice,
+this list of conditions intact,
+that the original source is available
+at http://softwarediamonds.com
+and provide means
+for the installer to actively accept
+the list of conditions; 
+otherwise, a license fee must be paid to
+Softwareware Diamonds.
+
+
 \=back
 
 SOFTWARE DIAMONDS, http://www.SoftwareDiamonds.com,
@@ -1197,7 +1132,7 @@ ANY WAY OUT OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 INSTALLATION:
-To installed the release file, use the CPAN module
+To installed the release package, use the CPAN module
 pr PPM module in the Perl release
 or the INSTALL.PL script at the following web site:
 
@@ -1226,6 +1161,16 @@ must be in the exeuction path. If tar and gunzip are
 not install, download and install unxutils from
 
  http://packages.softwarediamonds.com
+
+VERY IMPORTANT:
+
+The distribution package contains the cover
+C<bin/tmake.pl> perl command script.
+Manually copy this into the execution path
+in order to use C<STDmaker> from the
+command line. Rename it if there is a
+name conflict or just do not like the name.
+
 ^
 
 SUPPORT:
@@ -1234,6 +1179,7 @@ SUPPORT:
 
 NOTES:
 The following are useful acronyms:
+
 
 \=over 4
 
@@ -1267,124 +1213,36 @@ Software Version Description
 
 \=back
 ^
-SEE_ALSO:
 
-Modules with end-user functional interfaces 
-relating to US DOD 2167A automation are
-as follows:
+
+SEE_ALSO:
 
 \=over 4
 
 \=item L<Test::STDmaker|Test::STDmaker>
 
-\=item L<ExtUtils::SVDmaker|ExtUtils::SVDmaker>
+\=item L<Tie::FormD|Tie::Form>
 
-\=item L<DataPort::FileType::FormDB|DataPort::FileType::FormDB>
-
-\=item L<DataPort::DataFile|DataPort::DataFile>
 
 \=item L<Test::Tech|Test::Tech>
 
 \=item L<Test|Test>
 
-\=item L<Data::Dumper|Data::Dumper>
+\=item L<Data::Secs2|Data::Secs2>
 
-\=item L<Test::STD::Scrub|Test::STD::Scrub>
+\=item L<Test::STDmaker::Check|Test::STDmaker::Check>
 
-\=item L<Test::STD::STDutil|Test::STD::STDutil>
+\=item L<Test::STDmaker::Demo|Test::STDmaker::Demo>
 
-\=item L<File::FileUtil|File::FileUtil>
+\=item L<Test::STDmaker::STD|Test::STDmaker::STD>
 
-\=back
-
-The design modules for L<Test::STDmaker|Test::STDmaker>
-have no other conceivable use then to support the
-L<Test::STDmaker|Test::STDmaker> functional interface. 
-The  L<Test::STDmaker|Test::STDmaker>
-design module are as follows:
-
-\=over 4
-
-\=item L<Test::STD::Check|Test::STD::Check>
-
-\=item L<Test::STD::FileGen|Test::STD::FileGen>
-
-\=item L<Test::STD::STD2167|Test::STD::STD2167>
-
-\=item L<Test::STD::STDgen|Test::STD::STDgen>
-
-\=item L<Test::STDtype::Demo|Test::STDtype::Demo>
-
-\=item L<Test::STDtype::STD|Test::STDtype::STD>
-
-\=item L<Test::STDtype::Verify|Test::STDtype::Verify>
-
-\=back
-
-
-Some US DOD 2167A Software Development Standard, DIDs and
-other related documents that complement the 
-US DOD 2167A automation are as follows:
-
-\=over 4
+\=item L<Test::STDmaker::Verify|Test::STDmaker::Verify>
 
 \=item L<US DOD Software Development Standard|Docs::US_DOD::STD2167A>
 
 \=item L<US DOD Specification Practices|Docs::US_DOD::STD490A>
 
-\=item L<Computer Operation Manual (COM) DID|Docs::US_DOD::COM>
-
-\=item L<Computer Programming Manual (CPM) DID)|Docs::US_DOD::CPM>
-
-\=item L<Computer Resources Integrated Support Document (CRISD) DID|Docs::US_DOD::CRISD>
-
-\=item L<Computer System Operator's Manual (CSOM) DID|Docs::US_DOD::CSOM>
-
-\=item L<Database Design Description (DBDD) DID|Docs::US_DOD::DBDD>
-
-\=item L<Engineering Change Proposal (ECP) DID|Docs::US_DOD::ECP>
-
-\=item L<Firmware support Manual (FSM) DID|Docs::US_DOD::FSM>
-
-\=item L<Interface Design Document (IDD) DID|Docs::US_DOD::IDD>
-
-\=item L<Interface Requirements Specification (IRS) DID|Docs::US_DOD::IRS>
-
-\=item L<Operation Concept Description (OCD) DID|Docs::US_DOD::OCD>
-
-\=item L<Specification Change Notice (SCN) DID|Docs::US_DOD::SCN>
-
-\=item L<Software Design Specification (SDD) DID|Docs::US_DOD::SDD>
-
-\=item L<Software Development Plan (SDP) DID|Docs::US_DOD::SDP> 
-
-\=item L<Software Input and Output Manual (SIOM) DID|Docs::US_DOD::SIOM>
-
-\=item L<Software Installation Plan (SIP) DID|Docs::US_DOD::SIP>
-
-\=item L<Software Programmer's Manual (SPM) DID|Docs::US_DOD::SPM>
-
-\=item L<Software Product Specification (SPS) DID|Docs::US_DOD::SPS>
-
-\=item L<Software Requirements Specification (SRS) DID|Docs::US_DOD::SRS>
-
-\=item L<System or Segment Design Document (SSDD) DID|Docs::US_DOD::SSDD>
-
-\=item L<System or Subsystem Specification (SSS) DID|Docs::US_DOD::SSS>
-
 \=item L<Software Test Description (STD) DID|Docs::US_DOD::STD>
-
-\=item L<Software Test Plan (STP) DID|Docs::US_DOD::STP>
-
-\=item L<Software Test Report (STR) DID|Docs::US_DOD::STR>
-
-\=item L<Software Transition Plan (STrP) DID|Docs::US_DOD::STrP>
-
-\=item L<Software User Manual (SUM) DID|Docs::US_DOD::SUM>
-
-\=item L<Software Version Description (SVD) DID|Docs::US_DOD::SVD>
-
-\=item L<Version Description Document (VDD) DID|Docs::US_DOD::VDD>
 
 \=back
 
@@ -1407,5 +1265,9 @@ HTML:
 <p><br>
 ^
 ~-~
+
+
+
+
 
 

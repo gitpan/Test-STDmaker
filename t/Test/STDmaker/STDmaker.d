@@ -7,8 +7,8 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE);
-$VERSION = '0.09';   # automatically generated file
-$DATE = '2004/04/09';
+$VERSION = '0.11';   # automatically generated file
+$DATE = '2004/05/14';
 
 
 ##### Demonstration Script ####
@@ -41,7 +41,7 @@ BEGIN {
     use Cwd;
     use File::Spec;
     use FindBin;
-    use Test::Tech qw(tech_config plan demo skip_tests);
+    use Test::Tech qw(demo is_skip plan skip_tests tech_config );
 
     ########
     # The working directory for this script file is the directory where
@@ -81,19 +81,15 @@ END {
 
 print << 'MSG';
 
- ~~~~~~ Demonstration overview ~~~~~
+~~~~~~ Demonstration overview ~~~~~
  
-Perl code begins with the prompt
+The results from executing the Perl Code 
+follow on the next lines as comments. For example,
 
- =>
+ 2 + 2
+ # 4
 
-The selected results from executing the Perl Code 
-follow on the next lines. For example,
-
- => 2 + 2
- 4
-
- ~~~~~~ The demonstration follows ~~~~~
+~~~~~~ The demonstration follows ~~~~~
 
 MSG
 
@@ -138,12 +134,32 @@ demo( "\ \ \ \ use\ vars\ qw\(\$loaded\)\;\
     my $loaded = 0;
     my @outputs;; # execution
 
+print << "EOF";
+
+ ##################
+ # Load UUT
+ # 
+ 
+EOF
+
 demo( "my\ \$errors\ \=\ \$fp\-\>load_package\(\ \'Test\:\:STDmaker\'\ \)"); # typed in command           
       my $errors = $fp->load_package( 'Test::STDmaker' ); # execution
 
 demo( "\$errors", # typed in command           
       $errors # execution
 ) unless     $loaded; # condition for execution                            
+
+print << "EOF";
+
+ ##################
+ # Test::STDmaker Version $Test::STDmaker::VERSION
+ # 
+ 
+EOF
+
+demo( "\$Test\:\:STDmaker\:\:VERSION", # typed in command           
+      $Test::STDmaker::VERSION); # execution
+
 
 demo( "\$snl\-\>fin\(\'tgA0\.pm\'\)", # typed in command           
       $snl->fin('tgA0.pm')); # execution
@@ -160,6 +176,14 @@ demo( "\$s\-\>scrub_date_version\(\$snl\-\>fin\(\'tgA1\.pm\'\)\)", # typed in co
       $s->scrub_date_version($snl->fin('tgA1.pm'))); # execution
 
 
+print << "EOF";
+
+ ##################
+ # Clean STD pm with a todo list
+ # 
+ 
+EOF
+
 demo( "\$snl\-\>fin\(\'tgB0\.pm\'\)", # typed in command           
       $snl->fin('tgB0.pm')); # execution
 
@@ -173,6 +197,14 @@ demo( "\$s\-\>scrub_date_version\(\$snl\-\>fin\(\'tgB1\.pm\'\)\)", # typed in co
       $s->scrub_date_version($snl->fin('tgB1.pm'))); # execution
 
 
+print << "EOF";
+
+ ##################
+ # Clean STD pm without a todo list
+ # 
+ 
+EOF
+
 demo( "\ \ \ \ \$test_results\ \=\ \`perl\ tgB1\.t\`\;\
 \ \ \ \ \$snl\-\>fout\(\'tgB1\.txt\'\,\ \$test_results\)\;"); # typed in command           
           $test_results = `perl tgB1.t`;
@@ -181,6 +213,67 @@ demo( "\ \ \ \ \$test_results\ \=\ \`perl\ tgB1\.t\`\;\
 demo( "\$s\-\>scrub_probe\(\$s\-\>scrub_file_line\(\$test_results\)\)", # typed in command           
       $s->scrub_probe($s->scrub_file_line($test_results))); # execution
 
+
+print << "EOF";
+
+ ##################
+ # Generated and execute the test script
+ # 
+ 
+EOF
+
+print << "EOF";
+
+ ##################
+ # Cleaned tgA1.pm
+ # 
+ 
+EOF
+
+print << "EOF";
+
+ ##################
+ # Internal Storage
+ # 
+ 
+EOF
+
+demo( "\ \ \ \ use\ Data\:\:Dumper\;\
+\ \ \ \ my\ \$probe\ \=\ 3\;\
+\ \ \ \ my\ \$actual_results\ \=\ Dumper\(\[0\+\$probe\]\)\;\
+\ \ \ \ my\ \$internal_storage\ \=\ \'undetermine\'\;\
+\ \ \ \ if\(\ \$actual_results\ eq\ Dumper\(\[3\]\)\ \)\ \{\
+\ \ \ \ \ \ \ \ \$internal_storage\ \=\ \'number\'\;\
+\ \ \ \ \}\
+\ \ \ \ elsif\ \(\ \$actual_results\ eq\ Dumper\(\[\'3\'\]\)\ \)\ \{\
+\ \ \ \ \ \ \ \ \$internal_storage\ \=\ \'string\'\;\
+\ \ \ \ \}\
+\
+\ \ \ \ my\ \$expected_results\;"); # typed in command           
+          use Data::Dumper;
+    my $probe = 3;
+    my $actual_results = Dumper([0+$probe]);
+    my $internal_storage = 'undetermine';
+    if( $actual_results eq Dumper([3]) ) {
+        $internal_storage = 'number';
+    }
+    elsif ( $actual_results eq Dumper(['3']) ) {
+        $internal_storage = 'string';
+    }
+
+    my $expected_results;; # execution
+
+demo( "\$internal_storage", # typed in command           
+      $internal_storage); # execution
+
+
+print << "EOF";
+
+ ##################
+ # Generated and execute the test script
+ # 
+ 
+EOF
 
 demo( "\$snl\-\>fin\(\ \'tg0\.pm\'\ \ \)", # typed in command           
       $snl->fin( 'tg0.pm'  )); # execution
@@ -203,8 +296,18 @@ demo( "\ \ \ \ \#\#\#\#\#\#\#\#\#\
 \ \ \ \ pop\ \@cwd\;\
 \ \ \ \ pop\ \@cwd\;\
 \ \ \ \ unshift\ \@INC\,\ File\:\:Spec\-\>catdir\(\ \@cwd\ \)\;\ \ \#\ put\ UUT\ in\ lib\ path\
-\ \ \ \ \$tmaker\-\>tmake\(\'demo\'\,\ \{\ pm\ \=\>\ \'t\:\:Test\:\:STDmaker\:\:tgA1\'\,\ replace\ \=\>\ 1\}\)\;\
-\ \ \ \ shift\ \@INC\;"); # typed in command           
+\ \ \ \ \$tmaker\-\>tmake\(\'demo\'\,\ \{\ pm\ \=\>\ \'t\:\:Test\:\:STDmaker\:\:tgA1\'\,\ demo\ \=\>\ 1\}\)\;\
+\ \ \ \ shift\ \@INC\;\
+\
+\ \ \ \ \#\#\#\#\#\#\#\
+\ \ \ \ \#\ expected\ results\ depend\ upon\ the\ internal\ storage\ from\ numbers\ \
+\ \ \ \ \#\
+\ \ \ \ if\(\ \$internal_storage\ eq\ \'string\'\)\ \{\
+\ \ \ \ \ \ \ \ \$expected_results\ \=\ \'tg2B\.pm\'\;\
+\ \ \ \ \}\
+\ \ \ \ else\ \{\
+\ \ \ \ \ \ \ \ \$expected_results\ \=\ \'tg2A\.pm\'\;\
+\ \ \ \ \}"); # typed in command           
           #########
     #
     # Individual generate outputs using options
@@ -222,12 +325,30 @@ demo( "\ \ \ \ \#\#\#\#\#\#\#\#\#\
     pop @cwd;
     pop @cwd;
     unshift @INC, File::Spec->catdir( @cwd );  # put UUT in lib path
-    $tmaker->tmake('demo', { pm => 't::Test::STDmaker::tgA1', replace => 1});
-    shift @INC;; # execution
+    $tmaker->tmake('demo', { pm => 't::Test::STDmaker::tgA1', demo => 1});
+    shift @INC;
+
+    #######
+    # expected results depend upon the internal storage from numbers 
+    #
+    if( $internal_storage eq 'string') {
+        $expected_results = 'tg2B.pm';
+    }
+    else {
+        $expected_results = 'tg2A.pm';
+    }; # execution
 
 demo( "\$s\-\>scrub_date_version\(\$snl\-\>fin\(\'tg1\.pm\'\)\)", # typed in command           
       $s->scrub_date_version($snl->fin('tg1.pm'))); # execution
 
+
+print << "EOF";
+
+ ##################
+ # Generate and replace a demonstration
+ # 
+ 
+EOF
 
 demo( "\ \ \ \ no\ warnings\;\
 \ \ \ \ open\ SAVEOUT\,\ \"\>\&STDOUT\"\;\
@@ -270,6 +391,14 @@ demo( "\$s\-\>scrub_probe\(\$s\-\>scrub_test_file\(\$s\-\>scrub_file_line\(\$tes
       $s->scrub_probe($s->scrub_test_file($s->scrub_file_line($test_results)))); # execution
 
 
+print << "EOF";
+
+ ##################
+ # Generate and verbose test harness run test script
+ # 
+ 
+EOF
+
 demo( "\$snl\-\>fin\(\'tgC0\.pm\'\)", # typed in command           
       $snl->fin('tgC0.pm')); # execution
 
@@ -283,15 +412,65 @@ demo( "\$s\-\>scrub_date_version\(\$snl\-\>fin\(\'tgC1\.pm\'\)\)", # typed in co
       $s->scrub_date_version($snl->fin('tgC1.pm'))); # execution
 
 
+print << "EOF";
+
+ ##################
+ # Change File Spec
+ # 
+ 
+EOF
+
+print << "EOF";
+
+ ##################
+ # find_t_roots
+ # 
+ 
+EOF
+
+demo( "\ \ \ my\ \$OS\ \=\ \$\^O\;\ \ \#\ Need\ to\ escape\ the\ form\ delimiting\ char\ \^\
+\ \ \ unless\ \(\$OS\)\ \{\ \ \ \#\ on\ some\ perls\ \$\^O\ is\ not\ defined\
+\ \ \ \ \ require\ Config\;\
+\ \ \ \ \ \$OS\ \=\ \$Config\:\:Config\{\'osname\'\}\;\
+\ \ \ \}\ \
+\ \ \ my\ \$dir\ \=\ File\:\:Spec\-\>catdir\(cwd\(\)\,\'lib\'\)\;\
+\ \ \ \$dir\ \=\~\ s\=\/\=\\\\\=g\ if\ \$OS\ eq\ \'MSWin32\'\;\
+\ \ \ unshift\ \@INC\,\$dir\;\
+\ \ \ my\ \@t_path\ \=\ \$tmaker\-\>find_t_roots\(\ \)\;\
+\ \ \ \$t_path\[0\]\ \=\ \$t_path\[0\]\;\ \#\ stop\ temp\.pl\ warning\
+\ \ \ \$dir\ \=\ cwd\(\)\;\
+\ \ \ \$dir\ \=\~\ s\=\/\=\\\\\=g\ if\ \$OS\ eq\ \'MSWin32\'\;"); # typed in command           
+         my $OS = $^O;  # Need to escape the form delimiting char ^
+   unless ($OS) {   # on some perls $^O is not defined
+     require Config;
+     $OS = $Config::Config{'osname'};
+   } 
+   my $dir = File::Spec->catdir(cwd(),'lib');
+   $dir =~ s=/=\\=g if $OS eq 'MSWin32';
+   unshift @INC,$dir;
+   my @t_path = $tmaker->find_t_roots( );
+   $t_path[0] = $t_path[0]; # stop temp.pl warning
+   $dir = cwd();
+   $dir =~ s=/=\\=g if $OS eq 'MSWin32';; # execution
+
+demo( "\$t_path\[0\]", # typed in command           
+      $t_path[0]); # execution
+
+
 demo( "\ \ \ \ \#\#\#\#\#\
 \ \ \ \ \#\ Make\ sure\ there\ is\ no\ residue\ outputs\ hanging\
 \ \ \ \ \#\ around\ from\ the\ last\ test\ series\.\
 \ \ \ \ \#\
 \ \ \ \ \@outputs\ \=\ bsd_glob\(\ \'tg\*1\.\*\'\ \)\;\
 \ \ \ \ unlink\ \@outputs\;\
+\ \ \ \ unlink\ \'tgA1\.pm\'\;\
+\ \ \ \ unlink\ \'tgB1\.pm\'\;\
+\ \ \ \ unlink\ \'tgC1\.pm\'\;\
 \ \ \ \ tech_config\(\ \'Test\.TESTERR\'\,\ \$restore_testerr\)\;\ \ \ \
 \
-\
+\ \ \ \ \#\#\#\#\#\
+\ \ \ \ \#\ Suppress\ some\ annoying\ warnings\
+\ \ \ \ \#\
 \ \ \ \ sub\ __warn__\ \
 \ \ \ \ \{\ \
 \ \ \ \ \ \ \ my\ \(\$text\)\ \=\ \@_\;\
@@ -304,9 +483,14 @@ demo( "\ \ \ \ \#\#\#\#\#\
     #
     @outputs = bsd_glob( 'tg*1.*' );
     unlink @outputs;
+    unlink 'tgA1.pm';
+    unlink 'tgB1.pm';
+    unlink 'tgC1.pm';
     tech_config( 'Test.TESTERR', $restore_testerr);   
 
-
+    #####
+    # Suppress some annoying warnings
+    #
     sub __warn__ 
     { 
        my ($text) = @_;

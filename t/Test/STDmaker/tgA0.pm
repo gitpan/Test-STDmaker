@@ -10,8 +10,8 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE );
-$VERSION = '0.03';
-$DATE = '2004/04/09';
+$VERSION = '0.04';
+$DATE = '2004/05/14';
 $FILE = __FILE__;
 
 __DATA__
@@ -37,6 +37,23 @@ Verify: tgA1.t^
     #
     tech_config( 'Test.TESTERR', \*STDOUT );   
 ^  
+
+QC: my $expected1 = 'hello world'; ^
+
+ N: Quiet Code^
+ A: 'hello world'^
+ E: $expected1^
+
+ N: ok subroutine^
+TS: \&tolerance^
+ A: 99^
+ E: [100, 10]^
+
+ N: skip subroutine^
+ S: 0^
+TS: \&tolerance^
+ A: 80 ^
+ E: [100, 10] ^
 
  N: Pass test^
  R: L<Test::STDmaker::tg1/capability-A [1]>^
@@ -119,25 +136,22 @@ SE: 6^
  A: $x + $y + $x + $y + $x^
  E: 10^
 
-See_Also: 
- L<Test::STDmaker::tg1>
+QC:
+    sub tolerance
+    {   
+        my ($actual,$expected) = @_;
+        my ($average, $tolerance) = @$expected;
+        use integer;
+        $actual = (($average - $actual) * 100) / $average;
+        no integer;
+        (-$tolerance < $actual) && ($actual < $tolerance) ? 1 : 0;
+    }
 ^
+
+See_Also: L<Test::STDmaker::tg1> ^
 
 Copyright: This STD is public domain.^
 
-HTML:
-<hr>
-<!-- /BLK -->
-<p><br>
-<!-- BLK ID="NOTICE" -->
-<!-- /BLK -->
-<p><br>
-<!-- BLK ID="OPT-IN" -->
-<!-- /BLK -->
-<p><br>
-<!-- BLK ID="LOG_CGI" -->
-<!-- /BLK -->
-<p><br>
-^
+HTML: ^
 
 ~-~

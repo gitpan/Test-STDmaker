@@ -1,15 +1,2929 @@
+NAME
+    Test::STDmaker - generates test scripts, demo scripts and STD program
+    module sections
+
+SYNOPSIS
+     #######
+     # Procedural (subroutine) interface
+     # 
+     use Test::STDmake qw(find_t_roots);
+
+     @t_path = find_t_paths()
+     $date = get_date();
+
+     #####
+     # Class interface
+     #
+     use Test::STDmaker
+
+     $std = new Test::STDmaker( @options ); # From File::Maker
+ 
+     $success = $std->check_db($std_pm);
+     @t_path = $std->find_t_paths()
+     $date = $std->get_date();
+
+     $std->tmake( @targets, \%options ); 
+     $std->tmake( @targets ); 
+     $std->tmake( \%options  );
+
+     ######
+     # Internal Methods
+     #
+     $success = $std->build($output_type);
+     $success = $std->generate();
+     $success = $std->print($file_out);
+
+DESCRIPTION
+    The "Test::STDmaker" program module provides the following capabilities:
+
+    1   Automate Perl related programming needed to create a test script
+        resulting in reduction of time and cost.
+
+    2   Translate a short hand Software Test Description (STD) file into a
+        Perl test script that eventually makes use of the Test module.
+
+    3   Translate the sort hand STD data file into a Perl demo script that
+        demonstrates the features of the the module under test.
+
+    4   Provide in the POD of a STD file information required by a
+        Military/Federal Government Software Test Description (the STD
+        manpage) document that may easily be index and accessed by automated
+        Test software. ISO, British Military require most of the same
+        information, US agencies such as the FAA. The difference is that
+        ISO, British Military do not dictate detail format. US agencies such
+        as FAA will generally tailor down the DOD required formats. Thus,
+        there is an extremely wide variation in the format of the same
+        information among ISO certified comericail activities and militaries
+        other than US. Once the information is in a POD, different
+        translators may format nearly exactly as dictated by the end user,
+        whether it is the US DOD, ISO certified commericial activity,
+        British Military or whoever. By being able to provide the most
+        demanding, which is usually US DOD, capabilities is there for all
+        the others.
+
+    The "Test::STDmaker" package relieves the designer and developer from
+    the burden of filling out templates, counting oks, providing
+    documentation examples, tracing tests to test requirments, and other
+    such time consuming, boring, development tasks. Instead the designers
+    and developers need only to fill in an a form. The "Test::STDmaker" will
+    take it from there and automatically and quickly generate the desired
+    test scripts, demo scripts, and test description documents.
+
+    The "Test::STDmaker" class package automates the generation of Software
+    Test Descriptions (STD) Plain Old Documentation (POD), test scripts,
+    demonstrations scripts and the execution of the generated test scripts
+    and demonstration scripts. It will automatically insert the output from
+    the demonstration script into the POD *-headx Demonstration* section of
+    the file being tested.
+
+    The inputs for "Test::STDmaker" class package is the "__DATA__" section
+    of Software Test Description (STD) program module and a list of targets.
+    The __DATA__ section must contain a STD forms text database in the
+    Tie::Form format. Most of the targets are the ouputs. Each output has
+    its own program module in the "Test::STDmaker::" repository. The targets
+    are the name of a program module that process the form database as
+    follows:
+
+     target output program module   description
+     -------------------------------------------------------
+     Check  Test::STDmaker::Check   cleans database, counts oks
+     Demo   Test::STDmaker::Demo    generates demo script
+     STD    Test::STDmaker::STD     generates STD POD
+     Verify Test::STDmaker::Verify  generates test script
+
+    The interface between the "Test::STDmaker" package each of the driver
+    packages in the "Test::STDmaker::" repository is the same. New driver
+    packages may be added by putting them in the "Test::STDmaker::"
+    repository without modifying the "Test::STDmaker" package. The
+    "Test::STDmaker" package will find it and add it to is target list.
+
+    The STD program modules that contain the forms database should reside in
+    a "'t'" subtree whose root is the same as the "'lib'" subtree. For the
+    host site development and debug, the "lib" directory is most convenient
+    for test program modules. However, when building the distribution file
+    for installation on a target site, test library program modules should
+    be placed at the same level as the test script.
+
+    For example, while debugging and development the directory structure may
+    look as follows:
+
+     development_dir   
+       lib
+         MyTopLevel
+           MyUnitUnderTest.pm  # code program module
+         Data::xxxx.pm  # test library program modules
+ 
+         File::xxxx.pm  # test library program modules
+       t
+         MyTopLevel
+           MyUnitUnderTest.pm  # STD program module
+
+     # @INC contains the absolute path for development_dir
+
+    while a target site distribution directory for the "MyUnitUnderTest"
+    would be as follows:
+
+     devlopment_dir 
+       release_dir
+         MyUnitUnderTest_dir
+           lib
+             MyTopLevel
+               MyUnitUnderTest.pm  # code program module
+           t
+             MyTopLevel
+               MyUnitUnderTest.pm  # STD program module
+
+               Data::xxxx.pm  # test library program modules
+
+               File::xxxx.pm  # test library program modules
+
+     # @INC contains the absolute path for MyUnitUnderTest_dir 
+     # and does not contain the absolute path for devlopment_dir
+
+    When "Test::STDmaker" searches for a STD form database program module,
+    it looks for it first under all the directories in @INC This means the
+    STD program module name must start with ""t::"". Thus the program module
+    name for the Unit Under Test (UUT), "MyTopLevel::MyUnitUNderTest", and
+    the UUT STD program module, "t::MyTopLevel::MyUnitUNderTest", are always
+    different.
+
+    Use the "tmake.pl" (test make), found in the distribution file, cover
+    script for Test::STDmaker to process a STD database module to generate a
+    test script for debug and development as follows:
+
+      tmake -verbose -nounlink -pm=t::MyTopLevel::MyUnitUnderTest
+
+    The "tmake" script creates a "$std" object and runs the "tmake" method
+
+     my $std = new Test::STDmaker(\%options);
+     $std->tmake(@ARGV);
+
+    which replaces the POD in "t::MyTopLevel::MyUnitUNderTest" STD program
+    module and creates the following files
+
+     development_dir
+       t
+         MyTopLevel
+           MyUnitUNderTest.t  # test script
+           MyUnitUNderTest.d  # demo script
+           temp.pl            # calculates test steps and so forth
+
+    The names for these three files are determined by fields in the
+    "__DATA__" section of the "t::MyTopLevel::MyUnitUNderTest" STD program
+    module. All geneated scripts will contain Perl code to change the
+    working directory to the same directory as the test script and add this
+    directory to "@INC" so the Perl can find any test library program
+    modules placed in the same directory as the test script.
+
+    The first step is to debug temp.pl in the "development_dir"
+
+     perl -d temp.pl
+
+    Make any correction to the STD program module
+    "t::MyTopLevel::MyUnitUNderTest" not to "temp.pl" and repeat the above
+    steps. After debugging "temp.pl", use the same procedure to debug
+    "MyUnitUnderTest.t", "MyUnitUnderTest.d"
+
+      perl -d MyUnitUnderTest.t
+      perl -d MyUnitUnderTest.d
+
+    Again make any correction to the STD program module
+    "t::MyTopLevel::MyUnitUNderTest" not to "MyUnitUnderTest.t"
+    "MyUnitUnderTest.d"
+
+    Once this is accomplished, develop and debug the UUT using the test
+    script as follows:
+
+     perl -d MyUnitUnderTest.t
+
+    Finally, when the "MyTopLevel::MyUnitUNderTest" is working replace the
+    "=head1 DEMONSTRATION" in the "MyTopLevel::MyUnitUNderTest" with the
+    output from "MyUnitUnderTest.d" and run the "MyUnitUnderTest.t" under
+    "Test::Harness" with the following:
+
+     tmake -verbose -test_verbose -demo -report -run -pm=t::MyTopLevel::MyUnitUnderTest
+
+    Since there is no "-unlink" option, "tmake" removes the "temp.pl" file.
+
+    Keep the "t" subtree under the "development library" for regression
+    testing of the development library.
+
+    Use ExtUtils::SVDmaker to automatically build a release directory from
+    the development directory, run the test script using only the files in
+    the release directory, bump revisions for files that changed since the
+    last distribution, and package the UUT program module, test script and
+    test library program modules and other files for distrubtion.
+
+STD Program Module
+    The input(s) for the "Test::STDmaker" package are Softare Test
+    Description Program Modules (STM PM).
+
+    A STD PM consists of three sections as follows:
+
+    Perl Code Section
+        The code section contains the following Perl scalars: $VERSION,
+        $DATE, and $FILE. STDmaker automatically generates this section.
+
+    STD POD Section
+        The STD POD section is either a tailored Detail STD format or a
+        tailored STD2167 format described below. STDmaker automatically
+        generates this section.
+
+    STD Form Database Section
+        This section contains a STD Form Database that STDmaker uses (only
+        when directed by specifying STD as the output option) to generate
+        the Perl code section and the STD POD section.
+
+  POD Section
+
+    The STD2167 POD is a tailored Software Test Description (STD) Data Item
+    Description (DID), STD that eliminates paragraphs that are not
+    applicable for Perl POD modules. This greatly improves the readability
+    of the document without any loss of information.
+
+    The tailoring removes paragraph levels, reducing the number of paragraph
+    levels from four to two.
+
+    While the tailoring improves the readability considerably, all tailoring
+    is reversible for strict, conserative compliance to the DID by an
+    appropriate special POD translator.
+
+    The tailoring is as follows:
+
+    Paragraph Numbers
+        The tailoring removed paragraph numbers in the Plain Old
+        Documentation (POD) file. Normal POD processing or post-processing
+        of the normal POD processing, html html whatever, can add the
+        paragraph numbers and other requirements that large number of
+        technical communities are so fond. POD processing is the proper
+        place for such window dressing, not the POD itself.
+
+    2. REFERENCE DOCUMENTS
+        Tailoring renames this section to *SEE ALSO* and moved it to the end
+        of the document. This is the customary location for this info for
+        the Unix community and where the Unix community expects to find this
+        information.
+
+    3. TEST PREPARATIONS
+        The test preparations are the same for all tests. The addition of
+        Perl modules is straight forward, consistent and the same for all
+        new Perl moduels.
+
+        To improve readability with no loss of data provided, the test
+        paragraph level x, 3.x.1, 3.x.2, 3.x.3, 3.x.4, of the Software Test
+        Description (STD) Data Item Description (DID), has been tailored
+        out.
+
+        Similarily sections 4.x.y.5, 4.x.y.6, 4.x.y.7, are the same for all
+        tests. The tailoring removes the x.y levels and moves this sections
+        to 3.4, 3.5 and 3.6 respectively.
+
+        The tailored Section 3 is as follows:
+
+         3. TEST PREPARATIONS
+
+         3.1 Hardware preparation
+
+         3.2 Software preparation
+
+         3.3 Other pre-test preparations
+
+         3.4 Criteria for evaluating results.
+
+         3.5 Test procedure.
+
+         3.6 Assumptions and constraints 
+
+    Section 4. TEST DESCRIPTIONS
+        For the addition of Perl program modules and scripts the paragraphs
+        4.x.y.1, 4.x.y.2, 4.x.y.3 and 4.x.y.4 are one-liners herein, and
+        there is only one test case per test. Tailoring removes the
+        confusing level y, and replaces the lower level with a simple item
+        list.
+
+        POD processing has the flexibility of changing a item list into a
+        level 3 paragraph.
+
+        The tailored Section 4 is as follows:
+
+          4. TEST DESCRIPTIONS
+
+          4.1 ${Unique Test ID 1}
+
+           (a) ${Unique Test ID 1} Requirements addressed:
+           (b) ${Unique Test ID 1} Test:
+           (c) ${Unique Test ID 1} Expected test results:
+
+          ..
+
+          4.x ${Unique Test ID x}
+
+           (a) ${Unique Test ID x} Requirements addressed:
+           (b) ${Unique Test ID x} Test:
+           (c) ${Unique Test ID x} Expected test results:
+
+  Form Database Section
+
+    The "Test::STDmaker" module uses the Tie::Form lenient format to access
+    the data in the Data Section.
+
+    The requirements of Tie::Form lenient format govern in case of a
+    conflict with the description herein.
+
+    In accordance with Tie::Form, STD PM data consists of series of *field
+    name* and *field data* pairs.
+
+    The Tie::Form format separator strings are as follows:
+
+     End of Field Name:  [^:]:[^:]
+     ENd of Field Data:  [^\^]\^[^\^]
+     End of Record    :  ~-~
+
+    In other words, the separator strings have a string format of the
+    following:
+
+     (not_the_char) . (char) . (not_the_char)
+
+    The following are valid *FormDB* fields:
+
+     name: data^
+
+     name:
+     data
+      ..
+     data
+     ^
+
+    Separator strings are escaped by added an extra chacater. For example,
+
+    DIR:::Module: $data ^
+          unescaped field name:  DIR::MOdule
+
+    DIR::Module:: : $data ^
+          unescaped field name: DIR:Module:
+
+        Since the field name ends in a colon the format requires a space
+        between the field name and the *end of field name colon*. Since the
+        *FormDB* format ignores leading and trailing white space for field
+        names, this space is not part of the field name. space.
+
+    This is customary form that all of us have been forced to fill out
+    through out our lives with the addition of ending field punctuation.
+    Since the separator sequences are never part of the field name and data,
+    the code to read it is trivial. For being computer friendly it is hard
+    to beat. And, altough most of us are adverse to forms, it makes good try
+    of being people friendly.
+
+    An example of a STD FormDB follows:
+
+     File_Spec: Unix^
+     UUT: Test::STDmaker::tg1^
+     Revision: -^
+     End_User: General Public^
+     Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
+     STD2167_Template: ^
+     Detail_Template: ^
+     Classification: None^
+     Demo: TestGen1.d^
+     Verify: TestGen1.t^
+
+      T: 0^
+
+      C: use Test::t::TestGen1^
+
+      R: L<Test::t::TestGen1/Description> [1]^
+
+      C: 
+         my $x = 2
+         my $y = 3
+     ^
+
+      A: $x + $y^
+     SE: 5^
+
+      N: Two Additions 
+      A: ($x+$y,$y-$x)^
+      E: (5,1)^
+
+      N: Two Requirements^
+
+      R: 
+         L<Test::t::TestGen1/Description> [2]
+         L<Test::t::TestGen1/Description> [3]
+      ^
+
+      A: ($x+4,$x*$y)^
+      E: (6,5)^
+
+      U:  Test under development ^ 
+      S: 1^
+      A: $x*$y*2^
+      E: 6^
+
+      S: 0^
+      A: $x*$y*2^
+      E: 6^
+
+     See_Also: http://perl.SoftwareDiamonds.com^
+     Copyright: copyright © 2003 Software Diamonds.^
+
+    This is a very compact database form. The actual test code is Perl
+    snippets that will be passed to the appropriate build-in, behind the
+    scenes Perl subroutines.
+
+STD PM Form Database Fields
+    The following database file fields are information needed to generate
+    the documentation files and not information about the tests themselves:
+
+    Author field
+        The *prepare for* STD title page entry.
+
+    Classification field
+        Security classification.
+
+    Copyright field
+        Any copyright and license requirements. This is integrated into the
+        Demo Script, Test Script and the STD module.
+
+    Detail_Template field
+        This field contains a template program module that the
+        "Test::STDmaker" package method uses to generate the STD POD section
+        of the STD PM. Normally this field is left blank and the
+        "Test::STDmaker" package methods uses its built-in detail template.
+
+        The "Test::STDmaker" package methods merges the following variables
+        with the template in generating the "STD" file:
+
+        Date UUT_PM Revision End_User Author Classification Test_Script SVD
+        Tests STD_PM Test_Descriptions See_Also Trace_Requirement_Table
+        Trace_Test_Table Copyright
+
+    Demo field
+        The file for the "Demo output" relative to the STD PM directory.
+
+    End_User field
+        The *prepare for* STD title page entry.
+
+    File_Spec field
+        the operating system file specification used for the following
+        fields:
+
+         Verify Demo
+
+        Valid values are Unix MacOS MSWin32 os2 VMS epoc. The scope of this
+        value is very limited. It does not apply to any file specification
+        used in the test steps nor the files used for input to the
+        "Test::STDmaker" package method.
+
+    Revision field
+        Enter the revision for the STD POD. Revision numbers, in accordance
+        with standard engineering drawing practices are letters A .. B AA ..
+        ZZ except for the orginal revision which is -.
+
+    STD2167_Template field
+        Similar to the Detail_Template field except that the template is a
+        tailored STD2167 template.
+
+    See_Also field
+        This section provides links to other resources.
+
+    Test Description Fields
+        The Test Description Fields are described in the next section.
+
+    UUT field
+        The Unit Under Test (UUT).
+
+    Verify field
+        The file for the "Verify output" relative to the STD PM directory.
+
+STD PM Form Database Test Description Fields
+    The test description fields are order sensitive data as follows:
+
+  A
+
+     A: actual-expression 
+
+    This is the actual Perl expression under test and used for the
+    following:
+
+     L<STD 4.x.y.3 Test inputs.|Docs::US_DOD::STD/4.x.y.3 Test inputs.> 
+
+  E
+
+     E: expected-expression 
+
+    This is the expected results. This should be raw Perl values and used
+    for the following:
+
+     L<STD 4.x.y.4 Expected test results.|Docs::US_DOD::STD/4.x.y.4 Expected test results.>
+
+    This field triggers processing of the previous fields as a test. It must
+    always be the last field of a test. On failure, testing continues.
+
+  C
+
+      C: code
+
+    The "code" field data is free form Perl code. This field is generally
+    used for the following:
+
+     L<STD 4.x.y.2 Prerequisite conditions.|Docs::US_DOD::STD/4.x.y.2 Prerequisite conditions.> 
+
+  DO
+
+     DO: comment
+
+    This field tags all the fields up to the next "A: actual-expression" for
+    use only in generating a Demo output
+
+  DM
+
+     DM: msg
+
+    This field assigns a diagnostic message to the test step. The test
+    software prints out this message on test failure.
+
+  N
+
+     N: name_data
+
+    This field provides a name for the test. This is usually the same name
+    as the base name for the STD file.
+
+  ok
+
+     ok: test_number
+
+    The "ok: test_number" is a the test number that results from the
+    execution of "&TEST::ok" by the previous "E: data" or "SE: data"
+    expression. A STD file does not require any "ok:" fields since The
+    "Test::STDmaker" package methods will automatically generate the "ok:
+    test_number" fields.
+
+  QC
+
+     QC: code
+
+    This field is the same as a "C: code" field except that for the demo
+    script. The demo script will exectue the code, but will not print it
+    out.
+
+  R
+
+     R: requirement_data
+
+    The *requirement_data* cites a binding requirement that is verified by
+    the test. The test software uses the *requirement_data* to automatically
+    generate tracebility information that conforms to the following:
+
+     L<STD 4.x.y.1 Requirements addressed.|STD/Docs::US_DOD::4.x.y.1 Requirements addressed.> 
+
+    Many times the relationship between binding requirements and the a test
+    is vague and can even stretch the imagination. Perhaps by tracing the
+    binding requirement down to an actual test number, will help force
+    requirements that have clean cut tests in qualitative terms that can
+    verify and/or validate a requirement.
+
+  S
+
+     S: expression
+
+    The mode "S: expression" provides means to conditionally preform a test.
+    The condition is usually platform dependent. In other words, a feature
+    may be provided, say for a VMS platform that is not available on a
+    Microsoft platform.
+
+  SF
+
+     SF: value,msg
+
+    This field assigns a value to the skip flag and optional message to the
+    skip flag. A zero turns it off; otherwise, it is turned on. The test
+    software prints out the msg for each file skipped.
+
+  SE
+
+     SE: expected-expression
+
+    This field is the same as E: expected-expression except that testing
+    stops on failure. The test software implements the stop by turning on
+    the skip flag. When the skip flag is on, every test will be skip.
+
+  T
+
+     T: number_of_tests - todo tests
+
+    This field provides the number of tests and the number of the todo
+    tests. The "Test::STDmaker" package methods will automatically fill in
+    this field.
+
+  TS
+
+     TS: \&subroutine
+
+    This field provides a subroutine used to determine if an actual result
+    is within expected parameters with the following synopsis:
+
+     $success = &subroutine($acutal_result,$expected_paramters)
+
+  U
+
+     U: comment
+
+    This tags a test as testing a feature or capability under development.
+    The test is added to the *todo* list.
+
+  VO
+
+     VO: comment
+
+    This field tags all the fields up to the next "E: expected-expression"
+    for use only in generating a Verify output
+
+METHODS
+    The "STDmaker" class inherits the all the methods from the File::Maker
+    class. The additional "STDmaker" methods are follows.
+
+  check_std
+
+     $success = $std->load_std($std_pm);
+
+    The "load_std" loads a STD database in the Tie::Form format from the
+    "__DATA__" section of "$std_pm". The subroutine adds the following to
+    the object hash, "$std":
+
+     hash
+     key     description 
+     ----------------------------------------------------------
+     std_db  ordered name,data pairs from from $std_pm database
+     Record  complete $std_pm database record
+     std_pm  $std_pm;
+     Date    date using $std->get_date()
+     file    base file of $std_pm
+     vol     volume of $std_pm
+     dir     directory of $std_pm
+
+    It changes the class of object "$std" to "Test::STDmaker::Check",
+    keeping the same data hash as the incoming object. Since the class is
+    now "Test::STD:Check" and this class inherits methods from
+    "Test::STDmaker" and the methods of both classes are now visible.
+
+    The "$std" then executes the incoming object data using first the
+    "generate" method and then the "print" method herein which in turn use
+    the methods from the "Test::STDmaker::Check" class.
+
+  find_t_roots subroutine
+
+     @t_path = find_t_paths()
+
+    This method operates on the assumption that the test files are a subtree
+    to a directory named *t* and the *t* directories are on the same level
+    as the last directory of each directory tree specified in *@INC*. If
+    this assumption is not true, this method most likely will not behave
+    very well.
+
+  generate
+
+     $sucess = $std->generate();
+
+    The c<generat> is the workhose. It takes each ordered "$name,$data" pair
+    from the "@{$std-"{std_pm}}> array and uses the execute the method
+    "$name" with "$data". The "$name" variable are the "A" "E" and so on,
+    STD FormDB Test Description Fields with its associated data. The method
+    definitions varies depending upon the class that inherits the
+    "Test::STDmaker" class. Typically the child class is one of the
+    following:
+
+     C<Test::STDmaker::Check>
+     C<Test::STDmaker::Demo>
+     C<Test::STDmaker::STD>
+     C<Test::STDmaker::Verify>
+
+  get_date
+
+     $date = $std->get_date();
+
+    The "get_date" subroutine returns the "$date" in the yyyy/mm/dd format.
+
+  tmake
+
+     $std->tmake( @targets, \%options ); 
+     $std->tmake( @targets ); 
+     $std->tmake( \%options  );
+
+    The "tmake" method reads the data from the form database (FormDB)
+    section of a Software Test Description program module (STD PM), clean
+    it, and use the cleaned data to generate the output file(s) based on the
+    targets as follows:
+
+     target    description 
+     ----------------------------------------
+     all       generates all outputs
+     Demo      generates demo script
+     Verify    generates a test script
+     STD       generates and replaces the STD PM POD
+     generate
+     test
+
+    No target is the same as the "all" target.
+
+    The "@options]" are as follows:
+
+    demo option
+         demo => 1
+
+        run the all demo scripts and use thier output to replace the Unit
+        Under Test (UUT) =headx Demonstration POD section. The STD PM UUT
+        field specifies the UUT file.
+
+    pm
+         pm => $program_module
+
+        The STD PM is a Perl program module specified using the Perl '::'
+        notation. The module must be in one of the directories in the @INC
+        array. For example, the STD PM for this program module is
+
+         pm => t::Test::STDmaker::STDmaker
+
+        If there is no pm option, "tmake" subroutine uses "t::STD"
+
+    report option
+         report => 1
+
+        run the all test scripts and use thier output to replace the Unit
+        Under Test (UUT) =headx Test Report POD section. The STD PM UUT
+        field specifies the UUT file.
+
+    run option
+         run => 1
+
+        run all generated test scripts using the Test::Harness
+
+    verbose option
+         verbose => 1           
+
+        use verbose mode when using the Test::Harness
+
+INTERNAL METHODS
+    The methods in this section are methods internal to the
+    "Test::STDmaker". The are more of design in nature and not part of the
+    functional interface for the package. Typically they will never be used
+    outside of the "Test::STDmaker". They do provide some insight on the
+    form data processing and the exchange between the c<Test::STDmaker>
+    package and the driver packages in the "Test::STDmaker::" repository.
+
+  build
+
+     $success = $std->build($output_type);
+
+    The "$output_type" is the name of a driver in the "Test::STDmaker"
+    repository. The "build" subroutine takes "$output_type" and recast the
+    "$std" class to "Test::STDmaker::$output_type". The "bless" subroutine
+    does do class recasting as follows:
+
+     $std_driver = bless $std, Test::STDmaker::$output_type
+
+    The "build" subroutine then uses the recast object to call the
+    "generate" method followed by the "print" methods described below. Since
+    the object is now of the "Test::STDmaker::$output_type" class which
+    inherits the "Test::STDmaker" class, it used the
+    "&Test::STDmaker::generate" and "&Test::STDmaker::print" methods to
+    communicate with the methods in the "Test::STDmaker::$output_type"
+    class.
+
+  generate
+
+     $sucess = $std_driver->generate();
+
+    The c<generat> is the workhose. It takes each ordered "$name,$data" pair
+    from the "@{$std-"{std_pm}}> array and uses the execute the method
+    "$name" with "$data". The "$name" variable are the "A" "E" and so on,
+    STD FormDB Test Description Fields with its associated data. The method
+    definitions varies depending upon the class that inherits the
+    "Test::STDmaker" class. Typically the child class is one of the
+    following:
+
+     C<Test::STDmaker::Check>
+     C<Test::STDmaker::Demo>
+     C<Test::STDmaker::STD>
+     C<Test::STDmaker::Verify>
+
+  print
+
+     $success = $std_driver->print($file_out);
+
+    The "print" method prints any data accumulated in "$std" hash to
+    "$file_out". The method initiates the "post_print" method, provided it
+    exists as a "Test::STDmaker::$output_type" method.
+
+REQUIREMENTS
+    This section establishes the functional requirements for the
+    "Test::STDmaker" module and the "Test::STDmaker" package package
+    methods. All other subroutines in the Test::STDmaker module and modules
+    used by the "Test::STDmaker" module support the "Test::STDmaker" package
+    methods. Their requirements are of a design nature and not included. All
+    design requirements may change at any time without notice to improve
+    performance as long as the change does not impact the functional
+    requirements and the test results of the functional requirements.
+
+    Binding functional requirements, in accordance with DOD STD 490A, are
+    uniquely identified with the pharse 'shall[dd]' where dd is an unique
+    number for each section. The phrases such as *will, should, and may* do
+    not identified binding requirements. They provide clarifications of the
+    requirements and hints for the module design.
+
+    The general "Test::STDmaker" Perl module requirements are as follows:
+
+    load [1]
+        shall[1] load without error and
+
+    pod check [2]
+        shall[2] passed the Pod::Checker check without error.
+
+  Clean FormDB requirements
+
+    Before generating any output from a FormDB read from a STD PM, the
+    "Test::STDmaker" package methods fill clean the data. The requirements
+    for cleaning the data are as follows:
+
+    clean FormDB [1]
+        The "Test::STDmaker" package methods shall[1] ensure there is a test
+        step number field "ok: $test_number^" after each " E: $expected ^"
+        and each "E: $expected^" field. The "$test_number" will apply to all
+        fields preceding the "ok: $test_number^" to the previous "ok:
+        $test_number^" or <T: $total_tests^> field
+
+    clean FormDB [2]
+        The "Test::STDmaker" package methods shall[2] ensure all test
+        numbers in the "ok: test_number^" fields are numbered the same as
+        when executed by the test script.
+
+    clean FormDB [3]
+        The "Test::STDmaker" package methods shall[3] ensure the first test
+        field is "T: $total_tests^" where "$total_tests" is the number of
+        "ok: $test_number^" fields.
+
+    clean FormDB [4]
+        The "Test::STDmaker" package methods shall[4] include a "$todo_list"
+        in the "T: $total_tests - $todo_list^" field where each number in
+        the list is the $test_number for a "U: ^" field.
+
+    The "Test::STDmaker" package methods will perform this processing as
+    soon as it reads in the STD PM. All file generation will use the
+    processed, cleaned internal test data instead of the raw data directly
+    from the STD PM.
+
+  Verify output file
+
+    When the "tmake" subroutine c<@targets> contains "verify", "all" (case
+    insensitive) or is empty, the "Test::STDmaker" package methods, for each
+    input STD PM, will produce an verify ouput file. The functional
+    requirements specify the results of executing the verify output file.
+    The contents of the verify output file are of a design nature and
+    function requirements are not applicable.
+
+    The requirements for the generated verify output file are as follow:
+
+    verify file [1]
+        The "Test::STDmaker" package methods shall[1] obtained the name for
+        the verify output file from the "Verify" field in the STD PM and
+        assume it is a UNIX file specification relative to STD PM.
+
+    verify file [2]
+        The "Test::STDmaker" package methods shall[2] generate a test script
+        that when executed will, for each test, execute the "C: $code"
+        fields and compared the results obtained from the "A: $actual^"
+        actual expression with the results from the "E: $epected^" expected
+        expression and produce an output compatible with the
+        <"Test::Harness" module. A test is the fields between the "ok:
+        $test_number" fields of a cleaned STD PM. The generated test script
+        will provide skip test functionality by processing the "S:
+        $skip-condition", "DO: comment" and "U: comment" test fields and
+        producing suitable Test::Harness output.
+
+    verify file [3]
+        The "Test::STDmaker" package methods shall[3] output the "N: $name^"
+        field data as a <"Test::Harness" compatible comment.
+
+    The "Test::STDmaker" package methods will properly compare complex data
+    structures produce by the "A: $actual^" and "E: $epected^" expressions
+    by utilizing modules such as Data::Secs2 subroutines.
+
+  Demo output file
+
+    When the "tmake" subroutine c<@targets> contains "demo", "all" (case
+    insensitive) or is empty, the "Test::STDmaker" package methods, for each
+    input STD PM, will produce a demo ouput file. The functional
+    requirements specify the results of executing the demo output file. The
+    contents of the demo output file are of a design nature and function
+    requirements are not applicable.
+
+    The requirements for the generated demo output file are as follow:
+
+    demo file [1]
+        The "Test::STDmaker" package methods shall[1] obtained the name for
+        the demo output file from the "Demo" field in the STD PM and assume
+        it is a UNIX file specification relative to STD PM.
+
+    demo file [2]
+        The "Test::STDmaker" package methods shall[2] generate the a demo
+        script that when executed will produce an output that appears as if
+        the actual "C: ^" and "A: ^" where typed at a console followed by
+        the results of the execution of the "A: ^" field. The purpose of the
+        demo script is to provide automated, complete examples, of the using
+        the Unit Under Test. The generated demo script will provide skip
+        test functionality by processing the "S: $skip-condition", "VO:
+        comment" and "U: comment" test fields.
+
+  STD PM POD
+
+    When the "tmake" subroutine c<@targets> contains "STD", "all" (case
+    insensitive) or is empty, the "Test::STDmaker" package methods, for each
+    input STD PM, will generate the code and POD sections of the STD PM from
+    the FormDB section. The requirements for the generated STD output file
+    are as follow:
+
+    STD PM POD [1]
+        The "Test::STDmaker" package methods shall[2] produce the STD output
+        file by taking the merging STD template file from either the
+        "Detail_Template" field "STD2167_Template" field in the STD PM or a
+        built-in template with the
+
+        "Copyright Revision End_User Author SVD Classification"
+
+        fields from the ".std" and the generated
+
+        "Date UUT_PM STD_PM Test_Descriptions Test_Script Tests
+        Trace_Requirement_Table Trace_Requirement_Table"
+
+        fields.
+
+    The "Test::STDmaker" package methos will generate fields for merging
+    with the template file as follows:
+
+    Date
+        The current data
+
+    UUT_PM
+        The Perl :: module specfication for the UUT field in the ".std"
+        database
+
+    STD_PM
+        The Perl :: module specification for the ".std" Unix file
+        specification
+
+    Test_Script
+        The the "Verify" field in the ".std" database
+
+    Tests
+        The number of tests in the ".std" database
+
+    Test_Descriptions
+        A description of a test defined by the fields between "ok:" fields
+        in the ".std" database. The test descriptions will be in a STD
+        format as tailored by STDtailor
+
+    Trace_Requirement_Table
+        A table that relates the "R:" requirement fields to the test number
+        in the ".std" database.
+
+    Trace_Test_Table
+        A table that relates the test number in the ".std" database to the
+        "R:" requirement fields.
+
+    The usual template file is the "STD/STD001.fmt" file. This template is
+    in the STD format as tailored by STDtailor.
+
+  Options requirements
+The "fgenerate" option processing requirements are as follows:
+
+    file_out option [1]
+        When the c<@targets> has only target, specifying the option
+
+         { file_out => $file_out }
+
+        shall[1] cause the "tmake" method to print the ouput to the file
+        "$file_out" instead of the file specified in the STD PM. The
+        $file_out specification will be in the UNIX specification relative
+        to the STD PM.
+
+    replace option [2]
+        Specifying the option
+
+         { replace => 1 } or { demo => 1 }
+
+        with c<@targets> containing "Demo", shall[2] cause the c<tmake>
+        method to execute the demo script that it generates and replace the
+        "/(\n=head\d\s+Demonstration).*?\n=/i" section in the module named
+        by the "UUT" field in ".std" with the output from the demo script.
+
+    run option [3]
+        Specifying the option
+
+         { run => 1 }
+
+        with the c<@targets> list containing "Verify", shall[3] cause the
+        c<tmake> method to run the "Test::Harness" with the test script in
+        non-verbose mode.
+
+    verbose option [4]
+        Specifying the options
+
+         { run => 1, test_verbose => 1 }
+
+        with the c<@targets> containg "Verify", shall[4] cause the
+        "fgenerate" method to run the "Test::Harness" with the test script
+        in verbose mode.
+
+    fspec_out option [5]
+        Specifying the option
+
+         { fspec_out => I<$file_spec> }
+
+        shall[5] cause the "Test::STDmaker" methods to translate the file
+        names in the "STD" file output to the file specification
+        *$file_spec*.
+
+    fspec_in option [6]
+        Specifying the option
+
+         { fspec_in => I<$file_spec> }
+
+        shall[6] cause the "Test::STDmaker" methods to use file
+        specification *$file_spec* for the files in the STD PM database.
+
+DEMONSTRATION
+     #########
+     # perl STDmaker.d
+     ###
+
+    ~~~~~~ Demonstration overview ~~~~~
+
+    The results from executing the Perl Code follow on the next lines as
+    comments. For example,
+
+     2 + 2
+     # 4
+
+    ~~~~~~ The demonstration follows ~~~~~
+
+         use vars qw($loaded);
+         use File::Glob ':glob';
+         use File::Copy;
+         use File::Package;
+         use File::SmartNL;
+         use Text::Scrub;
+
+         #########
+         # For "TEST" 1.24 or greater that have separate std err output,
+         # redirect the TESTERR to STDOUT
+         #
+         my $restore_testerr = tech_config( 'Test.TESTERR', \*STDOUT );   
+
+         my $fp = 'File::Package';
+         my $snl = 'File::SmartNL';
+         my $s = 'Text::Scrub';
+
+         my $test_results;
+         my $loaded = 0;
+         my @outputs;
+
+     ##################
+     # Load UUT
+     # 
+
+     my $errors = $fp->load_package( 'Test::STDmaker' )
+     $errors
+
+     # ''
+     #
+
+     ##################
+     # Test::STDmaker Version 1.12
+     # 
+
+     $Test::STDmaker::VERSION
+
+     # '1.12'
+     #
+     $snl->fin('tgA0.pm')
+
+     # '#!perl
+     ##
+     ## The copyright notice and plain old documentation (POD)
+     ## are at the end of this file.
+     ##
+     #package  t::Test::STDmaker::tgA1;
+
+     #use strict;
+     #use warnings;
+     #use warnings::register;
+
+     #use vars qw($VERSION $DATE $FILE );
+     #$VERSION = '0.03';
+     #$DATE = '2004/04/09';
+     #$FILE = __FILE__;
+
+     #__DATA__
+
+     #File_Spec: Unix^
+     #UUT: Test::STDmaker::tg1^
+     #Revision: -^
+     #Version: 0.01^
+     #End_User: General Public^
+     #Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
+     #STD2167_Template: ^
+     #Detail_Template: ^
+     #Classification: None^
+     #Demo: tgA1.d^
+     #Verify: tgA1.t^
+
+     # T: 0^
+
+     # C: 
+     #    #########
+     #    # For "TEST" 1.24 or greater that have separate std err output,
+     #    # redirect the TESTERR to STDOUT
+     #    #
+     #    tech_config( 'Test.TESTERR', \*STDOUT );   
+     #^  
+
+     #QC: my $expected1 = 'hello world'; ^
+
+     # N: Quiet Code^
+     # A: 'hello world'^
+     # E: $expected1^
+
+     # N: ok subroutine^
+     #TS: \&tolerance^
+     # A: 99^
+     # E: [100, 10]^
+
+     # N: skip subroutine^
+     # S: 0^
+     #TS: \&tolerance^
+     # A: 80 ^
+     # E: [100, 10] ^
+
+     # N: Pass test^
+     # R: L<Test::STDmaker::tg1/capability-A [1]>^
+     # C: my $x = 2^
+     # C: my $y = 3^
+     # A: $x + $y^
+     #SE: 5^
+
+     # N: Todo test that passes^
+     # U: xy feature^
+     # A: $y-$x^
+     # E: 1^
+
+     # R: 
+     #    L<Test::STDmaker::tg1/capability-A [2]>
+     #    L<Test::STDmaker::tg1/capability-B [1]>
+     # ^
+     # N: Test that fails^
+     # A: $x+4^
+     # E: 7^
+
+     # N: Skipped tests^
+     # S: 1^
+     # A: $x*$y*2^
+     # E: 6^
+
+     # N: Todo Test that Fails^
+     # U: zyw feature^
+     # S: 0^
+     # A: $x*$y*2^
+     # E: 6^
+
+     # N: demo only^
+     #DO: ^
+     # A: $x^
+     # E: $y^
+
+     # N: verify only^
+     #VO: ^
+     # A: $x^
+     # E: $x^
+
+     # N: Test loop^
+     # C:
+     #    my @expected = ('200','201','202');
+     #    my $i;
+     #    for( $i=0; $i < 3; $i++) {
+     # ^
+
+     # A: $i+200^
+     # R: L<Test::STDmaker::tg1/capability-C [1]>^
+     # E: $expected[$i]^
+
+     # A: $i + ($x * 100)^
+     # R: L<Test::STDmaker::tg1/capability-B [4]>^
+     # E: $expected[$i]^
+
+     #C:
+     #    }; 
+     #^
+
+     # N: Failed test that skips the rest^
+     # R: L<Test::STDmaker::tg1/capability-B [2]>^
+     # A: $x + $y^
+     #SE: 6^
+
+     # N: A test to skip^
+     # A: $x + $y + $x^
+     # E: 9^
+
+     # N: A not skip to skip^
+     # S: 0^
+     # R: L<Test::STDmaker::tg1/capability-B [3]>^
+     # A: $x + $y + $x + $y^
+     # E: 10^
+
+     # N: A skip to skip^
+     # S: 1^
+     # R: L<Test::STDmaker::tg1/capability-B [3]>^
+     # A: $x + $y + $x + $y + $x^
+     # E: 10^
+
+     #QC:
+     #    sub tolerance
+     #    {   
+     #        my ($actual,$expected) = @_;
+     #        my ($average, $tolerance) = @$expected;
+     #        use integer;
+     #        $actual = (($average - $actual) * 100) / $average;
+     #        no integer;
+     #        (-$tolerance < $actual) && ($actual < $tolerance) ? 1 : 0;
+     #    }
+     #^
+
+     #See_Also: L<Test::STDmaker::tg1> ^
+
+     #Copyright: This STD is public domain.^
+
+     #HTML: ^
+
+     #~-~'
+     #
+         copy 'tgA0.pm', 'tgA1.pm';
+         my $tmaker = new Test::STDmaker(pm =>'t::Test::STDmaker::tgA1');
+         $tmaker->tmake( 'STD' );
+     $s->scrub_date_version($snl->fin('tgA1.pm'))
+
+     # '#!perl
+     ##
+     ## The copyright notice and plain old documentation (POD)
+     ## are at the end of this file.
+     ##
+     #package  t::Test::STDmaker::tgA1;
+
+     #use strict;
+     #use warnings;
+     #use warnings::register;
+
+     #use vars qw($VERSION $DATE $FILE );
+     #$VERSION = '0.00';
+     #$DATE = 'Feb 6, 1969';
+     #$FILE = __FILE__;
+
+     #########
+     ## The Test::STDmaker module uses the data after the __DATA__ 
+     ## token to automatically generate the this file.
+     ##
+     ## Don't edit anything before __DATA_. Edit instead
+     ## the data after the __DATA__ token.
+     ##
+     ## ANY CHANGES MADE BEFORE the  __DATA__ token WILL BE LOST
+     ##
+     ## the next time Test::STDmaker generates this file.
+     ##
+     ##
+
+     #=head1 TITLE PAGE
+
+     # Detailed Software Test Description (STD)
+
+     # for
+
+     # Perl Test::STDmaker::tg1 Program Module
+
+     # Revision: -
+
+     # Version: 0.01
+
+     # $DATE: Feb 6, 1969
+
+     # Prepared for: General Public 
+
+     # Prepared by:  http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com
+
+     # Classification: None
+
+     #=head1 SCOPE
+
+     #This detail STD and the 
+     #L<General Perl Program Module (PM) STD|Test::STD::PerlSTD>
+     #establishes the tests to verify the
+     #requirements of Perl Program Module (PM) L<Test::STDmaker::tg1|Test::STDmaker::tg1>
+
+     #The format of this STD is a tailored L<2167A STD DID|Docs::US_DOD::STD>.
+     #in accordance with 
+     #L<Detail STD Format|Test::STDmaker/Detail STD Format>.
+
+     ########
+     ##  
+     ##  4. TEST DESCRIPTIONS
+     ##
+     ##  4.1 Test 001
+     ##
+     ##  ..
+     ##
+     ##  4.x Test x
+     ##
+     ##
+
+     #=head1 TEST DESCRIPTIONS
+
+     #The test descriptions uses a legend to
+     #identify different aspects of a test description
+     #in accordance with
+     #L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description Fields>.
+
+     #=head2 Test Plan
+
+     # T: 19 - 5,8^
+
+     #=head2 ok: 1
+
+     #  C:
+     #     #########
+     #     # For "TEST" 1.24 or greater that have separate std err output,
+     #     # redirect the TESTERR to STDOUT
+     #     #
+     #     tech_config( 'Test.TESTERR', \*STDOUT );
+     # ^
+     # QC: my $expected1 = 'hello world';^
+     #  N: Quiet Code^
+     #  A: 'hello world'^
+     #  E: $expected1^
+     # ok: 1^
+
+     #=head2 ok: 2
+
+     #  N: ok subroutine^
+     # TS: \&tolerance^
+     #  A: 99^
+     #  E: [100, 10]^
+     # ok: 2^
+
+     #=head2 ok: 3
+
+     #  N: skip subroutine^
+     #  S: 0^
+     # TS: \&tolerance^
+     #  A: 80^
+     #  E: [100, 10]^
+     # ok: 3^
+
+     #=head2 ok: 4
+
+     #  N: Pass test^
+     #  R: L<Test::STDmaker::tg1/capability-A [1]>^
+     #  C: my $x = 2^
+     #  C: my $y = 3^
+     #  A: $x + $y^
+     # SE: 5^
+     # ok: 4^
+
+     #=head2 ok: 5
+
+     #  N: Todo test that passes^
+     #  U: xy feature^
+     #  A: $y-$x^
+     #  E: 1^
+     # ok: 5^
+
+     #=head2 ok: 6
+
+     #  R:
+     #     L<Test::STDmaker::tg1/capability-A [2]>
+     #     L<Test::STDmaker::tg1/capability-B [1]>
+     # ^
+     #  N: Test that fails^
+     #  A: $x+4^
+     #  E: 7^
+     # ok: 6^
+
+     #=head2 ok: 7
+
+     #  N: Skipped tests^
+     #  S: 1^
+     #  A: $x*$y*2^
+     #  E: 6^
+     # ok: 7^
+
+     #=head2 ok: 8
+
+     #  N: Todo Test that Fails^
+     #  U: zyw feature^
+     #  S: 0^
+     #  A: $x*$y*2^
+     #  E: 6^
+     # ok: 8^
+
+     #=head2 ok: 9
+
+     #  N: demo only^
+     # DO: ^
+     #  A: $x^
+     #  E: $y^
+     #  N: verify only^
+     # VO: ^
+     #  A: $x^
+     #  E: $x^
+     # ok: 9^
+
+     #=head2 ok: 10,12,14
+
+     #  N: Test loop^
+
+     #  C:
+     #     my @expected = ('200','201','202');
+     #     my $i;
+     #     for( $i=0; $i < 3; $i++) {
+     # ^
+     #  A: $i+200^
+     #  R: L<Test::STDmaker::tg1/capability-C [1]>^
+     #  E: $expected[$i]^
+     # ok: 10,12,14^
+
+     #=head2 ok: 11,13,15
+
+     #  A: $i + ($x * 100)^
+     #  R: L<Test::STDmaker::tg1/capability-B [4]>^
+     #  E: $expected[$i]^
+     # ok: 11,13,15^
+
+     #=head2 ok: 16
+
+     #  C:     };^
+     #  N: Failed test that skips the rest^
+     #  R: L<Test::STDmaker::tg1/capability-B [2]>^
+     #  A: $x + $y^
+     # SE: 6^
+     # ok: 16^
+
+     #=head2 ok: 17
+
+     #  N: A test to skip^
+     #  A: $x + $y + $x^
+     #  E: 9^
+     # ok: 17^
+
+     #=head2 ok: 18
+
+     #  N: A not skip to skip^
+     #  S: 0^
+     #  R: L<Test::STDmaker::tg1/capability-B [3]>^
+     #  A: $x + $y + $x + $y^
+     #  E: 10^
+     # ok: 18^
+
+     #=head2 ok: 19
+
+     #  N: A skip to skip^
+     #  S: 1^
+     #  R: L<Test::STDmaker::tg1/capability-B [3]>^
+     #  A: $x + $y + $x + $y + $x^
+     #  E: 10^
+     # ok: 19^
+
+     ########
+     ##  
+     ##  5. REQUIREMENTS TRACEABILITY
+     ##
+     ##
+
+     #=head1 REQUIREMENTS TRACEABILITY
+
+     #  Requirement                                                      Test
+     # ---------------------------------------------------------------- ----------------------------------------------------------------
+     # L<Test::STDmaker::tg1/capability-A [1]>                          L<t::Test::STDmaker::tgA1/ok: 4>
+     # L<Test::STDmaker::tg1/capability-A [2]>                          L<t::Test::STDmaker::tgA1/ok: 6>
+     # L<Test::STDmaker::tg1/capability-B [1]>                          L<t::Test::STDmaker::tgA1/ok: 6>
+     # L<Test::STDmaker::tg1/capability-B [2]>                          L<t::Test::STDmaker::tgA1/ok: 16>
+     # L<Test::STDmaker::tg1/capability-B [3]>                          L<t::Test::STDmaker::tgA1/ok: 18>
+     # L<Test::STDmaker::tg1/capability-B [3]>                          L<t::Test::STDmaker::tgA1/ok: 19>
+     # L<Test::STDmaker::tg1/capability-B [4]>                          L<t::Test::STDmaker::tgA1/ok: 11,13,15>
+     # L<Test::STDmaker::tg1/capability-C [1]>                          L<t::Test::STDmaker::tgA1/ok: 10,12,14>
+
+     #  Test                                                             Requirement
+     # ---------------------------------------------------------------- ----------------------------------------------------------------
+     # L<t::Test::STDmaker::tgA1/ok: 10,12,14>                          L<Test::STDmaker::tg1/capability-C [1]>
+     # L<t::Test::STDmaker::tgA1/ok: 11,13,15>                          L<Test::STDmaker::tg1/capability-B [4]>
+     # L<t::Test::STDmaker::tgA1/ok: 16>                                L<Test::STDmaker::tg1/capability-B [2]>
+     # L<t::Test::STDmaker::tgA1/ok: 18>                                L<Test::STDmaker::tg1/capability-B [3]>
+     # L<t::Test::STDmaker::tgA1/ok: 19>                                L<Test::STDmaker::tg1/capability-B [3]>
+     # L<t::Test::STDmaker::tgA1/ok: 4>                                 L<Test::STDmaker::tg1/capability-A [1]>
+     # L<t::Test::STDmaker::tgA1/ok: 6>                                 L<Test::STDmaker::tg1/capability-A [2]>
+     # L<t::Test::STDmaker::tgA1/ok: 6>                                 L<Test::STDmaker::tg1/capability-B [1]>
+
+     #=cut
+
+     ########
+     ##  
+     ##  6. NOTES
+     ##
+     ##
+
+     #=head1 NOTES
+
+     #This STD is public domain.
+
+     ########
+     ##
+     ##  2. REFERENCED DOCUMENTS
+     ##
+     ##
+     ##
+
+     #=head1 SEE ALSO
+
+     #L<Test::STDmaker::tg1>
+
+     #=back
+
+     #=for html
+
+     #=cut
+
+     #__DATA__
+
+     #File_Spec: Unix^
+     #UUT: Test::STDmaker::tg1^
+     #Revision: -^
+     #End_User: General Public^
+     #Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
+     #Detail_Template: ^
+     #STD2167_Template: ^
+     #Version: 0.01^
+     #Classification: None^
+     #Temp: temp.pl^
+     #Demo: tgA1.d^
+     #Verify: tgA1.t^
+
+     # T: 19 - 5,8^
+
+     # C:
+     #    #########
+     #    # For "TEST" 1.24 or greater that have separate std err output,
+     #    # redirect the TESTERR to STDOUT
+     #    #
+     #    tech_config( 'Test.TESTERR', \*STDOUT );
+     #^
+
+     #QC: my $expected1 = 'hello world';^
+     # N: Quiet Code^
+     # A: 'hello world'^
+     # E: $expected1^
+     #ok: 1^
+
+     # N: ok subroutine^
+     #TS: \&tolerance^
+
+     # A: 99^
+     # E: [100, 10]^
+     #ok: 2^
+
+     # N: skip subroutine^
+     # S: 0^
+     #TS: \&tolerance^
+
+     # A: 80^
+     # E: [100, 10]^
+     #ok: 3^
+
+     # N: Pass test^
+     # R: L<Test::STDmaker::tg1/capability-A [1]>^
+     # C: my $x = 2^
+     # C: my $y = 3^
+     # A: $x + $y^
+     #SE: 5^
+     #ok: 4^
+
+     # N: Todo test that passes^
+     # U: xy feature^
+     # A: $y-$x^
+     # E: 1^
+     #ok: 5^
+
+     # R:
+     #    L<Test::STDmaker::tg1/capability-A [2]>
+     #    L<Test::STDmaker::tg1/capability-B [1]>
+     #^
+
+     # N: Test that fails^
+     # A: $x+4^
+     # E: 7^
+     #ok: 6^
+
+     # N: Skipped tests^
+     # S: 1^
+     # A: $x*$y*2^
+     # E: 6^
+     #ok: 7^
+
+     # N: Todo Test that Fails^
+     # U: zyw feature^
+     # S: 0^
+     # A: $x*$y*2^
+     # E: 6^
+     #ok: 8^
+
+     # N: demo only^
+     #DO: ^
+     # A: $x^
+     # E: $y^
+     # N: verify only^
+     #VO: ^
+     # A: $x^
+     # E: $x^
+     #ok: 9^
+
+     # N: Test loop^
+
+     # C:
+     #    my @expected = ('200','201','202');
+     #    my $i;
+     #    for( $i=0; $i < 3; $i++) {
+     #^
+
+     # A: $i+200^
+     # R: L<Test::STDmaker::tg1/capability-C [1]>^
+     # E: $expected[$i]^
+     #ok: 10,12,14^
+
+     # A: $i + ($x * 100)^
+     # R: L<Test::STDmaker::tg1/capability-B [4]>^
+     # E: $expected[$i]^
+     #ok: 11,13,15^
+
+     # C:     };^
+     # N: Failed test that skips the rest^
+     # R: L<Test::STDmaker::tg1/capability-B [2]>^
+     # A: $x + $y^
+     #SE: 6^
+     #ok: 16^
+
+     # N: A test to skip^
+     # A: $x + $y + $x^
+     # E: 9^
+     #ok: 17^
+
+     # N: A not skip to skip^
+     # S: 0^
+     # R: L<Test::STDmaker::tg1/capability-B [3]>^
+     # A: $x + $y + $x + $y^
+     # E: 10^
+     #ok: 18^
+
+     # N: A skip to skip^
+     # S: 1^
+     # R: L<Test::STDmaker::tg1/capability-B [3]>^
+     # A: $x + $y + $x + $y + $x^
+     # E: 10^
+     #ok: 19^
+
+     #QC:
+     #    sub tolerance
+     #    {   
+     #        my ($actual,$expected) = @_;
+     #        my ($average, $tolerance) = @$expected;
+     #        use integer;
+     #        $actual = (($average - $actual) * 100) / $average;
+     #        no integer;
+     #        (-$tolerance < $actual) && ($actual < $tolerance) ? 1 : 0;
+     #    }
+     #^
+
+     #See_Also: L<Test::STDmaker::tg1>^
+     #Copyright: This STD is public domain.^
+     #HTML: ^
+
+     #~-~
+     #'
+     #
+
+     ##################
+     # Clean STD pm with a todo list
+     # 
+
+     $snl->fin('tgB0.pm')
+
+     # '#!perl
+     ##
+     ## The copyright notice and plain old documentation (POD)
+     ## are at the end of this file.
+     ##
+     #package  t::Test::STDmaker::tgB1;
+
+     #use strict;
+     #use warnings;
+     #use warnings::register;
+
+     #use vars qw($VERSION $DATE $FILE );
+     #$VERSION = '0.01';
+     #$DATE = '2004/04/09';
+     #$FILE = __FILE__;
+
+     #########
+     ## The Test::STDmaker module uses the data after the __DATA__ 
+     ## token to automatically generate the this file.
+     ##
+     ## Don't edit anything before __DATA_. Edit instead
+     ## the data after the __DATA__ token.
+     ##
+     ## ANY CHANGES MADE BEFORE the  __DATA__ token WILL BE LOST
+     ##
+     ## the next time Test::STDmaker generates this file.
+     ##
+     ##
+
+     #__DATA__
+
+     #File_Spec: Unix^
+     #UUT: Test::STDmaker::tg1^
+     #Revision: -^
+     #End_User: General Public^
+     #Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
+     #Detail_Template: ^
+     #STD2167_Template: ^
+     #Version: 0.01^
+     #Classification: None^
+     #Temp: temp.pl^
+     #Demo: tgB1.d^
+     #Verify: tgB1.t^
+
+     # T: 2^
+
+     # C: 
+     #    #########
+     #    # For "TEST" 1.24 or greater that have separate std err output,
+     #    # redirect the TESTERR to STDOUT
+     #    #
+     #    tech_config( 'Test.TESTERR', \*STDOUT );   
+     #^  
+
+     # R: L<Test::STDmaker::tg1/capability-A [1]>^
+     # C: my $x = 2^
+     # C: my $y = 3^
+     # A: $x + $y^
+     #SE: 5^
+     #ok: 1^
+
+     # A: [($x+$y,$y-$x)]^
+     # E: [5,2]^
+     #ok: 2^
+
+     #See_Also: L<Test::STDmaker::tg1>^
+     #Copyright: This STD is public domain^
+
+     #HTML:
+     #<hr>
+     #<!-- /BLK -->
+     #<p><br>
+     #<!-- BLK ID="NOTICE" -->
+     #<!-- /BLK -->
+     #<p><br>
+     #<!-- BLK ID="OPT-IN" -->
+     #<!-- /BLK -->
+     #<p><br>
+     #<!-- BLK ID="LOG_CGI" -->
+     #<!-- /BLK -->
+     #<p><br>
+     #^
+
+     #~-~
+     #'
+     #
+         copy 'tgB0.pm', 'tgB1.pm';
+         $tmaker->tmake('STD', 'verify', {pm => 't::Test::STDmaker::tgB1'} );
+     $s->scrub_date_version($snl->fin('tgB1.pm'))
+
+     # '#!perl
+     ##
+     ## The copyright notice and plain old documentation (POD)
+     ## are at the end of this file.
+     ##
+     #package  t::Test::STDmaker::tgB1;
+
+     #use strict;
+     #use warnings;
+     #use warnings::register;
+
+     #use vars qw($VERSION $DATE $FILE );
+     #$VERSION = '0.00';
+     #$DATE = 'Feb 6, 1969';
+     #$FILE = __FILE__;
+
+     #########
+     ## The Test::STDmaker module uses the data after the __DATA__ 
+     ## token to automatically generate the this file.
+     ##
+     ## Don't edit anything before __DATA_. Edit instead
+     ## the data after the __DATA__ token.
+     ##
+     ## ANY CHANGES MADE BEFORE the  __DATA__ token WILL BE LOST
+     ##
+     ## the next time Test::STDmaker generates this file.
+     ##
+     ##
+
+     #=head1 TITLE PAGE
+
+     # Detailed Software Test Description (STD)
+
+     # for
+
+     # Perl Test::STDmaker::tg1 Program Module
+
+     # Revision: -
+
+     # Version: 0.01
+
+     # $DATE: Feb 6, 1969
+
+     # Prepared for: General Public 
+
+     # Prepared by:  http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com
+
+     # Classification: None
+
+     #=head1 SCOPE
+
+     #This detail STD and the 
+     #L<General Perl Program Module (PM) STD|Test::STD::PerlSTD>
+     #establishes the tests to verify the
+     #requirements of Perl Program Module (PM) L<Test::STDmaker::tg1|Test::STDmaker::tg1>
+
+     #The format of this STD is a tailored L<2167A STD DID|Docs::US_DOD::STD>.
+     #in accordance with 
+     #L<Detail STD Format|Test::STDmaker/Detail STD Format>.
+
+     ########
+     ##  
+     ##  4. TEST DESCRIPTIONS
+     ##
+     ##  4.1 Test 001
+     ##
+     ##  ..
+     ##
+     ##  4.x Test x
+     ##
+     ##
+
+     #=head1 TEST DESCRIPTIONS
+
+     #The test descriptions uses a legend to
+     #identify different aspects of a test description
+     #in accordance with
+     #L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description Fields>.
+
+     #=head2 Test Plan
+
+     # T: 2^
+
+     #=head2 ok: 1
+
+     #  C:
+     #     #########
+     #     # For "TEST" 1.24 or greater that have separate std err output,
+     #     # redirect the TESTERR to STDOUT
+     #     #
+     #     tech_config( 'Test.TESTERR', \*STDOUT );
+     # ^
+     #  R: L<Test::STDmaker::tg1/capability-A [1]>^
+     #  C: my $x = 2^
+     #  C: my $y = 3^
+     #  A: $x + $y^
+     # SE: 5^
+     # ok: 1^
+
+     #=head2 ok: 2
+
+     #  A: [($x+$y,$y-$x)]^
+     #  E: [5,2]^
+     # ok: 2^
+
+     ########
+     ##  
+     ##  5. REQUIREMENTS TRACEABILITY
+     ##
+     ##
+
+     #=head1 REQUIREMENTS TRACEABILITY
+
+     #  Requirement                                                      Test
+     # ---------------------------------------------------------------- ----------------------------------------------------------------
+     # L<Test::STDmaker::tg1/capability-A [1]>                          L<t::Test::STDmaker::tgB1/ok: 1>
+
+     #  Test                                                             Requirement
+     # ---------------------------------------------------------------- ----------------------------------------------------------------
+     # L<t::Test::STDmaker::tgB1/ok: 1>                                 L<Test::STDmaker::tg1/capability-A [1]>
+
+     #=cut
+
+     ########
+     ##  
+     ##  6. NOTES
+     ##
+     ##
+
+     #=head1 NOTES
+
+     #This STD is public domain
+
+     ########
+     ##
+     ##  2. REFERENCED DOCUMENTS
+     ##
+     ##
+     ##
+
+     #=head1 SEE ALSO
+
+     #L<Test::STDmaker::tg1>
+
+     #=back
+
+     #=for html
+     #<hr>
+     #<!-- /BLK -->
+     #<p><br>
+     #<!-- BLK ID="NOTICE" -->
+     #<!-- /BLK -->
+     #<p><br>
+     #<!-- BLK ID="OPT-IN" -->
+     #<!-- /BLK -->
+     #<p><br>
+     #<!-- BLK ID="LOG_CGI" -->
+     #<!-- /BLK -->
+     #<p><br>
+
+     #=cut
+
+     #__DATA__
+
+     #File_Spec: Unix^
+     #UUT: Test::STDmaker::tg1^
+     #Revision: -^
+     #End_User: General Public^
+     #Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
+     #Detail_Template: ^
+     #STD2167_Template: ^
+     #Version: 0.01^
+     #Classification: None^
+     #Temp: temp.pl^
+     #Demo: tgB1.d^
+     #Verify: tgB1.t^
+
+     # T: 2^
+
+     # C:
+     #    #########
+     #    # For "TEST" 1.24 or greater that have separate std err output,
+     #    # redirect the TESTERR to STDOUT
+     #    #
+     #    tech_config( 'Test.TESTERR', \*STDOUT );
+     #^
+
+     # R: L<Test::STDmaker::tg1/capability-A [1]>^
+     # C: my $x = 2^
+     # C: my $y = 3^
+     # A: $x + $y^
+     #SE: 5^
+     #ok: 1^
+
+     # A: [($x+$y,$y-$x)]^
+     # E: [5,2]^
+     #ok: 2^
+
+     #See_Also: L<Test::STDmaker::tg1>^
+     #Copyright: This STD is public domain^
+
+     #HTML:
+     #<hr>
+     #<!-- /BLK -->
+     #<p><br>
+     #<!-- BLK ID="NOTICE" -->
+     #<!-- /BLK -->
+     #<p><br>
+     #<!-- BLK ID="OPT-IN" -->
+     #<!-- /BLK -->
+     #<p><br>
+     #<!-- BLK ID="LOG_CGI" -->
+     #<!-- /BLK -->
+     #<p><br>
+     #^
+
+     #~-~
+     #'
+     #
+
+     ##################
+     # Clean STD pm without a todo list
+     # 
+
+         $test_results = `perl tgB1.t`;
+         $snl->fout('tgB1.txt', $test_results);
+     $s->scrub_probe($s->scrub_file_line($test_results))
+
+     # '1..2
+     #ok 1
+     #not ok 2
+     ## Test 2 got: 'U1[1] 80
+     #N[2] 5 1
+     #' (xxxx.t at line 000)
+     ##   Expected: 'U1[1] 80
+     #N[2] 5 2
+     #'
+     ## Failed : 2
+     ## Passed : 1/2 50%
+     #'
+     #
+
+     ##################
+     # Generated and execute the test script
+     # 
+
+     ##################
+     # Cleaned tgA1.pm
+     # 
+
+     ##################
+     # Internal Storage
+     # 
+
+         use Data::Dumper;
+         my $probe = 3;
+         my $actual_results = Dumper([0+$probe]);
+         my $internal_storage = 'undetermine';
+         if( $actual_results eq Dumper([3]) ) {
+             $internal_storage = 'number';
+         }
+         elsif ( $actual_results eq Dumper(['3']) ) {
+             $internal_storage = 'string';
+         }
+
+         my $expected_results;
+     $internal_storage
+
+     # 'string'
+     #
+
+     ##################
+     # Generated and execute the test script
+     # 
+
+     $snl->fin( 'tg0.pm'  )
+
+     # '#!perl
+     ##
+     ## Documentation, copyright and license is at the end of this file.
+     ##
+     #package  Test::STDmaker::tg1;
+
+     #use 5.001;
+     #use strict;
+     #use warnings;
+     #use warnings::register;
+
+     #use vars qw($VERSION);
+
+     #$VERSION = '0.03';
+
+     #1
+
+     #__END__
+
+     #=head1 Requirements
+
+     #=head2 Capability-A 
+
+     #The requriements are as follows:
+
+     #=over 4
+
+     #=item capability-A [1]
+
+     #This subroutine shall[1] have feature 1. 
+
+     #=item capability-A [2]
+
+     #This subroutine shall[2] have feature 2.
+
+     #=back
+
+     #=head2 Capability-B
+     # 
+     #=over 4
+
+     #=item Capability-B [1]
+
+     #This subroutine shall[1] have feature 1.
+
+     #=item Capability-B [2]
+
+     #This subroutine shall[2] have feature 2.
+
+     #=item Capability-B [3]
+
+     #This subroutine shall[3] have feature 3.
+
+     #=back
+
+     #=head1 DEMONSTRATION
+     #  
+     #=head1 SEE ALSO
+
+     #http://perl.SoftwareDiamonds.com
+
+     #'
+     #
+         #########
+         #
+         # Individual generate outputs using options
+         #
+         ########
+         #####
+         # Make sure there is no residue outputs hanging
+         # around from the last test series.
+         #
+         @outputs = bsd_glob( 'tg*1.*' );
+         unlink @outputs;
+         copy 'tg0.pm', 'tg1.pm';
+         copy 'tgA0.pm', 'tgA1.pm';
+         my @cwd = File::Spec->splitdir( cwd() );
+         pop @cwd;
+         pop @cwd;
+         unshift @INC, File::Spec->catdir( @cwd );  # put UUT in lib path
+         $tmaker->tmake('demo', { pm => 't::Test::STDmaker::tgA1', demo => 1});
+         shift @INC;
+
+         #######
+         # expected results depend upon the internal storage from numbers 
+         #
+         if( $internal_storage eq 'string') {
+             $expected_results = 'tg2B.pm';
+         }
+         else {
+             $expected_results = 'tg2A.pm';
+         }
+     $s->scrub_date_version($snl->fin('tg1.pm'))
+
+     # '#!perl
+     ##
+     ## Documentation, copyright and license is at the end of this file.
+     ##
+     #package  Test::STDmaker::tg1;
+
+     #use 5.001;
+     #use strict;
+     #use warnings;
+     #use warnings::register;
+
+     #use vars qw($VERSION);
+
+     #$VERSION = '0.00';
+
+     #1
+
+     #__END__
+
+     #=head1 Requirements
+
+     #=head2 Capability-A 
+
+     #The requriements are as follows:
+
+     #=over 4
+
+     #=item capability-A [1]
+
+     #This subroutine shall[1] have feature 1. 
+
+     #=item capability-A [2]
+
+     #This subroutine shall[2] have feature 2.
+
+     #=back
+
+     #=head2 Capability-B
+     # 
+     #=over 4
+
+     #=item Capability-B [1]
+
+     #This subroutine shall[1] have feature 1.
+
+     #=item Capability-B [2]
+
+     #This subroutine shall[2] have feature 2.
+
+     #=item Capability-B [3]
+
+     #This subroutine shall[3] have feature 3.
+
+     #=back
+
+     #=head1 DEMONSTRATION
+
+     # #########
+     # # perl tgA1.d
+     # ###
+
+     #~~~~~~ Demonstration overview ~~~~~
+
+     #The results from executing the Perl Code 
+     #follow on the next lines as comments. For example,
+
+     # 2 + 2
+     # # 4
+
+     #~~~~~~ The demonstration follows ~~~~~
+
+     #     #########
+     #     # For "TEST" 1.24 or greater that have separate std err output,
+     #     # redirect the TESTERR to STDOUT
+     #     #
+     #     tech_config( 'Test.TESTERR', \*STDOUT );
+
+     # ##################
+     # # Quiet Code
+     # # 
+
+     # 'hello world'
+
+     # # 'hello world'
+     # #
+
+     # ##################
+     # # ok subroutine
+     # # 
+
+     # 99
+
+     # # 99
+     # #
+
+     # ##################
+     # # skip subroutine
+     # # 
+
+     # 80
+
+     # # 80
+     # #
+
+     # ##################
+     # # Pass test
+     # # 
+
+     # my $x = 2
+     # my $y = 3
+     # $x + $y
+
+     # # '5'
+     # #
+
+     # ##################
+     # # Todo test that passes
+     # # 
+
+     # $y-$x
+
+     # # '1'
+     # #
+
+     # ##################
+     # # Test that fails
+     # # 
+
+     # $x+4
+
+     # # '6'
+     # #
+
+     # ##################
+     # # Skipped tests
+     # # 
+
+     # ##################
+     # # Todo Test that Fails
+     # # 
+
+     # $x*$y*2
+
+     # # '12'
+     # #
+
+     # ##################
+     # # demo only
+     # # 
+
+     # $x
+
+     # # 2
+     # #
+
+     # ##################
+     # # verify only
+     # # 
+
+     # ##################
+     # # Test loop
+     # # 
+
+     #     my @expected = ('200','201','202');
+     #     my $i;
+     #     for( $i=0; $i < 3; $i++) {
+     # $i+200
+
+     # # '200'
+     # #
+     # $i + ($x * 100)
+
+     # # '200'
+     # #
+     #     };
+     # $i+200
+
+     # # '201'
+     # #
+     # $i + ($x * 100)
+
+     # # '201'
+     # #
+     #     };
+     # $i+200
+
+     # # '202'
+     # #
+     # $i + ($x * 100)
+
+     # # '202'
+     # #
+     #     };
+
+     # ##################
+     # # Failed test that skips the rest
+     # # 
+
+     # $x + $y
+
+     # # '5'
+     # #
+
+     # ##################
+     # # A test to skip
+     # # 
+
+     # $x + $y + $x
+
+     # # '7'
+     # #
+
+     # ##################
+     # # A not skip to skip
+     # # 
+
+     # $x + $y + $x + $y
+
+     # # '10'
+     # #
+
+     # ##################
+     # # A skip to skip
+     # # 
+
+     #=head1 SEE ALSO
+
+     #http://perl.SoftwareDiamonds.com
+
+     #'
+     #
+
+     ##################
+     # Generate and replace a demonstration
+     # 
+
+         no warnings;
+         open SAVEOUT, ">&STDOUT";
+         use warnings;
+         open STDOUT, ">tgA1.txt";
+         $tmaker->tmake('verify', { pm => 't::Test::STDmaker::tgA1', run => 1, test_verbose => 1});
+         close STDOUT;
+         open STDOUT, ">&SAVEOUT";
+
+         ######
+         # For some reason, test harness puts in a extra line when running u
+         # under the Active debugger on Win32. So just take it out.
+         # Also the script name is absolute which is site dependent.
+         # Take it out of the comparision.
+         #
+         $test_results = $snl->fin('tgA1.txt');
+         $test_results =~ s/.*?1..9/1..9/; 
+         $test_results =~ s/------.*?\n(\s*\()/\n $1/s;
+         $snl->fout('tgA1.txt',$test_results);
+     $s->scrub_probe($s->scrub_test_file($s->scrub_file_line($test_results)))
+
+     # '~~~~
+     #ok 1 - Quiet Code 
+     #ok 2 - ok subroutine 
+     #not ok 3 - skip subroutine 
+     ## Test 3 got: '0' (xxxx.t at line 000)
+     ##   Expected: '1' (
+     ## got: 80
+     ## expected: U1[1] 80
+     ## N[2] 100 10
+     ## 
+     ##)
+     #ok 4 - Pass test 
+     #ok 5 - Todo test that passes  # (xxxx.t at line 000 TODO?!)
+     #not ok 6 - Test that fails 
+     ## Test 6 got: '6' (xxxx.t at line 000)
+     ##   Expected: '7'
+     #ok 7 - Skipped tests  # skip
+     #not ok 8 - Todo Test that Fails 
+     ## Test 8 got: '12' (xxxx.t at line 000 *TODO*)
+     ##   Expected: '6'
+     #ok 9 - verify only 
+     #ok 10 - Test loop 
+     #ok 11
+     #ok 12 - Test loop 
+     #ok 13
+     #ok 14 - Test loop 
+     #ok 15
+     #not ok 16 - Failed test that skips the rest 
+     ## Test 16 got: '5' (xxxx.t at line 000)
+     ##    Expected: '6'
+     #ok 17 - A test to skip  # skip - Test not performed because of previous failure.
+     #ok 18 - A not skip to skip  # skip - Test not performed because of previous failure.
+     #ok 19 - A skip to skip  # skip - Test not performed because of previous failure.
+     ## Skipped: 7 17 18 19
+     ## Failed : 3 6 8 16
+     ## Passed : 11/15 73%
+     #FAILED tests 3, 6, 16
+     #      Failed 3/19 tests, 84.21% okay (less 4 skipped tests: 12 okay, 63.16%)
+     #Failed Test                       Stat Wstat Total Fail  Failed  List of Failed
+
+     #  (1 subtest UNEXPECTEDLY SUCCEEDED), 4 subtests skipped.
+     #Failed 1/1 test scripts, 0.00% okay. 3/19 subtests failed, 84.21% okay.
+     #~~~~
+     #Finished running Tests
+
+     #'
+     #
+
+     ##################
+     # Generate and verbose test harness run test script
+     # 
+
+     $snl->fin('tgC0.pm')
+
+     # '#!perl
+     ##
+     ## The copyright notice and plain old documentation (POD)
+     ## are at the end of this file.
+     ##
+     #package  t::Test::STDmaker::tgC1;
+
+     #use strict;
+     #use warnings;
+     #use warnings::register;
+
+     #use vars qw($VERSION $DATE $FILE );
+     #$VERSION = '0.03';
+     #$DATE = '2004/04/09';
+     #$FILE = __FILE__;
+
+     #########
+     ## The Test::STDmaker module uses the data after the __DATA__ 
+     ## token to automatically generate the this file.
+     ##
+     ## Don't edit anything before __DATA_. Edit instead
+     ## the data after the __DATA__ token.
+     ##
+     ## ANY CHANGES MADE BEFORE the  __DATA__ token WILL BE LOST
+     ##
+     ## the next time Test::STDmaker generates this file.
+     ##
+     ##
+
+     #__DATA__
+
+     #File_Spec: Unix^
+     #UUT: Test::STDmaker::tg1^
+     #Revision: -^
+     #End_User: General Public^
+     #Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
+     #Detail_Template: ^
+     #STD2167_Template: ^
+     #Version: 0.01^
+     #Classification: None^
+     #Temp: xx/temp.pl^
+     #Demo: yy/zz/tg1B.d^
+     #Verify: ccc/tg1B.t^
+
+     # T: 2^
+
+     # R: L<Test::STDmaker::tg1/capability-A [1]>^
+     # C: my $x = 2^
+     # C: my $y = 3^
+     # A: $x + $y^
+     #SE: 5^
+     #ok: 1^
+
+     # A: $y-$x^
+     # E: 1^
+     #ok: 2^
+
+     #See_Also: L<Test::STDmaker::tg1>^
+     #Copyright: This STD is public domain^
+
+     #HTML:
+     #<hr>
+     #<!-- /BLK -->
+     #<p><br>
+     #<!-- BLK ID="NOTICE" -->
+     #<!-- /BLK -->
+     #<p><br>
+     #<!-- BLK ID="OPT-IN" -->
+     #<!-- /BLK -->
+     #<p><br>
+     #<!-- BLK ID="LOG_CGI" -->
+     #<!-- /BLK -->
+     #<p><br>
+     #^
+
+     #~-~
+     #'
+     #
+         copy 'tgC0.pm', 'tgC1.pm';
+         $tmaker->tmake('STD', { pm => 't::Test::STDmaker::tgC1', fspec_out=>'os2'});
+     $s->scrub_date_version($snl->fin('tgC1.pm'))
+
+     # '#!perl
+     ##
+     ## The copyright notice and plain old documentation (POD)
+     ## are at the end of this file.
+     ##
+     #package  t::Test::STDmaker::tgC1;
+
+     #use strict;
+     #use warnings;
+     #use warnings::register;
+
+     #use vars qw($VERSION $DATE $FILE );
+     #$VERSION = '0.00';
+     #$DATE = 'Feb 6, 1969';
+     #$FILE = __FILE__;
+
+     #########
+     ## The Test::STDmaker module uses the data after the __DATA__ 
+     ## token to automatically generate the this file.
+     ##
+     ## Don't edit anything before __DATA_. Edit instead
+     ## the data after the __DATA__ token.
+     ##
+     ## ANY CHANGES MADE BEFORE the  __DATA__ token WILL BE LOST
+     ##
+     ## the next time Test::STDmaker generates this file.
+     ##
+     ##
+
+     #=head1 TITLE PAGE
+
+     # Detailed Software Test Description (STD)
+
+     # for
+
+     # Perl Test::STDmaker::tg1 Program Module
+
+     # Revision: -
+
+     # Version: 0.01
+
+     # $DATE: Feb 6, 1969
+
+     # Prepared for: General Public 
+
+     # Prepared by:  http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com
+
+     # Classification: None
+
+     #=head1 SCOPE
+
+     #This detail STD and the 
+     #L<General Perl Program Module (PM) STD|Test::STD::PerlSTD>
+     #establishes the tests to verify the
+     #requirements of Perl Program Module (PM) L<Test::STDmaker::tg1|Test::STDmaker::tg1>
+
+     #The format of this STD is a tailored L<2167A STD DID|Docs::US_DOD::STD>.
+     #in accordance with 
+     #L<Detail STD Format|Test::STDmaker/Detail STD Format>.
+
+     ########
+     ##  
+     ##  4. TEST DESCRIPTIONS
+     ##
+     ##  4.1 Test 001
+     ##
+     ##  ..
+     ##
+     ##  4.x Test x
+     ##
+     ##
+
+     #=head1 TEST DESCRIPTIONS
+
+     #The test descriptions uses a legend to
+     #identify different aspects of a test description
+     #in accordance with
+     #L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description Fields>.
+
+     #=head2 Test Plan
+
+     # T: 2^
+
+     #=head2 ok: 1
+
+     #  R: L<Test::STDmaker::tg1/capability-A [1]>^
+     #  C: my $x = 2^
+     #  C: my $y = 3^
+     #  A: $x + $y^
+     # SE: 5^
+     # ok: 1^
+
+     #=head2 ok: 2
+
+     #  A: $y-$x^
+     #  E: 1^
+     # ok: 2^
+
+     ########
+     ##  
+     ##  5. REQUIREMENTS TRACEABILITY
+     ##
+     ##
+
+     #=head1 REQUIREMENTS TRACEABILITY
+
+     #  Requirement                                                      Test
+     # ---------------------------------------------------------------- ----------------------------------------------------------------
+     # L<Test::STDmaker::tg1/capability-A [1]>                          L<t::Test::STDmaker::tgC1/ok: 1>
+
+     #  Test                                                             Requirement
+     # ---------------------------------------------------------------- ----------------------------------------------------------------
+     # L<t::Test::STDmaker::tgC1/ok: 1>                                 L<Test::STDmaker::tg1/capability-A [1]>
+
+     #=cut
+
+     ########
+     ##  
+     ##  6. NOTES
+     ##
+     ##
+
+     #=head1 NOTES
+
+     #This STD is public domain
+
+     ########
+     ##
+     ##  2. REFERENCED DOCUMENTS
+     ##
+     ##
+     ##
+
+     #=head1 SEE ALSO
+
+     #L<Test::STDmaker::tg1>
+
+     #=back
+
+     #=for html
+     #<hr>
+     #<!-- /BLK -->
+     #<p><br>
+     #<!-- BLK ID="NOTICE" -->
+     #<!-- /BLK -->
+     #<p><br>
+     #<!-- BLK ID="OPT-IN" -->
+     #<!-- /BLK -->
+     #<p><br>
+     #<!-- BLK ID="LOG_CGI" -->
+     #<!-- /BLK -->
+     #<p><br>
+
+     #=cut
+
+     #__DATA__
+
+     #File_Spec: os2^
+     #UUT: Test::STDmaker::tg1^
+     #Revision: -^
+     #End_User: General Public^
+     #Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
+     #Detail_Template: ^
+     #STD2167_Template: ^
+     #Version: 0.01^
+     #Classification: None^
+     #Temp: xx\temp.pl^
+     #Demo: yy\zz\tg1B.d^
+     #Verify: ccc\tg1B.t^
+
+     # T: 2^
+
+     # R: L<Test::STDmaker::tg1/capability-A [1]>^
+     # C: my $x = 2^
+     # C: my $y = 3^
+     # A: $x + $y^
+     #SE: 5^
+     #ok: 1^
+
+     # A: $y-$x^
+     # E: 1^
+     #ok: 2^
+
+     #See_Also: L<Test::STDmaker::tg1>^
+     #Copyright: This STD is public domain^
+
+     #HTML:
+     #<hr>
+     #<!-- /BLK -->
+     #<p><br>
+     #<!-- BLK ID="NOTICE" -->
+     #<!-- /BLK -->
+     #<p><br>
+     #<!-- BLK ID="OPT-IN" -->
+     #<!-- /BLK -->
+     #<p><br>
+     #<!-- BLK ID="LOG_CGI" -->
+     #<!-- /BLK -->
+     #<p><br>
+     #^
+
+     #~-~
+     #'
+     #
+
+     ##################
+     # Change File Spec
+     # 
+
+     ##################
+     # find_t_roots
+     # 
+
+        my $OS = $^O;  # Need to escape the form delimiting char ^
+        unless ($OS) {   # on some perls $^O is not defined
+          require Config;
+          $OS = $Config::Config{'osname'};
+        } 
+        my $dir = File::Spec->catdir(cwd(),'lib');
+        $dir =~ s=/=\\=g if $OS eq 'MSWin32';
+        unshift @INC,$dir;
+        my @t_path = $tmaker->find_t_roots( );
+        $t_path[0] = $t_path[0]; # stop temp.pl warning
+        $dir = cwd();
+        $dir =~ s=/=\\=g if $OS eq 'MSWin32';
+     $t_path[0]
+
+     # 'E:\User\SoftwareDiamonds\installation\t\Test\STDmaker'
+     #
+         #####
+         # Make sure there is no residue outputs hanging
+         # around from the last test series.
+         #
+         @outputs = bsd_glob( 'tg*1.*' );
+         unlink @outputs;
+         unlink 'tgA1.pm';
+         unlink 'tgB1.pm';
+         unlink 'tgC1.pm';
+         tech_config( 'Test.TESTERR', $restore_testerr);   
+
+         #####
+         # Suppress some annoying warnings
+         #
+         sub __warn__ 
+         { 
+            my ($text) = @_;
+            return $text =~ /STDOUT/;
+            CORE::warn( $text );
+         };
+
+QUALITY ASSURANCE
+    The module "t::Test::STDmaker::STDmaker" is the Software Test
+    Description file (STD) for the "Test::STDmaker". module. This module
+    contains all the information necessary for this module to verify that
+    this module meets its requirements. In other words, this module will
+    verify itself. This is valid because if something is wrong with this
+    module, it will not be able to verify itself. And if it cannot verify
+    itself, it cannot verify that another module meets its requirements.
+
+    To generate all the test output files, run the generated test script,
+    run the demonstration script, execute the following in any directory:
+
+     tmake -verbose -demo -report -run -pm=t::Test::STDmaker::STDmaker
+
+    Note that tmake.pl must be in the execution path "$ENV{PATH}" and the
+    "t" directory on the same level as the "lib" that contains the
+    "Test::STDmaker" module. The distribution file contains a copy of the
+    tmake.pl test make script.
+
+    And yes, the <Test::STDmaker> program module generates the test script
+    to test the <Test::STDmaker> program module which is perfectly legal. If
+    <Test::STDmaker> is not working, <Test::STDmaker> will fail to generate
+    a valid test script.
+
+NOTES
+  Binding Requirements
+
+    In accordance with the License, Software Diamonds is not liable for any
+    requirement, binding or otherwise.
+
+  Author
+
+    The author, holder of the copyright and maintainer is
+
+    <support@SoftwareDiamonds.com>
+
+  Copyright
+
+    copyright © 2003 SoftwareDiamonds.com
+
+  License
+
+    Software Diamonds permits the redistribution and use in source and
+    binary forms, with or without modification, provided that the following
+    conditions are met:
+
+    1   Redistributions of source code, modified or unmodified must retain
+        the above copyright notice, this list of conditions and the
+        following disclaimer.
+
+    2   Redistributions in binary form must reproduce the above copyright
+        notice, this list of conditions and the following disclaimer in the
+        documentation and/or other materials provided with the distribution.
+
+    3   Commercial installation of the binary or source must visually
+        present to the installer the above copyright notice, this list of
+        conditions intact, that the original source is available at
+        http://softwarediamonds.com and provide means for the installer to
+        actively accept the list of conditions; otherwise, a license fee
+        must be paid to Softwareware Diamonds.
+
+    SOFTWARE DIAMONDS, http://www.SoftwareDiamonds.com, PROVIDES THIS
+    SOFTWARE 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT
+    NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+    FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL SOFTWARE
+    DIAMONDS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+    SPECIAL,EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+    TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,DATA, OR
+    PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+    LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING USE
+    OF THIS SOFTWARE, EVEN IF ADVISED OF NEGLIGENCE OR OTHERWISE) ARISING IN
+    ANY WAY OUT OF THE POSSIBILITY OF SUCH DAMAGE.
+
+SEE ALSO
+    Test::Tech
+    Test
+    Test::Harness
+    Test::STDmaker::STD
+    Test::STDmaker::Verify
+    Test::STDmaker::Demo
+    Test::STDmaker::Check
+    Software Test Description
+    Specification Practices
+    Software Development
+NAME
+    Docs::Site_SVD::Test_STDmaker - Test Scripts, Demo Scripts and Software
+    Test Description (STD) Automation
+
 Title Page
      Software Version Description
 
      for
 
-     Test::STDmaker - Test Scripts, Demo Scripts and Software Test Description (STD) Automation
+     Docs::Site_SVD::Test_STDmaker - Test Scripts, Demo Scripts and Software Test Description (STD) Automation
 
-     Revision: G
+     Revision: J
 
-     Version: 0.08
+     Version: 0.10
 
-     Date: 2004/04/09
+     Date: 2004/05/14
 
      Prepared for: General Public 
 
@@ -24,10 +2938,12 @@ Title Page
     files.
 
   1.1 Identification
+
     This release, identified in 3.2, is a collection of Perl modules that
     extend the capabilities of the Perl language.
 
   1.2 System overview
+
     The system is the Perl programming language software. As established by
     the Perl referenced documents, the "Test::STDmaker" program module
     extends the Perl language.
@@ -35,32 +2951,6 @@ Title Page
     The input to "Test::STDmaker" is the __DATA__ section of Software Test
     Description (STD) program module. The __DATA__ section must contain STD
     forms text database in the DataPort::FileType::DataDB format.
-
-    The STD program modules should reside in a 't' subtree whose root is the
-    same as the 'lib' subtree.
-
-    For example,
-
-     root_dir   
-       lib
-         MyTopLevel
-           MyUnitUnderTest.pm  # code module
-       t
-         MyTopLevel
-           MyUnitUnderTest.pm  # std module
-
-    When "Test::STDmaker" searches for a STD program module, it looks for it
-    first under all the subtrees in @INC with the last directory removed.
-    This means the package name must start with "t::". Thus the program
-    module name for the Unit Under Test (UUT) and the UUT STD program module
-    are always different.
-
-    Use the "tg.pl" (test generate) cover script for Test::STDmaker to
-    process a STD database module as follows:
-
-      tg t::MyTopLevel::MyUnitUnderTest
-      perl -d root_dir/t/MyTopLevel/MyUnitUnderTest.t
-      perl -d root_dir/t/MyTopLevel/MyUnitUnderTest.d
 
     Using the data in the database, the "Test::STDmaker" module provides the
     following:
@@ -79,32 +2969,21 @@ Title Page
         database, information required by a US Department of Defense (DOD)
         Software Test Description (STD) Data Item Description (DID).
 
-    5   Automate generation of test information required by (STD2167A) from
-        the STD file making it economical to provide this information for
-        even commercial projects. The ISO standards and certification are
-        pushing commercial projects more and more toward using 2167
-        nomenclature and providing STD2167A information.
+    5
+    The "Test::STDmaker" package relieves the designer and developer from
+    the burden of filling out templates, counting oks, providing
+    documentation examples, tracing tests to test requirments, and other
+    such time consuming, boring, development tasks. Instead the designers
+    and developrs need only to fill in an a form. The "Test::STDmaker" will
+    take it from there and automatically and quickly generate the desired
+    test scripts, demo scripts, and test description documents.
 
     See the Test::STDmaker POD for further detail on the text database
     fields and the processing.
 
-    The "Test::STDmaker" program module is a high level use infterface
-    (functional interface) program module in the US DOD STD2167A bundle. The
-    dependency of the program modules in the US DOD STD2167A bundle is as
-    follows:
-
-     File::Package File:SmartNL File::TestPath Text::Scrub
-
-         Test::Tech
-
-            DataPort::FileType::FormDB DataPort::DataFile DataPort::Maker 
-            File::AnySpec File::Data File::PM2File File::SubPM Text::Replace 
-            Text::Column
-
-                Test::STDmaker ExtUtils::SVDmaker
-
   1.3 Document overview.
-    This document releases Test::STDmaker version 0.08 providing description
+
+    This document releases Test::STDmaker version 0.10 providing description
     of the inventory, installation instructions and other information
     necessary to utilize and track this release.
 
@@ -113,14 +2992,15 @@ Title Page
     specification.
 
   3.1 Inventory of materials released.
+
     This document releases the file
 
-     Test-STDmaker-0.08.tar.gz
+     Test-STDmaker-0.10.tar.gz
 
     found at the following repository(s):
 
       http://www.softwarediamonds/packages/
-      http://www.perl.com/CPAN-local/authors/id/S/SO/SOFTDIA/
+      http://www.perl.com/CPAN/authors/id/S/SO/SOFTDIA/
 
     Restrictions regarding duplication and license provisions are as
     follows:
@@ -155,6 +3035,13 @@ Title Page
             disclaimer in the documentation and/or other materials provided
             with the distribution.
 
+        3   Commercial installation of the binary or source must visually
+            present to the installer the above copyright notice, this list
+            of conditions intact, that the original source is available at
+            http://softwarediamonds.com and provide means for the installer
+            to actively accept the list of conditions; otherwise, a license
+            fee must be paid to Softwareware Diamonds.
+
         SOFTWARE DIAMONDS, http://www.SoftwareDiamonds.com, PROVIDES THIS
         SOFTWARE 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING,
         BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
@@ -169,48 +3056,51 @@ Title Page
         OF SUCH DAMAGE.
 
   3.2 Inventory of software contents
+
     The content of the released, compressed, archieve file, consists of the
     following files:
 
      file                                                         version date       comment
      ------------------------------------------------------------ ------- ---------- ------------------------
-     lib/Docs/Site_SVD/Test_STDmaker.pm                           0.08    2004/04/09 revised 0.07
-     MANIFEST                                                     0.08    2004/04/09 generated, replaces 0.07
-     Makefile.PL                                                  0.08    2004/04/09 generated, replaces 0.07
-     README                                                       0.08    2004/04/09 generated, replaces 0.07
-     lib/Test/STDmaker.pm                                         1.11    2004/04/09 revised 1.1
-     lib/Test/STDType/Demo.pm                                     1.09    2004/04/09 revised 1.08
-     lib/Test/STDType/STD.pm                                      1.08    2004/04/09 unchanged
-     lib/Test/STDType/Verify.pm                                   1.09    2004/04/09 revised 1.08
-     lib/Test/STD/Check.pm                                        1.09    2004/04/09 revised 1.08
-     lib/Test/STD/FileGen.pm                                      1.07    2004/04/09 unchanged
-     lib/Test/STD/STD2167.pm                                      1.05    2004/04/09 unchanged
-     lib/Test/STD/STDgen.pm                                       1.05    2004/04/09 unchanged
-     t/Test/STDmaker/STDmaker.d                                   0.09    2004/04/09 revised 0.08
-     t/Test/STDmaker/STDmaker.pm                                  0.01    2004/04/09 unchanged
-     t/Test/STDmaker/STDmaker.t                                   0.09    2004/04/09 revised 0.08
+     lib/Docs/Site_SVD/Test_STDmaker.pm                           0.10    2004/05/14 revised 0.09
+     MANIFEST                                                     0.10    2004/05/14 generated, replaces 0.09
+     Makefile.PL                                                  0.10    2004/05/14 generated, replaces 0.09
+     README                                                       0.10    2004/05/14 generated, replaces 0.09
+     lib/Test/STDmaker.pm                                         1.13    2004/05/14 revised 1.12
+     lib/Test/STDmaker/Check.pm                                   1.09    2004/05/14 new
+     lib/Test/STDmaker/Demo.pm                                    1.1     2004/05/14 new
+     lib/Test/STDmaker/STD.pm                                     1.08    2004/05/14 new
+     lib/Test/STDmaker/Verify.pm                                  1.1     2004/05/14 new
+     t/Test/STDmaker/STDmaker.d                                   0.11    2004/05/14 revised 0.1
+     t/Test/STDmaker/STDmaker.pm                                  0.09    2004/05/14 revised 0.08
+     t/Test/STDmaker/STDmaker.t                                   0.11    2004/05/14 revised 0.1
      t/Test/STDmaker/tg0.pm                                       0.03    2004/04/09 unchanged
-     t/Test/STDmaker/tg2.pm                                       0.02    2004/04/09 unchanged
-     t/Test/STDmaker/tgA0.pm                                      0.03    2004/04/09 unchanged
-     t/Test/STDmaker/tgA1.pm                                      0.03    2004/04/09 new
-     t/Test/STDmaker/tgA2.pm                                      0.03    2004/04/09 unchanged
-     t/Test/STDmaker/tgA2A.txt                                    0.07    2004/04/09 unchanged
-     t/Test/STDmaker/tgA2B.txt                                    0.06    2004/04/09 unchanged
-     t/Test/STDmaker/tgA2C.txt                                    0.07    2004/04/09 unchanged
-     t/Test/STDmaker/tgA2D.txt                                    0.03    2003/08/01 unchanged
+     t/Test/STDmaker/tg2A.pm                                      0.03    2004/05/14 revised 0.02
+     t/Test/STDmaker/tg2B.pm                                      0.04    2004/05/14 revised 0.03
+     t/Test/STDmaker/tgA0.pm                                      0.04    2004/05/14 revised 0.03
+     t/Test/STDmaker/tgA1.pm                                      0.04    2004/05/14 revised 0.03
+     t/Test/STDmaker/tgA2.pm                                      0.04    2004/05/14 revised 0.03
+     t/Test/STDmaker/tgA2A2.txt                                   0.1     2004/05/14 revised 0.09
+     t/Test/STDmaker/tgA2A3.txt                                   0.10    2004/05/14 new
+     t/Test/STDmaker/tgA2B.txt                                    0.08    2004/05/14 revised 0.07
+     t/Test/STDmaker/tgA2C.txt                                    0.09    2004/05/14 revised 0.08
      t/Test/STDmaker/tgB0.pm                                      0.01    2004/04/09 unchanged
-     t/Test/STDmaker/tgB1.pm                                      0.01    2004/04/09 new
+     t/Test/STDmaker/tgB1.pm                                      0.01    2004/04/09 unchanged
      t/Test/STDmaker/tgB2.pm                                      0.01    2004/04/09 unchanged
-     t/Test/STDmaker/tgB2.txt                                     0.07    2004/04/09 unchanged
+     t/Test/STDmaker/tgB2.txt                                     0.09    2004/05/14 revised 0.08
      t/Test/STDmaker/tgC0.pm                                      0.03    2004/04/09 unchanged
-     t/Test/STDmaker/tgC1.pm                                      0.01    2004/04/09 new
+     t/Test/STDmaker/tgC1.pm                                      0.01    2004/04/09 unchanged
      t/Test/STDmaker/tgC2.pm                                      0.03    2004/04/09 unchanged
-     bin/tmake.pl                                                 1.05    2003/08/01 unchanged
-     t/Test/STDmaker/Text/Scrub.pm                                1.11    2004/04/09 unchanged
-     t/Test/STDmaker/Test/Tech.pm                                 1.17    2004/04/09 unchanged
-     t/Test/STDmaker/Data/Secs2.pm                                1.15    2004/04/09 unchanged
+     t/Test/STDmaker/tmake.pl                                     1.06    2004/05/14 new
+     t/Test/STDmaker/Text/Scrub.pm                                1.13    2004/05/14 revised 1.11
+     t/Test/STDmaker/Test/Tech.pm                                 1.25    2004/05/14 revised 1.19
+     t/Test/STDmaker/Data/Secs2.pm                                1.23    2004/05/14 revised 1.17
+     t/Test/STDmaker/Data/SecsPack.pm                             0.08    2004/05/14 revised 0.02
+     t/Test/Data/SecsPack.pm                                      0.08    2004/05/14 new
+     t/Test/Data/Startup.pm                                       0.06    2004/05/14 new
 
   3.3 Changes
+
     Changes are as follows:
 
     STD-STDgen-0.01
@@ -218,7 +3108,6 @@ Title Page
         change.
 
     STD-STDgen-0.02
-
         t/STD/tgA0.std changes
             Added test for DO: field
 
@@ -236,7 +3125,6 @@ Title Page
             Added and revise code to make DO: VO: and looping work
 
     Test-STDmaker-0.01
-
         *   Low level subroutines are broken out as separate distribution
             modules: Test::TestUtil Test::Tech DataPort::FileType::FormDB
             DataPort::DataFile
@@ -313,15 +3201,45 @@ Title Page
            Platform:
              osname=linux, osvers=2.4.22-4tr, archname=i586-linux
 
-        This is capitalization problem. The program module name is 'FindBin'
-        not 'FindBIN' which is part of Perl. Microsoft does not care about
-        capitalization differences while linux does. This error is in the
-        test script automatically generated by "Test::STDmaker" and was just
-        introduced when moved test script libraries from "tlib" to the
-        directory of the test script. Repaired "Test::STDmaker" and
+        This is a capitalization problem. The program module name is
+        'FindBin' not 'FindBIN' which is part of Perl. Microsoft does not
+        care about capitalization differences while linux does. This error
+        is in the test script automatically generated by "Test::STDmaker"
+        and was just introduced when moved test script libraries from "tlib"
+        to the directory of the test script. Repaired "Test::STDmaker" and
         regenerated the distribution.
 
+    Test-STDmaker-0.09
+        Added the generated xxxx.d demo script prints out the test name as a
+        comment.
+
+        Added the "report" option that automatically runs all tests scripts
+        and replaces the UUT program module "=headx Test Report" section
+        with the output.
+
+        The test software uses the lastest version of "Test::Tech". This
+        impacted the expected values of the old tests slightly. Made the
+        adjustments.
+
+    Test-STDmaker-0.10
+        Added the "&Test::Tech::is_skip" subroutine.
+
+        Added a left edge space column to the =\headx test report
+        automatically generated section so that POD formats it as code.
+
+        Changed the look of the "demo" subroutine output to better resemble
+        Perl code. Print the code straight forward without leading '=>'. Put
+        a Perl comment '# ' in front of each result line instead of printing
+        it straing forward.
+
+        Added the "QC:" that is same for the "C:" field except for the demo
+        script. The demo script silently executes a "QC:", quiet code, data.
+
+        Recoded so that none of the modules uses "File::Data" program
+        module.
+
   3.4 Adaptation data.
+
     This installation requires that the installation site has the Perl
     programming language installed. There are no other additional
     requirements or tailoring needed of configurations files, adaptation
@@ -329,16 +3247,19 @@ Title Page
     installation site.
 
   3.5 Related documents.
+
     There are no related documents needed for the installation and test of
     this release.
 
   3.6 Installation instructions.
+
     Instructions for installation, installation tests and installation
     support are as follows:
 
     Installation Instructions.
-        To installed the release file, use the CPAN module pr PPM module in
-        the Perl release or the INSTALL.PL script at the following web site:
+        To installed the release package, use the CPAN module pr PPM module
+        in the Perl release or the INSTALL.PL script at the following web
+        site:
 
          http://packages.SoftwareDiamonds.com
 
@@ -348,14 +3269,14 @@ Title Page
         the following repositories in a web browser:
 
           http://www.softwarediamonds/packages/
-          http://www.perl.com/CPAN-local/authors/id/S/SO/SOFTDIA/
+          http://www.perl.com/CPAN/authors/id/S/SO/SOFTDIA/
 
-        Right click on 'Test-STDmaker-0.08.tar.gz' and download to a
+        Right click on 'Test-STDmaker-0.10.tar.gz' and download to a
         temporary installation directory. Enter the following where $make is
         'nmake' for microsoft windows; otherwise 'make'.
 
-         gunzip Test-STDmaker-0.08.tar.gz
-         tar -xf Test-STDmaker-0.08.tar
+         gunzip Test-STDmaker-0.10.tar.gz
+         tar -xf Test-STDmaker-0.10.tar
          perl Makefile.PL
          $make test
          $make install
@@ -366,18 +3287,26 @@ Title Page
 
          http://packages.softwarediamonds.com
 
+        VERY IMPORTANT:
+
+        The distribution package contains the cover "bin/tmake.pl" perl
+        command script. Manually copy this into the execution path in order
+        to use "STDmaker" from the command line. Rename it if there is a
+        name conflict or just do not like the name.
+
     Prerequistes.
          'File::AnySpec' => '1.1',
-         'File::Data' => '1.1',
          'File::Package' => '1.1',
          'File::Where' => '0.02',
          'File::SmartNL' => '1.1',
          'File::SubPM' => '1.1',
          'Text::Replace' => '1.08',
          'Text::Column' => '1.08',
-         'DataPort::FileType::FormDB' => '0.03',
-         'DataPort::Maker' => '1.04',
-         'DataPort::DataFile' => '0.04',
+         'File::Maker' => '0.03',
+         'Tie::Form' => '0.00',
+         'Tie::Layers' => '0.00',
+         'Test::Harness' => '2.42',
+         'Data::Startup' => '0.02',
 
     Security, privacy, or safety precautions.
         None.
@@ -395,6 +3324,7 @@ Title Page
          603 882-0846 E<lt>support@SoftwareDiamonds.comE<gt>
 
   3.7 Possible problems and known errors
+
     The open issues are as follows:
 
     *   The STD2167 option, for a full singe STD, instead of a detailed STD
@@ -432,62 +3362,15 @@ Title Page
     SVD Software Version Description
 
 2.0 SEE ALSO
-    Modules with end-user functional interfaces relating to US DOD 2167A
-    automation are as follows:
-
     Test::STDmaker
-    ExtUtils::SVDmaker
-    DataPort::FileType::FormDB
-    DataPort::DataFile
+    Tie::FormD
     Test::Tech
     Test
-    Data::Dumper
-    Test::STD::Scrub
-    Test::STD::STDutil
-    File::FileUtil
-
-    The design modules for Test::STDmaker have no other conceivable use then
-    to support the Test::STDmaker functional interface. The Test::STDmaker
-    design module are as follows:
-
-    Test::STD::Check
-    Test::STD::FileGen
-    Test::STD::STD2167
-    Test::STD::STDgen
-    Test::STDtype::Demo
-    Test::STDtype::STD
-    Test::STDtype::Verify
-
-    Some US DOD 2167A Software Development Standard, DIDs and other related
-    documents that complement the US DOD 2167A automation are as follows:
-
+    Data::Secs2
+    Test::STDmaker::Check
+    Test::STDmaker::Demo
+    Test::STDmaker::STD
+    Test::STDmaker::Verify
     US DOD Software Development Standard
     US DOD Specification Practices
-    Computer Operation Manual (COM) DID
-    Computer Programming Manual (CPM) DID)
-    Computer Resources Integrated Support Document (CRISD) DID
-    Computer System Operator's Manual (CSOM) DID
-    Database Design Description (DBDD) DID
-    Engineering Change Proposal (ECP) DID
-    Firmware support Manual (FSM) DID
-    Interface Design Document (IDD) DID
-    Interface Requirements Specification (IRS) DID
-    Operation Concept Description (OCD) DID
-    Specification Change Notice (SCN) DID
-    Software Design Specification (SDD) DID
-    Software Development Plan (SDP) DID
-    Software Input and Output Manual (SIOM) DID
-    Software Installation Plan (SIP) DID
-    Software Programmer's Manual (SPM) DID
-    Software Product Specification (SPS) DID
-    Software Requirements Specification (SRS) DID
-    System or Segment Design Document (SSDD) DID
-    System or Subsystem Specification (SSS) DID
     Software Test Description (STD) DID
-    Software Test Plan (STP) DID
-    Software Test Report (STR) DID
-    Software Transition Plan (STrP) DID
-    Software User Manual (SUM) DID
-    Software Version Description (SVD) DID
-    Version Description Document (VDD) DID
-

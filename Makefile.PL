@@ -18,27 +18,28 @@
 use ExtUtils::MakeMaker;
 
 my $tests = join ' ',unix2os('t/Test/STDmaker/STDmaker.t');
-my @exe = unix2os('bin/tmake.pl');
+
 
 WriteMakefile(
     NAME => 'Test::STDmaker',
     DISTNAME => 'Test-STDmaker',
-    VERSION  => '0.08',
+    VERSION  => '0.10',
     dist     => {COMPRESS => 'gzip',
                 'gz' => 'gz'},
     test     => {TESTS => $tests},
     PREREQ_PM => {'File::AnySpec' => '1.1',
-                  'File::Data' => '1.1',
                   'File::Package' => '1.1',
                   'File::Where' => '0.02',
                   'File::SmartNL' => '1.1',
                   'File::SubPM' => '1.1',
                   'Text::Replace' => '1.08',
                   'Text::Column' => '1.08',
-                  'DataPort::FileType::FormDB' => '0.03',
-                  'DataPort::Maker' => '1.04',
-                  'DataPort::DataFile' => '0.04',},
-    EXE_FILES => \@exe,
+                  'File::Maker' => '0.03',
+                  'Tie::Form' => '0.00',
+                  'Tie::Layers' => '0.00',
+                  'Test::Harness' => '2.42',
+                  'Data::Startup' => '0.02',},
+    
 
     ($] >= 5.005 ?     
         (AUTHOR    => 'SoftwareDiamonds.com E<lt>support@SoftwareDiamonds.comE<gt>',

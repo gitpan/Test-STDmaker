@@ -3,7 +3,7 @@
 # Documentation, copyright and license is at the end of this file.
 #
 
-package  Test::STDtype::Verify;
+package  Test::STDmaker::Verify;
 
 use 5.001;
 use strict;
@@ -12,19 +12,26 @@ use warnings::register;
 
 use File::Spec;
 use File::AnySpec;
-use Test::Harness;
+use File::Where;
+use Test::Harness 2.42;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.09';
-$DATE = '2004/04/09';
+$VERSION = '1.1';
+$DATE = '2004/05/14';
 
 ########
-# Inherit Test::STD::FileGen
+# Inherit classes
 #
-use Test::STD::FileGen;
+use Test::STDmaker;
 use vars qw(@ISA);
-@ISA = qw(Test::STD::FileGen);
+@ISA = qw(Test::STDmaker);
 
+
+#############################################################################
+#  
+#                           TEST DESCRIPTION METHODS
+#
+#
 
 sub extension { '.t' };
 
@@ -61,10 +68,50 @@ sub post_generate
      my ($self) = @_;
 
      my $module = ref($self);
+
+     #####
+     # Run the tests and use the output to
+     # replace the =head2 Test Report header in the UUT
+     # program module 
+     #
+     if ($self->{options}->{report}) {
+         my $test_report = ();
+         my $test_script = '';
+         my @test_report;
+         my $base_test_script;
+         foreach $test_script (@{$self->{$module}->{generated_files}}) {
+            (undef,undef,$base_test_script) = File::Spec->splitpath($test_script);
+            @test_report = `perl $test_script`;
+            $test_report .= "\n => perl $base_test_script\n\n";
+            $test_report .= join '',@test_report;
+         };
+         $test_report =~ s/\n/\n /g;         
+
+         ######
+         # Find uut file
+         #
+         my $uut = $self->{'UUT'};
+         if( $uut ) {
+            my ($uut_file) = File::Where->where_pm($uut);
+            if( $uut_file && -e $uut_file ) {
+                my $uut_contents = File::SmartNL->fin( $uut_file );
+                $uut_contents =~ s/(\n=head\d\s+Test Report).*?\n=/$1\n$test_report\n=/si;
+                File::SmartNL->fout( $uut_file, $uut_contents);
+             }
+            else {
+                warn("No UUT specified.\n");
+            }
+         }
+     }
+
+     #####
+     # Run tests under test harness
+     #
      unless ($self->{options}->{run}) {
          @{$self->{$module}->{generated_files}} = ();
          return 1 
      }
+
      if( $self->{options}->{test_verbose} ) {
          print( "~~~~\nRunning Tests\n\n" );
          $Test::Harness::verbose = 1;
@@ -78,9 +125,12 @@ sub post_generate
      #
      eval 'runtests( @{$self->{$module}->{generated_files}} )';
      print $@ if $@; # send any die messages to standard out
+
      @{$self->{$module}->{generated_files}} = ();
 
      print( "~~~~\nFinished running Tests\n\n" ) if $self->{options}->{test_verbose};
+
+     return 1;
 
 }
 
@@ -120,6 +170,9 @@ sub T
     #   
     my ($vol, $dirs, $__restore_dir__) = ('$vol', '$dirs', '$__restore_dir__');
     my ($VERSION, $DATE, $FILE) = ('$VERSION', '$DATE', '$FILE');
+
+    my ($restore_croak, $croak_die_error, $restore_confess, $confess_die_error) =
+           ('$restore_croak', '$croak_die_error', '$restore_confess', '$confess_die_error');
 
     << "EOF";
 #!perl
@@ -202,7 +255,8 @@ BEGIN {
    # and the todo tests
    #
    require Test::Tech;
-   Test::Tech->import( qw(plan ok skip skip_tests tech_config finish) );
+   Test::Tech->import( qw(finish is_skip ok ok_sub plan skip 
+                          skip_sub skip_tests tech_config) );
    plan($plan);
 
 }
@@ -216,6 +270,45 @@ END {
    \@INC = \@lib::ORIG_INC;
    chdir $__restore_dir__;
 }
+
+
+=head1 comment_out
+
+###
+# Have been problems with debugger with trapping CARP
+#
+
+####
+# Poor man's eval where the test script traps off the Carp::croak 
+# Carp::confess functions.
+#
+# The Perl authorities have Core::die locked down tight so
+# it is next to impossible to trap off of Core::die. Lucky 
+# must everyone uses Carp to die instead of just dieing.
+#
+use Carp;
+use vars qw($restore_croak $croak_die_error $restore_confess $confess_die_error);
+$restore_croak = \\&Carp::croak;
+$croak_die_error = '';
+$restore_confess = \\&Carp::confess;
+$confess_die_error = '';
+no warnings;
+*Carp::croak = sub {
+   $croak_die_error = '# Test Script Croak. ' . (join '', \@_);
+   $croak_die_error .= Carp::longmess (join '', \@_);
+   $croak_die_error =~ s/\\n/\\n#/g;
+       goto CARP_DIE; # once croak can not continue
+};
+*Carp::confess = sub {
+   $confess_die_error = '# Test Script Confess. ' . (join '', \@_);
+   $confess_die_error .= Carp::longmess (join '', \@_);
+   $confess_die_error =~ s/\\n/\\n#/g;
+       goto CARP_DIE; # once confess can not continue
+
+};
+use warnings;
+=cut
+
 
 EOF
 
@@ -242,6 +335,16 @@ sub DM
 };
 
 
+sub TS 
+{ 
+   my ($self, $command, $data) = @_;
+   my $module = ref($self);
+   return '' if  $self->{$module}->{demo_only};
+   $self->{$module}->{test_subroutine} = $data;
+   '' 
+};
+
+
 sub ok
 {
    my ($self, $command,$data) = @_;
@@ -252,6 +355,39 @@ sub ok
 EOF
 
 }
+
+
+
+sub SF
+{
+   my ($self, $command,$data) = @_;
+   
+   my @data;
+   if ($data ) {
+       @data = split /\s*,\s*/;
+   }
+   else {
+       $data[0] = 1;
+   }
+  
+   if($data[1]) {
+
+   << "EOF";
+skip_tests( $data[0],$data[1] );
+
+EOF
+
+   }
+   else { 
+
+   << "EOF";
+skip_tests( $data );
+
+EOF
+
+   }
+}
+
 
 sub U
 {
@@ -291,11 +427,12 @@ sub S
    '';
 }
 
-
+sub QC { C(@_) };
 sub C
 {
    my ($self, $command, $data) = @_;
    my $module = ref($self);
+   return '' if  $self->{$module}->{'demo_only'};
 
    $data .= ';' if substr( $data, length($data)-1,1) ne ';';
 
@@ -320,6 +457,7 @@ sub A
        $module_db->{skip} = '';
        $module_db->{test_name} = '';
        $module_db->{diag_msg} = '';
+       $module_db->{test_subroutine} = '',
        return '';
    }
    $module_db->{demo_only_expected} = '';
@@ -346,34 +484,38 @@ sub E
        $module_db->{skip} = '';
        $module_db->{test_name} = '';
        $module_db->{diag_msg} = '';
+       $module_db->{test_subroutine} = '',
        return '';
    }
 
-   my $msg = '';
-
    my $skip = $module_db->{skip};
+   my $subroutine = $module_db->{test_subroutine};
    my $requirement = $module_db->{requirement};
    $module_db->{skip} = '';
    $module_db->{requirement} = '';
+   $module_db->{test_subroutine} = '';
 
+   my $msg = '';
    if($requirement) {
        $requirement =~ s/\n/\n# /g;
        $msg = "\n####\n# verifies requirement(s):\n# $requirement\n\n#####\n";
    }
 
-   if(  $command eq 'SE' ) {
+   $msg .=  'skip_tests( 1 ) unless' . "\n  " if(  $command eq 'SE' );
+
+   if( $subroutine ) {        
 
        #######
        # Skip stop statement
        #
        if( $skip ) {
            $msg .=  << "EOF";
-skip_tests( 1 ) unless skip(
-      $skip, # condition to skip test   
-      $module_db->{actual}, # actual results
-      $data,  # expected results
-      \"$module_db->{diag_msg}\",
-      \"$module_db->{test_name}\");
+skip_sub( $subroutine, # test subroutine
+          $skip, # condition to skip test   
+          $module_db->{actual}, # actual results
+          $data,  # expected results
+          \"$module_db->{diag_msg}\",
+          \"$module_db->{test_name}\");
  
 EOF
        }
@@ -384,11 +526,11 @@ EOF
        else {
 
            $msg .=  << "EOF";
-skip_tests( 1 ) unless ok(
-      $module_db->{actual}, # actual results
-      $data, # expected results
-      \"$module_db->{diag_msg}\",
-      \"$module_db->{test_name}\"); 
+ok_sub( $subroutine, # test subroutine
+        $module_db->{actual}, # actual results
+        $data, # expected results
+        \"$module_db->{diag_msg}\",
+        \"$module_db->{test_name}\"); 
 
 EOF
 
@@ -442,7 +584,28 @@ sub podgen
 
     my (undef,undef,$test_script) = File::Spec->splitpath( $self->{'Verify'} );
 
+    my ($restore_croak, $croak_die_error, $restore_confess, $confess_die_error) =
+           ('$restore_croak', '$croak_die_error', '$restore_confess', '$confess_die_error');
+
     my $msg = << "EOF";
+
+=head1 comment out
+
+# does not work with debugger
+CARP_DIE:
+    if ($croak_die_error || $confess_die_error) {
+        print \$Test::TESTOUT = "not ok \$Test::ntest\\n";
+        \$Test::ntest++;
+        print \$Test::TESTERR $croak_die_error . $confess_die_error;
+        $croak_die_error = '';
+        $confess_die_error = '';
+        skip_tests(1, 'Test invalid because of Carp die.');
+    }
+    no warnings;
+    *Carp::croak = $restore_croak;    
+    *Carp::confess = $restore_confess;
+    use warnings;
+=cut
 
     finish();
 
@@ -494,12 +657,93 @@ sub AUTOLOAD
 
 __END__
 
+=head1 NAME
+
+Test::STDmaker::Verify - generates the C<$mytest . '.t'> test script from the STD database
+
+=head1 TEST DESCRIPTION METHODS
+
+=head2 A
+
+ $file_data = A($command, $actual-expression )
+
+=head2 E
+ 
+ $file_data = E($command, $expected-expression)
+
+=head2 C
+
+ $file_data = C($command, $code)
+
+=head2 DO
+
+ $file_data = DO($command, $comment)
+
+=head2 DM
+
+ $file_data = DM($command, $msg)
+
+=head2 N
+
+ $file_data = N($command, $name_data)
+
+=head2 ok
+
+ $file_data = ok($command, $test_number)
+
+=head2 QC
+
+ $file_data = QC($command, $code)
+
+=head2 R
+
+ $file_data = R($command, $requirement_data)
+
+=head2 S
+
+ $file_data = S($command, $expression)
+
+
+=head2 SF
+
+ $file_data = SF($command, "$value,$msg")
+
+=head2 SE
+
+ $file_data = SE($command, $expected-expression)
+
+
+=head2 T
+
+ $file_data = T($command,  $tests )
+
+=head2 TS
+
+ $file_data = TS(command, \&subroutine)
+
+=head2 U
+
+ $file_data = U($command, $comment)
+
+=head2 VO
+
+ $file_data = VO($command, $comment)
+
+=head1 ADMINSTRATIVE METHODS
+
+=head2 start
+
+ $file_data = start()
+
+=head2 finish
+
+ $file_data = finish()
+
+=head2 post_print
+
+ $success = post_print()
+
 =head1 NOTES
-
-=head2 Binding Requirements
-
-In accordance with the License, Software Diamonds
-is not liable for any requirement, binding or otherwise.
 
 =head2 Author
 
@@ -535,6 +779,20 @@ disclaimer in the documentation and/or
 other materials provided with the
 distribution.
 
+=item 3
+
+Commercial installation of the binary or source
+must visually present to the installer 
+the above copyright notice,
+this list of conditions intact,
+that the original source is available
+at http://softwarediamonds.com
+and provide means
+for the installer to actively accept
+the list of conditions; 
+otherwise, a license fee must be paid to
+Softwareware Diamonds.
+
 =back
 
 SOFTWARE DIAMONDS, http://www.SoftwareDiamonds.com,
@@ -556,30 +814,30 @@ ANY WAY OUT OF THE POSSIBILITY OF SUCH DAMAGE.
 
 =head1 SEE ALSO
 
-L<Test|Test> 
-L<Test::Harness|Test::Harness> 
-L<tg|STD::t::tg>
-L<STDtailor|STD::STDtailor>
-L<STD|Military::STD>
-L<SVD|Military::SVD>
-L<DOD STD 490A|Military::STD490A>
-L<DOD STD 2167A|Military::STD2167A>
+=over 4
 
-=for html
-<hr>
-<p><br>
-<!-- BLK ID="NOTICE" -->
-<!-- /BLK -->
-<p><br>
-<!-- BLK ID="OPT-IN" -->
-<!-- /BLK -->
-<p><br>
-<!-- BLK ID="EMAIL" -->
-<!-- /BLK -->
-<p><br>
-<!-- BLK ID="LOG_CGI" -->
-<!-- /BLK -->
-<p><br>
+=item L<Test::Tech|Test::Tech> 
+
+=item L<Test|Test> 
+
+=item L<Test::Harness|Test::Harness> 
+
+=item L<Test::STDmaker|Test::STDmaker>
+
+=item L<Test::STDmaker::Demo|Test::STDmaker::Demo>
+
+=item L<Test::STDmaker::STD|Test::STDmaker::STD>
+
+=item L<Test::STDmaker::Check|Test::STDmaker::Check>
+
+=item L<STD - Software Test Description|Docs::US_DOD::STD>
+
+=item L<Specification Practices|Docs::US_DOD::STD490A>
+
+=item L<Software Development|Docs::US_DOD::STD2167A>
+
+=back
+
 
 =cut
 
