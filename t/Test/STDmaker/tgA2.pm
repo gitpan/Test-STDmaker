@@ -10,8 +10,8 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE );
-$VERSION = '0.06';
-$DATE = '2004/05/21';
+$VERSION = '0.07';
+$DATE = '2004/05/22';
 $FILE = __FILE__;
 
 ########
@@ -206,7 +206,7 @@ L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Databa
 
 =head2 ok: 16
 
-  C:     };^
+  C:     }^
   N: Failed test that skips the rest^
   R: L<Test::STDmaker::tg1/capability-B [2]>^
   A: $x + $y^
@@ -417,7 +417,7 @@ ok: 10,12,14^
  E: $expected[$i]^
 ok: 11,13,15^
 
- C:     };^
+ C:     }^
  N: Failed test that skips the rest^
  R: L<Test::STDmaker::tg1/capability-B [2]>^
  A: $x + $y^

@@ -15,8 +15,8 @@ use File::AnySpec;
 use File::Where;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.18';
-$DATE = '2004/05/21';
+$VERSION = '1.19';
+$DATE = '2004/05/22';
 
 use vars qw(@ISA @EXPORT_OK);
 @ISA = qw();
@@ -44,7 +44,7 @@ sub build
      $self = bless $self,$generator; # change the class
      $self = $self->generate();
      return undef unless ref($self);
-     return undef unless $self->print();
+     return undef unless $self->print(); 
      $self;    
 }
 
@@ -84,7 +84,7 @@ sub check_db
      #
      $self->{Temp} = 'temp.pl' unless $self->{'Temp'};
      $self->{'Test::STDmaker::Check'}->{file_out} = $self->{'Temp'};
-     $self = $self->build('Check');
+     $self = ($self->build('Check'));
      $self;
 }
 

@@ -10,32 +10,32 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE );
-$VERSION = '0.16';
-$DATE = '2004/05/21';
+$VERSION = '0.17';
+$DATE = '2004/05/22';
 $FILE = __FILE__;
 
 use vars qw(%INVENTORY);
 %INVENTORY = (
-    'lib/Docs/Site_SVD/Test_STDmaker.pm' => [qw(0.16 2004/05/21), 'revised 0.15'],
-    'MANIFEST' => [qw(0.16 2004/05/21), 'generated, replaces 0.15'],
-    'Makefile.PL' => [qw(0.16 2004/05/21), 'generated, replaces 0.15'],
-    'README' => [qw(0.16 2004/05/21), 'generated, replaces 0.15'],
-    'lib/Test/STDmaker.pm' => [qw(1.18 2004/05/21), 'revised 1.17'],
-    'lib/Test/STDmaker/Check.pm' => [qw(1.13 2004/05/21), 'revised 1.12'],
-    'lib/Test/STDmaker/Demo.pm' => [qw(1.14 2004/05/21), 'revised 1.13'],
+    'lib/Docs/Site_SVD/Test_STDmaker.pm' => [qw(0.17 2004/05/22), 'revised 0.16'],
+    'MANIFEST' => [qw(0.17 2004/05/22), 'generated, replaces 0.16'],
+    'Makefile.PL' => [qw(0.17 2004/05/22), 'generated, replaces 0.16'],
+    'README' => [qw(0.17 2004/05/22), 'generated, replaces 0.16'],
+    'lib/Test/STDmaker.pm' => [qw(1.19 2004/05/22), 'revised 1.18'],
+    'lib/Test/STDmaker/Check.pm' => [qw(1.14 2004/05/22), 'revised 1.13'],
+    'lib/Test/STDmaker/Demo.pm' => [qw(1.14 2004/05/21), 'unchanged'],
     'lib/Test/STDmaker/STD.pm' => [qw(1.11 2004/05/21), 'unchanged'],
-    'lib/Test/STDmaker/Verify.pm' => [qw(1.14 2004/05/21), 'revised 1.13'],
+    'lib/Test/STDmaker/Verify.pm' => [qw(1.15 2004/05/22), 'revised 1.14'],
     'lib/Test/STD/PerlSTD.pm' => [qw(1.08 2004/05/19), 'unchanged'],
-    't/Test/STDmaker/STDmaker.d' => [qw(0.13 2004/05/20), 'unchanged'],
-    't/Test/STDmaker/STDmaker.pm' => [qw(0.11 2004/05/20), 'unchanged'],
-    't/Test/STDmaker/STDmaker.t' => [qw(0.13 2004/05/20), 'unchanged'],
+    't/Test/STDmaker/STDmaker.d' => [qw(0.14 2004/05/22), 'revised 0.13'],
+    't/Test/STDmaker/STDmaker.pm' => [qw(0.12 2004/05/22), 'revised 0.11'],
+    't/Test/STDmaker/STDmaker.t' => [qw(0.14 2004/05/22), 'revised 0.13'],
     't/Test/STDmaker/tg0.pm' => [qw(0.03 2004/04/09), 'unchanged'],
-    't/Test/STDmaker/tg2A.pm' => [qw(0.03 2004/05/14), 'unchanged'],
-    't/Test/STDmaker/tg2B.pm' => [qw(0.04 2004/05/14), 'unchanged'],
-    't/Test/STDmaker/tgA0.pm' => [qw(0.05 2004/05/18), 'unchanged'],
-    't/Test/STDmaker/tgA2.pm' => [qw(0.06 2004/05/21), 'unchanged'],
-    't/Test/STDmaker/tgA2A2.txt' => [qw(0.1 2004/05/14), 'unchanged'],
-    't/Test/STDmaker/tgA2A3.txt' => [qw(0.10 2004/05/14), 'unchanged'],
+    't/Test/STDmaker/tg2A.pm' => [qw(0.04 2004/05/22), 'revised 0.03'],
+    't/Test/STDmaker/tg2B.pm' => [qw(0.05 2004/05/22), 'revised 0.04'],
+    't/Test/STDmaker/tgA0.pm' => [qw(0.06 2004/05/22), 'revised 0.05'],
+    't/Test/STDmaker/tgA2.pm' => [qw(0.07 2004/05/22), 'revised 0.06'],
+    't/Test/STDmaker/tgA2A2.txt' => [qw(0.11 2004/05/22), 'revised 0.1'],
+    't/Test/STDmaker/tgA2A3.txt' => [qw(0.11 2004/05/22), 'revised 0.10'],
     't/Test/STDmaker/tgA2B.txt' => [qw(0.08 2004/05/14), 'unchanged'],
     't/Test/STDmaker/tgA2C.txt' => [qw(0.09 2004/05/14), 'unchanged'],
     't/Test/STDmaker/tgB0.pm' => [qw(0.02 2004/05/18), 'unchanged'],
@@ -43,12 +43,12 @@ use vars qw(%INVENTORY);
     't/Test/STDmaker/tgB2.txt' => [qw(0.09 2004/05/14), 'unchanged'],
     't/Test/STDmaker/tgC0.pm' => [qw(0.04 2004/05/18), 'unchanged'],
     't/Test/STDmaker/tgC2.pm' => [qw(0.05 2004/05/21), 'unchanged'],
-    't/Test/STDmaker/tmake.pl' => [qw(1.06 2004/05/21), 'unchanged'],
-    't/Test/STDmaker/Text/Scrub.pm' => [qw(1.14 2004/05/21), 'unchanged'],
-    't/Test/STDmaker/Test/Tech.pm' => [qw(1.26 2004/05/21), 'unchanged'],
-    't/Test/STDmaker/Data/Secs2.pm' => [qw(1.26 2004/05/21), 'unchanged'],
-    't/Test/STDmaker/Data/Str2Num.pm' => [qw(0.08 2004/05/21), 'unchanged'],
-    't/Test/STDmaker/Data/Startup.pm' => [qw(0.07 2004/05/21), 'unchanged'],
+    't/Test/STDmaker/tmake.pl' => [qw(1.06 2004/05/22), 'unchanged'],
+    't/Test/STDmaker/Text/Scrub.pm' => [qw(1.14 2004/05/22), 'unchanged'],
+    't/Test/STDmaker/Test/Tech.pm' => [qw(1.26 2004/05/22), 'unchanged'],
+    't/Test/STDmaker/Data/Secs2.pm' => [qw(1.26 2004/05/22), 'unchanged'],
+    't/Test/STDmaker/Data/Str2Num.pm' => [qw(0.08 2004/05/22), 'unchanged'],
+    't/Test/STDmaker/Data/Startup.pm' => [qw(0.07 2004/05/22), 'unchanged'],
 
 );
 
@@ -79,11 +79,11 @@ Docs::Site_SVD::Test_STDmaker - generate test scripts, demo scripts from a test 
 
  Docs::Site_SVD::Test_STDmaker - generate test scripts, demo scripts from a test description short hand
 
- Revision: N
+ Revision: P
 
- Version: 0.16
+ Version: 0.17
 
- Date: 2004/05/21
+ Date: 2004/05/22
 
  Prepared for: General Public 
 
@@ -172,7 +172,7 @@ further detail on the text database fields and the processing.
 
 =head2 1.3 Document overview.
 
-This document releases Test::STDmaker version 0.16
+This document releases Test::STDmaker version 0.17
 providing description of the inventory, installation
 instructions and other information necessary to
 utilize and track this release.
@@ -187,7 +187,7 @@ system file specification.
 
 This document releases the file 
 
- Test-STDmaker-0.16.tar.gz
+ Test-STDmaker-0.17.tar.gz
 
 found at the following repository(s):
 
@@ -274,26 +274,26 @@ consists of the following files:
 
  file                                                         version date       comment
  ------------------------------------------------------------ ------- ---------- ------------------------
- lib/Docs/Site_SVD/Test_STDmaker.pm                           0.16    2004/05/21 revised 0.15
- MANIFEST                                                     0.16    2004/05/21 generated, replaces 0.15
- Makefile.PL                                                  0.16    2004/05/21 generated, replaces 0.15
- README                                                       0.16    2004/05/21 generated, replaces 0.15
- lib/Test/STDmaker.pm                                         1.18    2004/05/21 revised 1.17
- lib/Test/STDmaker/Check.pm                                   1.13    2004/05/21 revised 1.12
- lib/Test/STDmaker/Demo.pm                                    1.14    2004/05/21 revised 1.13
+ lib/Docs/Site_SVD/Test_STDmaker.pm                           0.17    2004/05/22 revised 0.16
+ MANIFEST                                                     0.17    2004/05/22 generated, replaces 0.16
+ Makefile.PL                                                  0.17    2004/05/22 generated, replaces 0.16
+ README                                                       0.17    2004/05/22 generated, replaces 0.16
+ lib/Test/STDmaker.pm                                         1.19    2004/05/22 revised 1.18
+ lib/Test/STDmaker/Check.pm                                   1.14    2004/05/22 revised 1.13
+ lib/Test/STDmaker/Demo.pm                                    1.14    2004/05/21 unchanged
  lib/Test/STDmaker/STD.pm                                     1.11    2004/05/21 unchanged
- lib/Test/STDmaker/Verify.pm                                  1.14    2004/05/21 revised 1.13
+ lib/Test/STDmaker/Verify.pm                                  1.15    2004/05/22 revised 1.14
  lib/Test/STD/PerlSTD.pm                                      1.08    2004/05/19 unchanged
- t/Test/STDmaker/STDmaker.d                                   0.13    2004/05/20 unchanged
- t/Test/STDmaker/STDmaker.pm                                  0.11    2004/05/20 unchanged
- t/Test/STDmaker/STDmaker.t                                   0.13    2004/05/20 unchanged
+ t/Test/STDmaker/STDmaker.d                                   0.14    2004/05/22 revised 0.13
+ t/Test/STDmaker/STDmaker.pm                                  0.12    2004/05/22 revised 0.11
+ t/Test/STDmaker/STDmaker.t                                   0.14    2004/05/22 revised 0.13
  t/Test/STDmaker/tg0.pm                                       0.03    2004/04/09 unchanged
- t/Test/STDmaker/tg2A.pm                                      0.03    2004/05/14 unchanged
- t/Test/STDmaker/tg2B.pm                                      0.04    2004/05/14 unchanged
- t/Test/STDmaker/tgA0.pm                                      0.05    2004/05/18 unchanged
- t/Test/STDmaker/tgA2.pm                                      0.06    2004/05/21 unchanged
- t/Test/STDmaker/tgA2A2.txt                                   0.1     2004/05/14 unchanged
- t/Test/STDmaker/tgA2A3.txt                                   0.10    2004/05/14 unchanged
+ t/Test/STDmaker/tg2A.pm                                      0.04    2004/05/22 revised 0.03
+ t/Test/STDmaker/tg2B.pm                                      0.05    2004/05/22 revised 0.04
+ t/Test/STDmaker/tgA0.pm                                      0.06    2004/05/22 revised 0.05
+ t/Test/STDmaker/tgA2.pm                                      0.07    2004/05/22 revised 0.06
+ t/Test/STDmaker/tgA2A2.txt                                   0.11    2004/05/22 revised 0.1
+ t/Test/STDmaker/tgA2A3.txt                                   0.11    2004/05/22 revised 0.10
  t/Test/STDmaker/tgA2B.txt                                    0.08    2004/05/14 unchanged
  t/Test/STDmaker/tgA2C.txt                                    0.09    2004/05/14 unchanged
  t/Test/STDmaker/tgB0.pm                                      0.02    2004/05/18 unchanged
@@ -301,12 +301,12 @@ consists of the following files:
  t/Test/STDmaker/tgB2.txt                                     0.09    2004/05/14 unchanged
  t/Test/STDmaker/tgC0.pm                                      0.04    2004/05/18 unchanged
  t/Test/STDmaker/tgC2.pm                                      0.05    2004/05/21 unchanged
- t/Test/STDmaker/tmake.pl                                     1.06    2004/05/21 unchanged
- t/Test/STDmaker/Text/Scrub.pm                                1.14    2004/05/21 unchanged
- t/Test/STDmaker/Test/Tech.pm                                 1.26    2004/05/21 unchanged
- t/Test/STDmaker/Data/Secs2.pm                                1.26    2004/05/21 unchanged
- t/Test/STDmaker/Data/Str2Num.pm                              0.08    2004/05/21 unchanged
- t/Test/STDmaker/Data/Startup.pm                              0.07    2004/05/21 unchanged
+ t/Test/STDmaker/tmake.pl                                     1.06    2004/05/22 unchanged
+ t/Test/STDmaker/Text/Scrub.pm                                1.14    2004/05/22 unchanged
+ t/Test/STDmaker/Test/Tech.pm                                 1.26    2004/05/22 unchanged
+ t/Test/STDmaker/Data/Secs2.pm                                1.26    2004/05/22 unchanged
+ t/Test/STDmaker/Data/Str2Num.pm                              0.08    2004/05/22 unchanged
+ t/Test/STDmaker/Data/Startup.pm                              0.07    2004/05/22 unchanged
 
 
 =head2 3.3 Changes
@@ -593,6 +593,22 @@ does not exist, also not to add the semicolon if a right or left curly bracket e
 end of the C<C> test description field. Add the option, C<nosemi>, to disable the automatic
 addition of a semicolon to the end of C <C> test description field.
 
+=item Test-STDmaker-0.17
+
+Test Failure:
+
+Same of Test-STDmaker-0.16
+
+Analysis:
+
+Opps. Did not change manual "};" to "}"
+
+Corrections:
+
+Change all "};" in all test case test scripts. Still do not know if this
+will cure the deficiency so added diagnostic steps that will provided
+added feedback.
+
 =back
 
 =head2 3.4 Adaptation data.
@@ -631,13 +647,13 @@ Enter one of the following repositories in a web browser:
   http://www.softwarediamonds/packages/
   http://www.perl.com/CPAN/authors/id/S/SO/SOFTDIA/
 
-Right click on 'Test-STDmaker-0.16.tar.gz' and download to a temporary
+Right click on 'Test-STDmaker-0.17.tar.gz' and download to a temporary
 installation directory.
 Enter the following where $make is 'nmake' for microsoft
 windows; otherwise 'make'.
 
- gunzip Test-STDmaker-0.16.tar.gz
- tar -xf Test-STDmaker-0.16.tar
+ gunzip Test-STDmaker-0.17.tar.gz
+ tar -xf Test-STDmaker-0.17.tar
  perl Makefile.PL
  $make test
  $make install
@@ -792,10 +808,10 @@ __DATA__
 DISTNAME: Test-STDmaker^
 REPOSITORY_DIR: packages^
 
-VERSION : 0.16^
+VERSION : 0.17^
 FREEZE: 1^
-PREVIOUS_RELEASE: 0.15^
-REVISION: N^
+PREVIOUS_RELEASE: 0.16^
+REVISION: P^
 
 PREVIOUS_DISTNAME:  ^
 AUTHOR  : SoftwareDiamonds.com E<lt>support@SoftwareDiamonds.comE<gt>^
@@ -1203,6 +1219,22 @@ does not exist, also not to add the semicolon if a right or left curly bracket e
 end of the C<C> test description field. Add the option, C<nosemi>, to disable the automatic
 addition of a semicolon to the end of C <C> test description field.
 
+\=item Test-STDmaker-0.17
+
+Test Failure:
+
+Same of Test-STDmaker-0.16
+
+Analysis:
+
+Opps. Did not change manual "};" to "}"
+
+Corrections:
+
+Change all "};" in all test case test scripts. Still do not know if this
+will cure the deficiency so added diagnostic steps that will provided
+added feedback.
+
 \=back
 
 ^
@@ -1415,6 +1447,14 @@ HTML:
 <p><br>
 ^
 ~-~
+
+
+
+
+
+
+
+
 
 
 

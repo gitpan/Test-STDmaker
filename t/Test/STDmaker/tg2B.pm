@@ -11,7 +11,7 @@ use warnings::register;
 
 use vars qw($VERSION);
 
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 1
 
@@ -172,7 +172,7 @@ follow on the next lines as comments. For example,
 
  # '200'
  #
-     };
+     }
  $i+200
 
  # '201'
@@ -181,7 +181,7 @@ follow on the next lines as comments. For example,
 
  # '201'
  #
-     };
+     }
  $i+200
 
  # '202'
@@ -190,7 +190,7 @@ follow on the next lines as comments. For example,
 
  # '202'
  #
-     };
+     }
 
  ##################
  # Failed test that skips the rest

@@ -7,8 +7,8 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE);
-$VERSION = '0.13';   # automatically generated file
-$DATE = '2004/05/20';
+$VERSION = '0.14';   # automatically generated file
+$DATE = '2004/05/22';
 $FILE = __FILE__;
 
 
@@ -80,7 +80,7 @@ BEGIN {
    require Test::Tech;
    Test::Tech->import( qw(finish is_skip ok ok_sub plan skip 
                           skip_sub skip_tests tech_config) );
-   plan(tests => 14);
+   plan(tests => 21);
 
 }
 
@@ -119,6 +119,10 @@ END {
     my $loaded = 0;
     my @outputs;
 
+    my ($success, $diag);
+
+
+
    # Perl code from C:
     @outputs = bsd_glob( 'tg*1.*' );
     unlink @outputs;
@@ -148,6 +152,8 @@ END {
     #  unlink <tg1*.*>;  causes subsequent bsd_blog calls to crash
     #;
 
+
+
 ok(  $loaded = $fp->is_package_loaded('Test::STDmaker'), # actual results
       '', # expected results
      "For a valid test, the UUT should not be loaded",
@@ -157,6 +163,8 @@ ok(  $loaded = $fp->is_package_loaded('Test::STDmaker'), # actual results
 
    # Perl code from C:
 my $errors = $fp->load_package( 'Test::STDmaker' );
+
+
 
 
 ####
@@ -183,8 +191,20 @@ ok(  $Test::STDmaker::VERSION, # actual results
 
    # Perl code from C:
     copy 'tgA0.pm', 'tgA1.pm';
-    my $tmaker = new Test::STDmaker(pm =>'t::Test::STDmaker::tgA1');
-    $tmaker->tmake( 'STD' );
+    my $tmaker = new Test::STDmaker(pm =>'t::Test::STDmaker::tgA1', nounlink => 1);
+    $success = $tmaker->tmake( 'STD' );
+    $diag = (-e 'temp.pl') ? "\n~~~~~~~temp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
+    $diag .= (-e 'tgA1.pm') ? "\n~~~~~~~tgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
+
+
+
+skip_tests( 1 ) unless
+  ok(  $success, # actual results
+     1, # expected results
+     "$diag",
+     "tmake('STD', {pm => 't::Test::STDmaker::tgA1'})");
+
+#  ok:  4
 
 
 ####
@@ -202,11 +222,25 @@ ok(  $s->scrub_date_version($snl->fin('tgA1.pm')), # actual results
      "",
      "Clean STD pm with a todo list");
 
-#  ok:  4
+#  ok:  5
 
    # Perl code from C:
+    skip_tests(0);
     copy 'tgB0.pm', 'tgB1.pm';
-    $tmaker->tmake('STD', 'verify', {pm => 't::Test::STDmaker::tgB1'} );
+    $success = $tmaker->tmake('STD', 'verify', {pm => 't::Test::STDmaker::tgB1', nounlink => 1} );
+    $diag = (-e 'temp.pl') ? "\n~~~~~~~temp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
+    $diag .= (-e 'tgB1.pm') ? "\n~~~~~~~tgB1.pm\n\n" . $snl->fin('tgB1.pm') : 'No tgB1.pm';
+    $diag .= (-e 'tgB1.t') ? "\n~~~~~~~tgB1.t\n\n" . $snl->fin('tgB1.t') : 'No tgB1.t';
+
+
+
+skip_tests( 1 ) unless
+  ok(  $success, # actual results
+     1, # expected results
+     "$diag",
+     "tmake('STD', 'verify', {pm => 't::Test::STDmaker::tgB1'})");
+
+#  ok:  6
 
 
 ####
@@ -224,21 +258,25 @@ ok(  $s->scrub_date_version($snl->fin('tgB1.pm')), # actual results
      "",
      "Clean STD pm without a todo list");
 
-#  ok:  5
+#  ok:  7
 
    # Perl code from C:
     my $perl_execuable = $tmaker->perl_command();
     $test_results = `$perl_execuable tgB1.t`;
     $snl->fout('tgB1.txt', $test_results);
 
+
+
 ok(  $s->scrub_probe($s->scrub_file_line($test_results)), # actual results
      $s->scrub_probe($s->scrub_file_line($snl->fin('tgB2.txt'))), # expected results
      "",
      "Generated and execute the test script");
 
-#  ok:  6
+#  ok:  8
 
    # Perl code from C:
+    skip_tests(0);
+
     #####
     # Make sure there is no residue outputs hanging
     # around from the last test series.
@@ -247,7 +285,20 @@ ok(  $s->scrub_probe($s->scrub_file_line($test_results)), # actual results
     unlink @outputs;
     copy 'tgA0.pm', 'tgA1.pm';
     $tmaker = new Test::STDmaker( {pm => 't::Test::STDmaker::tgA1'} );
-    $tmaker->tmake();
+    $success = $tmaker->tmake();
+    $diag = (-e 'tgA1.pm') ? "\n~~~~~~~tgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
+    $diag .= (-e 'tgA1.t') ? "\n~~~~~~~tgA1.t\n\n" . $snl->fin('tgA1.t') : 'No tgA1.t';
+    $diag .= (-e 'tgA1.d') ? "\n~~~~~~~tgA1.d\n\n" . $snl->fin('tgA1.d') : 'No tgA1.d';
+
+
+
+skip_tests( 1 ) unless
+  ok(  $success, # actual results
+     1, # expected results
+     "$diag",
+     "tmake( {pm => 't::Test::STDmaker::tgA1'})");
+
+#  ok:  9
 
 
 ####
@@ -265,7 +316,7 @@ ok(  $s->scrub_date_version($snl->fin('tgA1.pm')), # actual results
      "",
      "Cleaned tgA1.pm");
 
-#  ok:  7
+#  ok:  10
 
    # Perl code from C:
     $test_results = `$perl_execuable tgA1.d`;
@@ -293,7 +344,9 @@ ok(  $s->scrub_date_version($snl->fin('tgA1.pm')), # actual results
     }
     else {
         $expected_results = 'tgA2A2.txt';
-    };
+    }
+
+
 
 
 ####
@@ -308,11 +361,13 @@ ok(  $test_results, # actual results
      "",
      "Demonstration script");
 
-#  ok:  8
+#  ok:  11
 
    # Perl code from C:
     $test_results = `$perl_execuable tgA1.t`;
     $snl->fout('tgA1.txt', $test_results);
+
+
 
 
 ####
@@ -328,7 +383,7 @@ ok(  $s->scrub_probe($s->scrub_file_line($test_results)), # actual results
      "",
      "Generated and execute the test script");
 
-#  ok:  9
+#  ok:  12
 
    # Perl code from C:
     #########
@@ -336,6 +391,9 @@ ok(  $s->scrub_probe($s->scrub_file_line($test_results)), # actual results
     # Individual generate outputs using options
     #
     ########
+
+    skip_tests(0);
+
     #####
     # Make sure there is no residue outputs hanging
     # around from the last test series.
@@ -348,7 +406,7 @@ ok(  $s->scrub_probe($s->scrub_file_line($test_results)), # actual results
     pop @cwd;
     pop @cwd;
     unshift @INC, File::Spec->catdir( @cwd );  # put UUT in lib path
-    $tmaker->tmake('demo', { pm => 't::Test::STDmaker::tgA1', demo => 1});
+    $success = $tmaker->tmake('demo', { pm => 't::Test::STDmaker::tgA1', demo => 1});
     shift @INC;
 
     #######
@@ -359,21 +417,35 @@ ok(  $s->scrub_probe($s->scrub_file_line($test_results)), # actual results
     }
     else {
         $expected_results = 'tg2A.pm';
-    };
+    }
+    $diag = (-e 'tgA1.pm') ? "\n~~~~~~~tgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
+    $diag .= (-e 'tgA1.d') ? "\n~~~~~~~tgA1.d\n\n" . $snl->fin('tgA1.d') : 'No tgA1.d';
+
+
+
+skip_tests( 1 ) unless
+  ok(  $success, # actual results
+     1, # expected results
+     "$diag",
+     "tmake('demo', {pm => 't::Test::STDmaker::tgA1', demo => 1})");
+
+#  ok:  13
 
 ok(  $s->scrub_date_version($snl->fin('tg1.pm')), # actual results
      $s->scrub_date_version($snl->fin($expected_results)), # expected results
      "",
      "Generate and replace a demonstration");
 
-#  ok:  10
+#  ok:  14
 
    # Perl code from C:
+    skip_tests(0);
+
     no warnings;
     open SAVEOUT, ">&STDOUT";
     use warnings;
     open STDOUT, ">tgA1.txt";
-    $tmaker->tmake('verify', { pm => 't::Test::STDmaker::tgA1', run => 1, test_verbose => 1});
+    $success = $tmaker->tmake('verify', { pm => 't::Test::STDmaker::tgA1', run => 1, test_verbose => 1});
     close STDOUT;
     open STDOUT, ">&SAVEOUT";
     
@@ -387,6 +459,10 @@ ok(  $s->scrub_date_version($snl->fin('tg1.pm')), # actual results
     $test_results =~ s/.*?1..9/1..9/; 
     $test_results =~ s/------.*?\n(\s*\()/\n $1/s;
     $snl->fout('tgA1.txt',$test_results);
+    $diag = (-e 'tgA1.pm') ? "\n~~~~~~~tgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
+    $diag .= (-e 'tgA1.t') ? "\n~~~~~~~tgA1.d\n\n" . $snl->fin('tgA1.t') : 'No tgA1.t';
+
+
 
 
 ####
@@ -400,20 +476,30 @@ ok(  $s->scrub_date_version($snl->fin('tg1.pm')), # actual results
 # 
 
 #####
+skip_tests( 1 ) unless
+  ok(  $success, # actual results
+     1, # expected results
+     "$diag",
+     "tmake('verify', {pm => 't::Test::STDmaker::tgA1', run => 1, test_verbose => 1})");
+
+#  ok:  15
+
 ok(  $s->scrub_probe($s->scrub_test_file($s->scrub_file_line($test_results))), # actual results
      $s->scrub_probe($s->scrub_test_file($s->scrub_file_line($snl->fin('tgA2C.txt')))), # expected results
      "",
      "Generate and verbose test harness run test script");
 
-#  ok:  11
+#  ok:  16
 
    # Perl code from C:
+    skip_tests(0);
+
     no warnings;
     open SAVEOUT, ">&STDOUT";
     use warnings;
     open STDOUT, ">tgA1.txt";
     $main::SIG{__WARN__}=\&__warn__; # kill pesty Format STDOUT and Format STDOUT_TOP redefined
-    $tmaker->tmake('verify', { pm => 't::Test::STDmaker::tgA1', run => 1});
+    $success = $tmaker->tmake('verify', { pm => 't::Test::STDmaker::tgA1', run => 1});
     $main::SIG{__WARN__}=\&CORE::warn;
     close STDOUT;
     open STDOUT, ">&SAVEOUT";
@@ -428,6 +514,8 @@ ok(  $s->scrub_probe($s->scrub_test_file($s->scrub_file_line($test_results))), #
     $test_results = 'FAILED tests 3, 13' if( $test_results =~ /FAILED tests 3, 6, 16/ );
 
 
+
+
 ####
 # verifies requirement(s):
 #     L<Test::STDmaker/verify file [1]>
@@ -437,16 +525,35 @@ ok(  $s->scrub_probe($s->scrub_test_file($s->scrub_file_line($test_results))), #
 # 
 
 #####
+skip_tests( 1 ) unless
+  ok(  $success, # actual results
+     1, # expected results
+     "",
+     "tmake('verify', {pm => 't::Test::STDmaker::tgA1', run => 1})");
+
+#  ok:  17
+
 ok(  $test_results, # actual results
      'FAILED tests 3, 13', # expected results
      "",
      "Generate and test harness run test script");
 
-#  ok:  12
+#  ok:  18
 
    # Perl code from C:
+    skip_tests(0);
     copy 'tgC0.pm', 'tgC1.pm';
-    $tmaker->tmake('STD', { pm => 't::Test::STDmaker::tgC1', fspec_out=>'os2'});
+    $success = $tmaker->tmake('STD', { pm => 't::Test::STDmaker::tgC1', fspec_out=>'os2'});
+
+
+
+skip_tests( 1 ) unless
+  ok(  $success, # actual results
+     1, # expected results
+     "",
+     "tmake('STD', {pm => 't::Test::STDmaker::tgC1', fspec_out=>'os2'})");
+
+#  ok:  19
 
 
 ####
@@ -460,7 +567,7 @@ ok(  $s->scrub_date_version($snl->fin('tgC1.pm')), # actual results
      "",
      "Change File Spec");
 
-#  ok:  13
+#  ok:  20
 
    # Perl code from C:
    my $OS = $^O;  # Need to escape the form delimiting char ^
@@ -476,12 +583,14 @@ ok(  $s->scrub_date_version($snl->fin('tgC1.pm')), # actual results
    $dir = File::Spec->catdir($vol,@dirs);
    my @t_path = $tmaker->find_t_roots();
 
+
+
 ok(  $t_path[0], # actual results
      $dir, # expected results
      "",
      "find_t_roots");
 
-#  ok:  14
+#  ok:  21
 
    # Perl code from C:
     #####
@@ -504,6 +613,8 @@ ok(  $t_path[0], # actual results
        return $text =~ /STDOUT/;
        CORE::warn( $text );
     };
+
+
 
 
     finish();

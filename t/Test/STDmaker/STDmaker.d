@@ -7,8 +7,8 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE);
-$VERSION = '0.13';   # automatically generated file
-$DATE = '2004/05/20';
+$VERSION = '0.14';   # automatically generated file
+$DATE = '2004/05/22';
 
 
 ##### Demonstration Script ####
@@ -124,7 +124,9 @@ demo( "\ \ \ \ use\ vars\ qw\(\$loaded\)\;\
 \
 \ \ \ \ my\ \$test_results\;\
 \ \ \ \ my\ \$loaded\ \=\ 0\;\
-\ \ \ \ my\ \@outputs\;"); # typed in command           
+\ \ \ \ my\ \@outputs\;\
+\
+\ \ \ \ my\ \(\$success\,\ \$diag\)\;"); # typed in command           
           use vars qw($loaded);
     use File::Glob ':glob';
     use File::Copy;
@@ -144,7 +146,11 @@ demo( "\ \ \ \ use\ vars\ qw\(\$loaded\)\;\
 
     my $test_results;
     my $loaded = 0;
-    my @outputs;; # execution
+    my @outputs;
+
+    my ($success, $diag); # execution
+
+
 
 print << "EOF";
 
@@ -156,6 +162,8 @@ EOF
 
 demo( "my\ \$errors\ \=\ \$fp\-\>load_package\(\ \'Test\:\:STDmaker\'\ \)"); # typed in command           
       my $errors = $fp->load_package( 'Test::STDmaker' ); # execution
+
+
 
 demo( "\$errors", # typed in command           
       $errors # execution
@@ -177,15 +185,29 @@ demo( "\$snl\-\>fin\(\'tgA0\.pm\'\)", # typed in command
       $snl->fin('tgA0.pm')); # execution
 
 
-demo( "\ \ \ \ copy\ \'tgA0\.pm\'\,\ \'tgA1\.pm\'\;\
-\ \ \ \ my\ \$tmaker\ \=\ new\ Test\:\:STDmaker\(pm\ \=\>\'t\:\:Test\:\:STDmaker\:\:tgA1\'\)\;\
-\ \ \ \ \$tmaker\-\>tmake\(\ \'STD\'\ \)\;"); # typed in command           
-          copy 'tgA0.pm', 'tgA1.pm';
-    my $tmaker = new Test::STDmaker(pm =>'t::Test::STDmaker::tgA1');
-    $tmaker->tmake( 'STD' );; # execution
+print << "EOF";
 
-demo( "\$s\-\>scrub_date_version\(\$snl\-\>fin\(\'tgA1\.pm\'\)\)", # typed in command           
-      $s->scrub_date_version($snl->fin('tgA1.pm'))); # execution
+ ##################
+ # tmake('STD', {pm => 't::Test::STDmaker::tgA1'})
+ # 
+ 
+EOF
+
+demo( "\ \ \ \ copy\ \'tgA0\.pm\'\,\ \'tgA1\.pm\'\;\
+\ \ \ \ my\ \$tmaker\ \=\ new\ Test\:\:STDmaker\(pm\ \=\>\'t\:\:Test\:\:STDmaker\:\:tgA1\'\,\ nounlink\ \=\>\ 1\)\;\
+\ \ \ \ \$success\ \=\ \$tmaker\-\>tmake\(\ \'STD\'\ \)\;\
+\ \ \ \ \$diag\ \=\ \(\-e\ \'temp\.pl\'\)\ \?\ \"\\n\~\~\~\~\~\~\~temp\.pl\\n\\n\"\ \.\ \$snl\-\>fin\(\'temp\.pl\'\)\ \:\ \'No\ temp\.pl\'\;\
+\ \ \ \ \$diag\ \.\=\ \(\-e\ \'tgA1\.pm\'\)\ \?\ \"\\n\~\~\~\~\~\~\~tgA1\.pm\\n\\n\"\ \.\ \$snl\-\>fin\(\'tgA1\.pm\'\)\ \:\ \'No\ tgA1\.pm\'\;"); # typed in command           
+          copy 'tgA0.pm', 'tgA1.pm';
+    my $tmaker = new Test::STDmaker(pm =>'t::Test::STDmaker::tgA1', nounlink => 1);
+    $success = $tmaker->tmake( 'STD' );
+    $diag = (-e 'temp.pl') ? "\n~~~~~~~temp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
+    $diag .= (-e 'tgA1.pm') ? "\n~~~~~~~tgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm'; # execution
+
+
+
+demo( "\$success", # typed in command           
+      $success); # execution
 
 
 print << "EOF";
@@ -196,17 +218,39 @@ print << "EOF";
  
 EOF
 
+demo( "\$s\-\>scrub_date_version\(\$snl\-\>fin\(\'tgA1\.pm\'\)\)", # typed in command           
+      $s->scrub_date_version($snl->fin('tgA1.pm'))); # execution
+
+
 demo( "\$snl\-\>fin\(\'tgB0\.pm\'\)", # typed in command           
       $snl->fin('tgB0.pm')); # execution
 
 
-demo( "\ \ \ \ copy\ \'tgB0\.pm\'\,\ \'tgB1\.pm\'\;\
-\ \ \ \ \$tmaker\-\>tmake\(\'STD\'\,\ \'verify\'\,\ \{pm\ \=\>\ \'t\:\:Test\:\:STDmaker\:\:tgB1\'\}\ \)\;"); # typed in command           
-          copy 'tgB0.pm', 'tgB1.pm';
-    $tmaker->tmake('STD', 'verify', {pm => 't::Test::STDmaker::tgB1'} );; # execution
+demo( "\ \ \ \ skip_tests\(0\)\;\
+\ \ \ \ copy\ \'tgB0\.pm\'\,\ \'tgB1\.pm\'\;\
+\ \ \ \ \$success\ \=\ \$tmaker\-\>tmake\(\'STD\'\,\ \'verify\'\,\ \{pm\ \=\>\ \'t\:\:Test\:\:STDmaker\:\:tgB1\'\,\ nounlink\ \=\>\ 1\}\ \)\;\
+\ \ \ \ \$diag\ \=\ \(\-e\ \'temp\.pl\'\)\ \?\ \"\\n\~\~\~\~\~\~\~temp\.pl\\n\\n\"\ \.\ \$snl\-\>fin\(\'temp\.pl\'\)\ \:\ \'No\ temp\.pl\'\;\
+\ \ \ \ \$diag\ \.\=\ \(\-e\ \'tgB1\.pm\'\)\ \?\ \"\\n\~\~\~\~\~\~\~tgB1\.pm\\n\\n\"\ \.\ \$snl\-\>fin\(\'tgB1\.pm\'\)\ \:\ \'No\ tgB1\.pm\'\;\
+\ \ \ \ \$diag\ \.\=\ \(\-e\ \'tgB1\.t\'\)\ \?\ \"\\n\~\~\~\~\~\~\~tgB1\.t\\n\\n\"\ \.\ \$snl\-\>fin\(\'tgB1\.t\'\)\ \:\ \'No\ tgB1\.t\'\;"); # typed in command           
+          skip_tests(0);
+    copy 'tgB0.pm', 'tgB1.pm';
+    $success = $tmaker->tmake('STD', 'verify', {pm => 't::Test::STDmaker::tgB1', nounlink => 1} );
+    $diag = (-e 'temp.pl') ? "\n~~~~~~~temp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
+    $diag .= (-e 'tgB1.pm') ? "\n~~~~~~~tgB1.pm\n\n" . $snl->fin('tgB1.pm') : 'No tgB1.pm';
+    $diag .= (-e 'tgB1.t') ? "\n~~~~~~~tgB1.t\n\n" . $snl->fin('tgB1.t') : 'No tgB1.t'; # execution
 
-demo( "\$s\-\>scrub_date_version\(\$snl\-\>fin\(\'tgB1\.pm\'\)\)", # typed in command           
-      $s->scrub_date_version($snl->fin('tgB1.pm'))); # execution
+
+
+print << "EOF";
+
+ ##################
+ # tmake('STD', 'verify', {pm => 't::Test::STDmaker::tgB1'})
+ # 
+ 
+EOF
+
+demo( "\$success", # typed in command           
+      $success); # execution
 
 
 print << "EOF";
@@ -217,15 +261,8 @@ print << "EOF";
  
 EOF
 
-demo( "\ \ \ \ my\ \$perl_execuable\ \=\ \$tmaker\-\>perl_command\(\)\;\
-\ \ \ \ \$test_results\ \=\ \`\$perl_execuable\ tgB1\.t\`\;\
-\ \ \ \ \$snl\-\>fout\(\'tgB1\.txt\'\,\ \$test_results\)\;"); # typed in command           
-          my $perl_execuable = $tmaker->perl_command();
-    $test_results = `$perl_execuable tgB1.t`;
-    $snl->fout('tgB1.txt', $test_results);; # execution
-
-demo( "\$s\-\>scrub_probe\(\$s\-\>scrub_file_line\(\$test_results\)\)", # typed in command           
-      $s->scrub_probe($s->scrub_file_line($test_results))); # execution
+demo( "\$s\-\>scrub_date_version\(\$snl\-\>fin\(\'tgB1\.pm\'\)\)", # typed in command           
+      $s->scrub_date_version($snl->fin('tgB1.pm'))); # execution
 
 
 print << "EOF";
@@ -236,6 +273,19 @@ print << "EOF";
  
 EOF
 
+demo( "\ \ \ \ my\ \$perl_execuable\ \=\ \$tmaker\-\>perl_command\(\)\;\
+\ \ \ \ \$test_results\ \=\ \`\$perl_execuable\ tgB1\.t\`\;\
+\ \ \ \ \$snl\-\>fout\(\'tgB1\.txt\'\,\ \$test_results\)\;"); # typed in command           
+          my $perl_execuable = $tmaker->perl_command();
+    $test_results = `$perl_execuable tgB1.t`;
+    $snl->fout('tgB1.txt', $test_results); # execution
+
+
+
+demo( "\$s\-\>scrub_probe\(\$s\-\>scrub_file_line\(\$test_results\)\)", # typed in command           
+      $s->scrub_probe($s->scrub_file_line($test_results))); # execution
+
+
 print << "EOF";
 
  ##################
@@ -243,6 +293,10 @@ print << "EOF";
  # 
  
 EOF
+
+demo( "\$s\-\>scrub_date_version\(\$snl\-\>fin\(\'tgA1\.pm\'\)\)", # typed in command           
+      $s->scrub_date_version($snl->fin('tgA1.pm'))); # execution
+
 
 print << "EOF";
 
@@ -275,29 +329,34 @@ demo( "\ \ \ \ use\ Data\:\:Dumper\;\
         $internal_storage = 'string';
     }
 
-    my $expected_results;; # execution
+    my $expected_results; # execution
+
+
 
 demo( "\$internal_storage", # typed in command           
       $internal_storage); # execution
 
 
-print << "EOF";
-
- ##################
- # Generated and execute the test script
- # 
- 
-EOF
-
 demo( "\$snl\-\>fin\(\ \'tg0\.pm\'\ \ \)", # typed in command           
       $snl->fin( 'tg0.pm'  )); # execution
 
+
+print << "EOF";
+
+ ##################
+ # tmake('demo', {pm => 't::Test::STDmaker::tgA1', demo => 1})
+ # 
+ 
+EOF
 
 demo( "\ \ \ \ \#\#\#\#\#\#\#\#\#\
 \ \ \ \ \#\
 \ \ \ \ \#\ Individual\ generate\ outputs\ using\ options\
 \ \ \ \ \#\
 \ \ \ \ \#\#\#\#\#\#\#\#\
+\
+\ \ \ \ skip_tests\(0\)\;\
+\
 \ \ \ \ \#\#\#\#\#\
 \ \ \ \ \#\ Make\ sure\ there\ is\ no\ residue\ outputs\ hanging\
 \ \ \ \ \#\ around\ from\ the\ last\ test\ series\.\
@@ -310,7 +369,7 @@ demo( "\ \ \ \ \#\#\#\#\#\#\#\#\#\
 \ \ \ \ pop\ \@cwd\;\
 \ \ \ \ pop\ \@cwd\;\
 \ \ \ \ unshift\ \@INC\,\ File\:\:Spec\-\>catdir\(\ \@cwd\ \)\;\ \ \#\ put\ UUT\ in\ lib\ path\
-\ \ \ \ \$tmaker\-\>tmake\(\'demo\'\,\ \{\ pm\ \=\>\ \'t\:\:Test\:\:STDmaker\:\:tgA1\'\,\ demo\ \=\>\ 1\}\)\;\
+\ \ \ \ \$success\ \=\ \$tmaker\-\>tmake\(\'demo\'\,\ \{\ pm\ \=\>\ \'t\:\:Test\:\:STDmaker\:\:tgA1\'\,\ demo\ \=\>\ 1\}\)\;\
 \ \ \ \ shift\ \@INC\;\
 \
 \ \ \ \ \#\#\#\#\#\#\#\
@@ -321,12 +380,17 @@ demo( "\ \ \ \ \#\#\#\#\#\#\#\#\#\
 \ \ \ \ \}\
 \ \ \ \ else\ \{\
 \ \ \ \ \ \ \ \ \$expected_results\ \=\ \'tg2A\.pm\'\;\
-\ \ \ \ \}"); # typed in command           
+\ \ \ \ \}\
+\ \ \ \ \$diag\ \=\ \(\-e\ \'tgA1\.pm\'\)\ \?\ \"\\n\~\~\~\~\~\~\~tgA1\.pm\\n\\n\"\ \.\ \$snl\-\>fin\(\'tgA1\.pm\'\)\ \:\ \'No\ tgA1\.pm\'\;\
+\ \ \ \ \$diag\ \.\=\ \(\-e\ \'tgA1\.d\'\)\ \?\ \"\\n\~\~\~\~\~\~\~tgA1\.d\\n\\n\"\ \.\ \$snl\-\>fin\(\'tgA1\.d\'\)\ \:\ \'No\ tgA1\.d\'\;"); # typed in command           
           #########
     #
     # Individual generate outputs using options
     #
     ########
+
+    skip_tests(0);
+
     #####
     # Make sure there is no residue outputs hanging
     # around from the last test series.
@@ -339,7 +403,7 @@ demo( "\ \ \ \ \#\#\#\#\#\#\#\#\#\
     pop @cwd;
     pop @cwd;
     unshift @INC, File::Spec->catdir( @cwd );  # put UUT in lib path
-    $tmaker->tmake('demo', { pm => 't::Test::STDmaker::tgA1', demo => 1});
+    $success = $tmaker->tmake('demo', { pm => 't::Test::STDmaker::tgA1', demo => 1});
     shift @INC;
 
     #######
@@ -350,10 +414,14 @@ demo( "\ \ \ \ \#\#\#\#\#\#\#\#\#\
     }
     else {
         $expected_results = 'tg2A.pm';
-    }; # execution
+    }
+    $diag = (-e 'tgA1.pm') ? "\n~~~~~~~tgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
+    $diag .= (-e 'tgA1.d') ? "\n~~~~~~~tgA1.d\n\n" . $snl->fin('tgA1.d') : 'No tgA1.d'; # execution
 
-demo( "\$s\-\>scrub_date_version\(\$snl\-\>fin\(\'tg1\.pm\'\)\)", # typed in command           
-      $s->scrub_date_version($snl->fin('tg1.pm'))); # execution
+
+
+demo( "\$success", # typed in command           
+      $success); # execution
 
 
 print << "EOF";
@@ -364,11 +432,25 @@ print << "EOF";
  
 EOF
 
-demo( "\ \ \ \ no\ warnings\;\
+demo( "\$s\-\>scrub_date_version\(\$snl\-\>fin\(\'tg1\.pm\'\)\)", # typed in command           
+      $s->scrub_date_version($snl->fin('tg1.pm'))); # execution
+
+
+print << "EOF";
+
+ ##################
+ # tmake('verify', {pm => 't::Test::STDmaker::tgA1', run => 1, test_verbose => 1})
+ # 
+ 
+EOF
+
+demo( "\ \ \ \ skip_tests\(0\)\;\
+\
+\ \ \ \ no\ warnings\;\
 \ \ \ \ open\ SAVEOUT\,\ \"\>\&STDOUT\"\;\
 \ \ \ \ use\ warnings\;\
 \ \ \ \ open\ STDOUT\,\ \"\>tgA1\.txt\"\;\
-\ \ \ \ \$tmaker\-\>tmake\(\'verify\'\,\ \{\ pm\ \=\>\ \'t\:\:Test\:\:STDmaker\:\:tgA1\'\,\ run\ \=\>\ 1\,\ test_verbose\ \=\>\ 1\}\)\;\
+\ \ \ \ \$success\ \=\ \$tmaker\-\>tmake\(\'verify\'\,\ \{\ pm\ \=\>\ \'t\:\:Test\:\:STDmaker\:\:tgA1\'\,\ run\ \=\>\ 1\,\ test_verbose\ \=\>\ 1\}\)\;\
 \ \ \ \ close\ STDOUT\;\
 \ \ \ \ open\ STDOUT\,\ \"\>\&SAVEOUT\"\;\
 \ \ \ \ \
@@ -381,12 +463,16 @@ demo( "\ \ \ \ no\ warnings\;\
 \ \ \ \ \$test_results\ \=\ \$snl\-\>fin\(\'tgA1\.txt\'\)\;\
 \ \ \ \ \$test_results\ \=\~\ s\/\.\*\?1\.\.9\/1\.\.9\/\;\ \
 \ \ \ \ \$test_results\ \=\~\ s\/\-\-\-\-\-\-\.\*\?\\n\(\\s\*\\\(\)\/\\n\ \$1\/s\;\
-\ \ \ \ \$snl\-\>fout\(\'tgA1\.txt\'\,\$test_results\)\;"); # typed in command           
-          no warnings;
+\ \ \ \ \$snl\-\>fout\(\'tgA1\.txt\'\,\$test_results\)\;\
+\ \ \ \ \$diag\ \=\ \(\-e\ \'tgA1\.pm\'\)\ \?\ \"\\n\~\~\~\~\~\~\~tgA1\.pm\\n\\n\"\ \.\ \$snl\-\>fin\(\'tgA1\.pm\'\)\ \:\ \'No\ tgA1\.pm\'\;\
+\ \ \ \ \$diag\ \.\=\ \(\-e\ \'tgA1\.t\'\)\ \?\ \"\\n\~\~\~\~\~\~\~tgA1\.d\\n\\n\"\ \.\ \$snl\-\>fin\(\'tgA1\.t\'\)\ \:\ \'No\ tgA1\.t\'\;"); # typed in command           
+          skip_tests(0);
+
+    no warnings;
     open SAVEOUT, ">&STDOUT";
     use warnings;
     open STDOUT, ">tgA1.txt";
-    $tmaker->tmake('verify', { pm => 't::Test::STDmaker::tgA1', run => 1, test_verbose => 1});
+    $success = $tmaker->tmake('verify', { pm => 't::Test::STDmaker::tgA1', run => 1, test_verbose => 1});
     close STDOUT;
     open STDOUT, ">&SAVEOUT";
     
@@ -399,10 +485,14 @@ demo( "\ \ \ \ no\ warnings\;\
     $test_results = $snl->fin('tgA1.txt');
     $test_results =~ s/.*?1..9/1..9/; 
     $test_results =~ s/------.*?\n(\s*\()/\n $1/s;
-    $snl->fout('tgA1.txt',$test_results);; # execution
+    $snl->fout('tgA1.txt',$test_results);
+    $diag = (-e 'tgA1.pm') ? "\n~~~~~~~tgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
+    $diag .= (-e 'tgA1.t') ? "\n~~~~~~~tgA1.d\n\n" . $snl->fin('tgA1.t') : 'No tgA1.t'; # execution
 
-demo( "\$s\-\>scrub_probe\(\$s\-\>scrub_test_file\(\$s\-\>scrub_file_line\(\$test_results\)\)\)", # typed in command           
-      $s->scrub_probe($s->scrub_test_file($s->scrub_file_line($test_results)))); # execution
+
+
+demo( "\$success", # typed in command           
+      $success); # execution
 
 
 print << "EOF";
@@ -413,17 +503,45 @@ print << "EOF";
  
 EOF
 
+demo( "\$s\-\>scrub_probe\(\$s\-\>scrub_test_file\(\$s\-\>scrub_file_line\(\$test_results\)\)\)", # typed in command           
+      $s->scrub_probe($s->scrub_test_file($s->scrub_file_line($test_results)))); # execution
+
+
+print << "EOF";
+
+ ##################
+ # Generate and test harness run test script
+ # 
+ 
+EOF
+
+demo( "\$test_results", # typed in command           
+      $test_results); # execution
+
+
 demo( "\$snl\-\>fin\(\'tgC0\.pm\'\)", # typed in command           
       $snl->fin('tgC0.pm')); # execution
 
 
-demo( "\ \ \ \ copy\ \'tgC0\.pm\'\,\ \'tgC1\.pm\'\;\
-\ \ \ \ \$tmaker\-\>tmake\(\'STD\'\,\ \{\ pm\ \=\>\ \'t\:\:Test\:\:STDmaker\:\:tgC1\'\,\ fspec_out\=\>\'os2\'\}\)\;"); # typed in command           
-          copy 'tgC0.pm', 'tgC1.pm';
-    $tmaker->tmake('STD', { pm => 't::Test::STDmaker::tgC1', fspec_out=>'os2'});; # execution
+print << "EOF";
 
-demo( "\$s\-\>scrub_date_version\(\$snl\-\>fin\(\'tgC1\.pm\'\)\)", # typed in command           
-      $s->scrub_date_version($snl->fin('tgC1.pm'))); # execution
+ ##################
+ # tmake('STD', {pm => 't::Test::STDmaker::tgC1', fspec_out=>'os2'})
+ # 
+ 
+EOF
+
+demo( "\ \ \ \ skip_tests\(0\)\;\
+\ \ \ \ copy\ \'tgC0\.pm\'\,\ \'tgC1\.pm\'\;\
+\ \ \ \ \$success\ \=\ \$tmaker\-\>tmake\(\'STD\'\,\ \{\ pm\ \=\>\ \'t\:\:Test\:\:STDmaker\:\:tgC1\'\,\ fspec_out\=\>\'os2\'\}\)\;"); # typed in command           
+          skip_tests(0);
+    copy 'tgC0.pm', 'tgC1.pm';
+    $success = $tmaker->tmake('STD', { pm => 't::Test::STDmaker::tgC1', fspec_out=>'os2'}); # execution
+
+
+
+demo( "\$success", # typed in command           
+      $success); # execution
 
 
 print << "EOF";
@@ -433,6 +551,10 @@ print << "EOF";
  # 
  
 EOF
+
+demo( "\$s\-\>scrub_date_version\(\$snl\-\>fin\(\'tgC1\.pm\'\)\)", # typed in command           
+      $s->scrub_date_version($snl->fin('tgC1.pm'))); # execution
+
 
 print << "EOF";
 
@@ -465,7 +587,9 @@ demo( "\ \ \ my\ \$OS\ \=\ \$\^O\;\ \ \#\ Need\ to\ escape\ the\ form\ delimitin
    pop @dirs; # pop Test
    pop @dirs; # pop t
    $dir = File::Spec->catdir($vol,@dirs);
-   my @t_path = $tmaker->find_t_roots();; # execution
+   my @t_path = $tmaker->find_t_roots(); # execution
+
+
 
 demo( "\$t_path\[0\]", # typed in command           
       $t_path[0]); # execution
@@ -510,7 +634,9 @@ demo( "\ \ \ \ \#\#\#\#\#\
        my ($text) = @_;
        return $text =~ /STDOUT/;
        CORE::warn( $text );
-    };; # execution
+    }; # execution
+
+
 
 
 =head1 NAME

@@ -16,8 +16,8 @@ use File::Where;
 use Test::Harness 2.42;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.14';
-$DATE = '2004/05/21';
+$VERSION = '1.15';
+$DATE = '2004/05/22';
 
 ########
 # Inherit classes
@@ -48,13 +48,9 @@ sub A
        $module_db->{test_subroutine} = '',
        return '';
    }
-   $module_db->{demo_only_expected} = '';
 
-   ######
-   # Save for expected the next statement
-   #
    $self->{$module}->{actual} = $data;
-
+   $module_db->{demo_only_expected} = '';
    ''  # writing actual out in the expected statement
 }
 

@@ -16,8 +16,8 @@ use vars qw($VERSION $DATE);
 use Cwd;
 use File::AnySpec;
 
-$VERSION = '1.13';
-$DATE = '2004/05/21';
+$VERSION = '1.14';
+$DATE = '2004/05/22';
 
 ########
 # Inherit classes
@@ -47,7 +47,10 @@ sub  A
         $self->{$module}->{demo_only_expected} = 1;
         return '';
     }
-    $self->{$module}->{demo_only_expected} = '';
+    if($self->{$module}->{demo_only_expected}) {
+        $self->{$module}->{demo_only_expected} = '';
+        return "\n";
+    }
     '' 
 }
 

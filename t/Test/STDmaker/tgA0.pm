@@ -10,8 +10,8 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE );
-$VERSION = '0.05';
-$DATE = '2004/05/18';
+$VERSION = '0.06';
+$DATE = '2004/05/22';
 $FILE = __FILE__;
 
 __DATA__
@@ -113,7 +113,7 @@ VO: ^
  E: $expected[$i]^
 
 C:
-    }; 
+    }
 ^
 
  N: Failed test that skips the rest^
