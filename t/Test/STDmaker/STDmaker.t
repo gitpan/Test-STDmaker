@@ -7,7 +7,7 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE);
-$VERSION = '0.17';   # automatically generated file
+$VERSION = '0.18';   # automatically generated file
 $DATE = '2004/05/23';
 $FILE = __FILE__;
 
@@ -192,6 +192,7 @@ ok(  $Test::STDmaker::VERSION, # actual results
    # Perl code from C:
     copy 'tgA0.pm', 'tgA1.pm';
     my $tmaker = new Test::STDmaker(pm =>'t::Test::STDmaker::tgA1', nounlink => 1);
+    my $perl_executable = $tmaker->perl_command();
     $success = $tmaker->tmake( 'STD' );
     $diag = "\n~~~~~~~\nFormDB\n\n" . join "\n", @{$tmaker->{FormDB}};
     $diag .= "\n~~~~~~~\nstd_db\n\n" . join "\n", @{$tmaker->{std_db}};
@@ -228,58 +229,6 @@ ok(  $s->scrub_date_version($snl->fin('tgA1.pm')), # actual results
 
    # Perl code from C:
     skip_tests(0);
-    copy 'tgB0.pm', 'tgB1.pm';
-    $success = $tmaker->tmake('STD', 'verify', {pm => 't::Test::STDmaker::tgB1', nounlink => 1} );
-    $diag = "\n~~~~~~~\nFormDB\n\n" . join "\n", @{$tmaker->{FormDB}};
-    $diag .= "\n~~~~~~~\nstd_db\n\n" . join "\n", @{$tmaker->{std_db}};
-    $diag .= (-e 'temp.pl') ? "\n~~~~~~~\ntemp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
-    $diag .= (-e 'tgB1.pm') ? "\n~~~~~~~\ntgB1.pm\n\n" . $snl->fin('tgB1.pm') : 'No tgB1.pm';
-    $diag .= (-e 'tgB1.t') ? "\n~~~~~~~\ntgB1.t\n\n" . $snl->fin('tgB1.t') : 'No tgB1.t';
-
-
-
-skip_tests( 1 ) unless
-  ok(  $success, # actual results
-     1, # expected results
-     "$diag",
-     "tmake('STD', 'verify', {pm => 't::Test::STDmaker::tgB1'})");
-
-#  ok:  6
-
-
-####
-# verifies requirement(s):
-#     L<Test::STDmaker/clean FormDB [1]>
-#     L<Test::STDmaker/clean FormDB [2]>
-#     L<Test::STDmaker/clean FormDB [3]>
-#     L<Test::STDmaker/clean FormDB [4]>
-#     L<Test::STDmaker/file_out option [1]>
-# 
-
-#####
-ok(  $s->scrub_date_version($snl->fin('tgB1.pm')), # actual results
-     $s->scrub_date_version($snl->fin('tgB2.pm')), # expected results
-     "",
-     "Clean STD pm without a todo list");
-
-#  ok:  7
-
-   # Perl code from C:
-    my $perl_execuable = $tmaker->perl_command();
-    $test_results = `$perl_execuable tgB1.t`;
-    $snl->fout('tgB1.txt', $test_results);
-
-
-
-ok(  $s->scrub_probe($s->scrub_file_line($test_results)), # actual results
-     $s->scrub_probe($s->scrub_file_line($snl->fin('tgB2.txt'))), # expected results
-     "",
-     "Generated and execute the test script");
-
-#  ok:  8
-
-   # Perl code from C:
-    skip_tests(0);
 
     #####
     # Make sure there is no residue outputs hanging
@@ -287,16 +236,12 @@ ok(  $s->scrub_probe($s->scrub_file_line($test_results)), # actual results
     #
     @outputs = bsd_glob( 'tg*1.*' );
     unlink @outputs;
-    copy 'tgA0.pm', 'tgA1.pm';
-    $tmaker = new Test::STDmaker( {pm => 't::Test::STDmaker::tgA1'} );
     $success = $tmaker->tmake();
     $diag = "\n~~~~~~~\nFormDB\n\n" . join "\n", @{$tmaker->{FormDB}};
     $diag .= "\n~~~~~~~\nstd_db\n\n" . join "\n", @{$tmaker->{std_db}};
     $diag .= (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
-#    $diag .= (-e 'tgA1.t') ? "\n~~~~~~~\ntgA1.t\n\n" . $snl->fin('tgA1.t') : 'No tgA1.t';
-#    $diag .= (-e 'tgA1.d') ? "\n~~~~~~~\ntgA1.d\n\n" . $snl->fin('tgA1.d') : 'No tgA1.d';
-    warn("####\ntest: 9\n\t\$success=$success\n");
-    warn($diag);
+    $diag .= (-e 'tgA1.t') ? "\n~~~~~~~\ntgA1.t\n\n" . $snl->fin('tgA1.t') : 'No tgA1.t';
+    $diag .= (-e 'tgA1.d') ? "\n~~~~~~~\ntgA1.d\n\n" . $snl->fin('tgA1.d') : 'No tgA1.d';
 
 
 
@@ -306,7 +251,7 @@ skip_tests( 1 ) unless
      "$diag",
      "tmake( {pm => 't::Test::STDmaker::tgA1'})");
 
-#  ok:  9
+#  ok:  6
 
    # Perl code from C:
 ;
@@ -329,10 +274,10 @@ ok(  $s->scrub_date_version($snl->fin('tgA1.pm')), # actual results
      "",
      "Cleaned tgA1.pm");
 
-#  ok:  10
+#  ok:  7
 
    # Perl code from C:
-    $test_results = `$perl_execuable tgA1.d`;
+    $test_results = `$perl_executable tgA1.d`;
     $snl->fout('tgA1.txt', $test_results);
 
     use Data::Dumper;
@@ -374,10 +319,10 @@ ok(  $test_results, # actual results
      "",
      "Demonstration script");
 
-#  ok:  11
+#  ok:  8
 
    # Perl code from C:
-    $test_results = `$perl_execuable tgA1.t`;
+    $test_results = `$perl_executable tgA1.t`;
     $snl->fout('tgA1.txt', $test_results);
 
 
@@ -396,7 +341,7 @@ ok(  $s->scrub_probe($s->scrub_file_line($test_results)), # actual results
      "",
      "Generated and execute the test script");
 
-#  ok:  12
+#  ok:  9
 
    # Perl code from C:
     #########
@@ -444,14 +389,14 @@ skip_tests( 1 ) unless
      "$diag",
      "tmake('demo', {pm => 't::Test::STDmaker::tgA1', demo => 1})");
 
-#  ok:  13
+#  ok:  10
 
 ok(  $s->scrub_date_version($snl->fin('tg1.pm')), # actual results
      $s->scrub_date_version($snl->fin($expected_results)), # expected results
      "",
      "Generate and replace a demonstration");
 
-#  ok:  14
+#  ok:  11
 
    # Perl code from C:
     skip_tests(0);
@@ -495,14 +440,14 @@ skip_tests( 1 ) unless
      "",
      "tmake('verify', {pm => 't::Test::STDmaker::tgA1', run => 1, test_verbose => 1})");
 
-#  ok:  15
+#  ok:  12
 
 ok(  $s->scrub_probe($s->scrub_test_file($s->scrub_file_line($test_results))), # actual results
      $s->scrub_probe($s->scrub_test_file($s->scrub_file_line($snl->fin('tgA2C.txt')))), # expected results
      "",
      "Generate and verbose test harness run test script");
 
-#  ok:  16
+#  ok:  13
 
    # Perl code from C:
     skip_tests(0);
@@ -544,12 +489,63 @@ skip_tests( 1 ) unless
      "",
      "tmake('verify', {pm => 't::Test::STDmaker::tgA1', run => 1})");
 
-#  ok:  17
+#  ok:  14
 
 ok(  $test_results, # actual results
      'FAILED tests 4, 8', # expected results
      "",
      "Generate and test harness run test script");
+
+#  ok:  15
+
+   # Perl code from C:
+    skip_tests(0);
+    copy 'tgB0.pm', 'tgB1.pm';
+    $success = $tmaker->tmake('STD', 'verify', {pm => 't::Test::STDmaker::tgB1', nounlink => 1} );
+    $diag = "\n~~~~~~~\nFormDB\n\n" . join "\n", @{$tmaker->{FormDB}};
+    $diag .= "\n~~~~~~~\nstd_db\n\n" . join "\n", @{$tmaker->{std_db}};
+    $diag .= (-e 'temp.pl') ? "\n~~~~~~~\ntemp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
+    $diag .= (-e 'tgB1.pm') ? "\n~~~~~~~\ntgB1.pm\n\n" . $snl->fin('tgB1.pm') : 'No tgB1.pm';
+    $diag .= (-e 'tgB1.t') ? "\n~~~~~~~\ntgB1.t\n\n" . $snl->fin('tgB1.t') : 'No tgB1.t';
+
+
+
+skip_tests( 1 ) unless
+  ok(  $success, # actual results
+     1, # expected results
+     "$diag",
+     "tmake('STD', 'verify', {pm => 't::Test::STDmaker::tgB1'})");
+
+#  ok:  16
+
+
+####
+# verifies requirement(s):
+#     L<Test::STDmaker/clean FormDB [1]>
+#     L<Test::STDmaker/clean FormDB [2]>
+#     L<Test::STDmaker/clean FormDB [3]>
+#     L<Test::STDmaker/clean FormDB [4]>
+#     L<Test::STDmaker/file_out option [1]>
+# 
+
+#####
+ok(  $s->scrub_date_version($snl->fin('tgB1.pm')), # actual results
+     $s->scrub_date_version($snl->fin('tgB2.pm')), # expected results
+     "",
+     "Clean STD pm without a todo list");
+
+#  ok:  17
+
+   # Perl code from C:
+    $test_results = `$perl_executable tgB1.t`;
+    $snl->fout('tgB1.txt', $test_results);
+
+
+
+ok(  $s->scrub_probe($s->scrub_file_line($test_results)), # actual results
+     $s->scrub_probe($s->scrub_file_line($snl->fin('tgB2.txt'))), # expected results
+     "",
+     "Generated and execute the test script");
 
 #  ok:  18
 

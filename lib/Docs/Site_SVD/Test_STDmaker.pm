@@ -10,45 +10,45 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE );
-$VERSION = '0.20';
+$VERSION = '0.21';
 $DATE = '2004/05/23';
 $FILE = __FILE__;
 
 use vars qw(%INVENTORY);
 %INVENTORY = (
-    'lib/Docs/Site_SVD/Test_STDmaker.pm' => [qw(0.20 2004/05/23), 'revised 0.19'],
-    'MANIFEST' => [qw(0.20 2004/05/23), 'generated, replaces 0.19'],
-    'Makefile.PL' => [qw(0.20 2004/05/23), 'generated, replaces 0.19'],
-    'README' => [qw(0.20 2004/05/23), 'generated, replaces 0.19'],
-    'lib/Test/STDmaker.pm' => [qw(1.19 2004/05/22), 'unchanged'],
-    'lib/Test/STDmaker/Check.pm' => [qw(1.15 2004/05/23), 'revised 1.14'],
+    'lib/Docs/Site_SVD/Test_STDmaker.pm' => [qw(0.21 2004/05/23), 'revised 0.20'],
+    'MANIFEST' => [qw(0.21 2004/05/23), 'generated, replaces 0.20'],
+    'Makefile.PL' => [qw(0.21 2004/05/23), 'generated, replaces 0.20'],
+    'README' => [qw(0.21 2004/05/23), 'generated, replaces 0.20'],
+    'lib/Test/STDmaker.pm' => [qw(1.2 2004/05/23), 'revised 1.19'],
+    'lib/Test/STDmaker/Check.pm' => [qw(1.15 2004/05/23), 'unchanged'],
     'lib/Test/STDmaker/Demo.pm' => [qw(1.14 2004/05/21), 'unchanged'],
-    'lib/Test/STDmaker/STD.pm' => [qw(1.12 2004/05/23), 'revised 1.11'],
+    'lib/Test/STDmaker/STD.pm' => [qw(1.12 2004/05/23), 'unchanged'],
     'lib/Test/STDmaker/Verify.pm' => [qw(1.15 2004/05/22), 'unchanged'],
     'lib/Test/STD/PerlSTD.pm' => [qw(1.08 2004/05/19), 'unchanged'],
-    't/Test/STDmaker/STDmaker.d' => [qw(0.17 2004/05/23), 'revised 0.16'],
-    't/Test/STDmaker/STDmaker.pm' => [qw(0.15 2004/05/23), 'revised 0.14'],
-    't/Test/STDmaker/STDmaker.t' => [qw(0.17 2004/05/23), 'revised 0.16'],
+    't/Test/STDmaker/STDmaker.d' => [qw(0.18 2004/05/23), 'revised 0.17'],
+    't/Test/STDmaker/STDmaker.pm' => [qw(0.16 2004/05/23), 'revised 0.15'],
+    't/Test/STDmaker/STDmaker.t' => [qw(0.18 2004/05/23), 'revised 0.17'],
     't/Test/STDmaker/tg0.pm' => [qw(0.03 2004/04/09), 'unchanged'],
-    't/Test/STDmaker/tg2A.pm' => [qw(0.06 2004/05/23), 'revised 0.05'],
-    't/Test/STDmaker/tg2B.pm' => [qw(0.07 2004/05/23), 'revised 0.06'],
-    't/Test/STDmaker/tgA0.pm' => [qw(0.08 2004/05/23), 'revised 0.07'],
-    't/Test/STDmaker/tgA1.pm' => [qw(0.08 2004/05/23), 'revised 0.07'],
-    't/Test/STDmaker/tgA2.pm' => [qw(0.09 2004/05/23), 'revised 0.08'],
-    't/Test/STDmaker/tgA2A2.txt' => [qw(0.13 2004/05/23), 'revised 0.12'],
-    't/Test/STDmaker/tgA2A3.txt' => [qw(0.13 2004/05/23), 'revised 0.12'],
+    't/Test/STDmaker/tg2A.pm' => [qw(0.06 2004/05/23), 'unchanged'],
+    't/Test/STDmaker/tg2B.pm' => [qw(0.07 2004/05/23), 'unchanged'],
+    't/Test/STDmaker/tgA0.pm' => [qw(0.08 2004/05/23), 'unchanged'],
+    't/Test/STDmaker/tgA1.pm' => [qw(0.08 2004/05/23), 'unchanged'],
+    't/Test/STDmaker/tgA2.pm' => [qw(0.09 2004/05/23), 'unchanged'],
+    't/Test/STDmaker/tgA2A2.txt' => [qw(0.13 2004/05/23), 'unchanged'],
+    't/Test/STDmaker/tgA2A3.txt' => [qw(0.13 2004/05/23), 'unchanged'],
     't/Test/STDmaker/tgA2B.txt' => [qw(0.09 2004/05/22), 'unchanged'],
     't/Test/STDmaker/tgA2C.txt' => [qw(0.1 2004/05/22), 'unchanged'],
     't/Test/STDmaker/tgB0.pm' => [qw(0.02 2004/05/18), 'unchanged'],
-    't/Test/STDmaker/tgB1.pm' => [qw(0.02 2004/05/23), 'revised 0.01'],
-    't/Test/STDmaker/tgB2.pm' => [qw(0.04 2004/05/23), 'revised 0.03'],
-    't/Test/STDmaker/tgB2.txt' => [qw(0.1 2004/05/23), 'revised 0.09'],
+    't/Test/STDmaker/tgB1.pm' => [qw(0.02 2004/05/23), 'unchanged'],
+    't/Test/STDmaker/tgB2.pm' => [qw(0.04 2004/05/23), 'unchanged'],
+    't/Test/STDmaker/tgB2.txt' => [qw(0.1 2004/05/23), 'unchanged'],
     't/Test/STDmaker/tgC0.pm' => [qw(0.04 2004/05/18), 'unchanged'],
-    't/Test/STDmaker/tgC1.pm' => [qw(0.02 2004/05/23), 'revised 0.01'],
-    't/Test/STDmaker/tgC2.pm' => [qw(0.06 2004/05/23), 'revised 0.05'],
+    't/Test/STDmaker/tgC1.pm' => [qw(0.02 2004/05/23), 'unchanged'],
+    't/Test/STDmaker/tgC2.pm' => [qw(0.06 2004/05/23), 'unchanged'],
     't/Test/STDmaker/tgD0.pm' => [qw(0.06 2004/05/22), 'unchanged'],
     't/Test/STDmaker/tmake.pl' => [qw(1.06 2004/05/23), 'unchanged'],
-    't/Test/STDmaker/Text/Scrub.pm' => [qw(1.15 2004/05/23), 'revised 1.14'],
+    't/Test/STDmaker/Text/Scrub.pm' => [qw(1.15 2004/05/23), 'unchanged'],
     't/Test/STDmaker/Test/Tech.pm' => [qw(1.26 2004/05/23), 'unchanged'],
     't/Test/STDmaker/Data/Secs2.pm' => [qw(1.26 2004/05/23), 'unchanged'],
     't/Test/STDmaker/Data/Str2Num.pm' => [qw(0.08 2004/05/23), 'unchanged'],
@@ -85,7 +85,7 @@ Docs::Site_SVD::Test_STDmaker - generate test scripts, demo scripts from a test 
 
  Revision: R
 
- Version: 0.20
+ Version: 0.21
 
  Date: 2004/05/23
 
@@ -176,7 +176,7 @@ further detail on the text database fields and the processing.
 
 =head2 1.3 Document overview.
 
-This document releases Test::STDmaker version 0.20
+This document releases Test::STDmaker version 0.21
 providing description of the inventory, installation
 instructions and other information necessary to
 utilize and track this release.
@@ -191,7 +191,7 @@ system file specification.
 
 This document releases the file 
 
- Test-STDmaker-0.20.tar.gz
+ Test-STDmaker-0.21.tar.gz
 
 found at the following repository(s):
 
@@ -278,39 +278,39 @@ consists of the following files:
 
  file                                                         version date       comment
  ------------------------------------------------------------ ------- ---------- ------------------------
- lib/Docs/Site_SVD/Test_STDmaker.pm                           0.20    2004/05/23 revised 0.19
- MANIFEST                                                     0.20    2004/05/23 generated, replaces 0.19
- Makefile.PL                                                  0.20    2004/05/23 generated, replaces 0.19
- README                                                       0.20    2004/05/23 generated, replaces 0.19
- lib/Test/STDmaker.pm                                         1.19    2004/05/22 unchanged
- lib/Test/STDmaker/Check.pm                                   1.15    2004/05/23 revised 1.14
+ lib/Docs/Site_SVD/Test_STDmaker.pm                           0.21    2004/05/23 revised 0.20
+ MANIFEST                                                     0.21    2004/05/23 generated, replaces 0.20
+ Makefile.PL                                                  0.21    2004/05/23 generated, replaces 0.20
+ README                                                       0.21    2004/05/23 generated, replaces 0.20
+ lib/Test/STDmaker.pm                                         1.2     2004/05/23 revised 1.19
+ lib/Test/STDmaker/Check.pm                                   1.15    2004/05/23 unchanged
  lib/Test/STDmaker/Demo.pm                                    1.14    2004/05/21 unchanged
- lib/Test/STDmaker/STD.pm                                     1.12    2004/05/23 revised 1.11
+ lib/Test/STDmaker/STD.pm                                     1.12    2004/05/23 unchanged
  lib/Test/STDmaker/Verify.pm                                  1.15    2004/05/22 unchanged
  lib/Test/STD/PerlSTD.pm                                      1.08    2004/05/19 unchanged
- t/Test/STDmaker/STDmaker.d                                   0.17    2004/05/23 revised 0.16
- t/Test/STDmaker/STDmaker.pm                                  0.15    2004/05/23 revised 0.14
- t/Test/STDmaker/STDmaker.t                                   0.17    2004/05/23 revised 0.16
+ t/Test/STDmaker/STDmaker.d                                   0.18    2004/05/23 revised 0.17
+ t/Test/STDmaker/STDmaker.pm                                  0.16    2004/05/23 revised 0.15
+ t/Test/STDmaker/STDmaker.t                                   0.18    2004/05/23 revised 0.17
  t/Test/STDmaker/tg0.pm                                       0.03    2004/04/09 unchanged
- t/Test/STDmaker/tg2A.pm                                      0.06    2004/05/23 revised 0.05
- t/Test/STDmaker/tg2B.pm                                      0.07    2004/05/23 revised 0.06
- t/Test/STDmaker/tgA0.pm                                      0.08    2004/05/23 revised 0.07
- t/Test/STDmaker/tgA1.pm                                      0.08    2004/05/23 revised 0.07
- t/Test/STDmaker/tgA2.pm                                      0.09    2004/05/23 revised 0.08
- t/Test/STDmaker/tgA2A2.txt                                   0.13    2004/05/23 revised 0.12
- t/Test/STDmaker/tgA2A3.txt                                   0.13    2004/05/23 revised 0.12
+ t/Test/STDmaker/tg2A.pm                                      0.06    2004/05/23 unchanged
+ t/Test/STDmaker/tg2B.pm                                      0.07    2004/05/23 unchanged
+ t/Test/STDmaker/tgA0.pm                                      0.08    2004/05/23 unchanged
+ t/Test/STDmaker/tgA1.pm                                      0.08    2004/05/23 unchanged
+ t/Test/STDmaker/tgA2.pm                                      0.09    2004/05/23 unchanged
+ t/Test/STDmaker/tgA2A2.txt                                   0.13    2004/05/23 unchanged
+ t/Test/STDmaker/tgA2A3.txt                                   0.13    2004/05/23 unchanged
  t/Test/STDmaker/tgA2B.txt                                    0.09    2004/05/22 unchanged
  t/Test/STDmaker/tgA2C.txt                                    0.1     2004/05/22 unchanged
  t/Test/STDmaker/tgB0.pm                                      0.02    2004/05/18 unchanged
- t/Test/STDmaker/tgB1.pm                                      0.02    2004/05/23 revised 0.01
- t/Test/STDmaker/tgB2.pm                                      0.04    2004/05/23 revised 0.03
- t/Test/STDmaker/tgB2.txt                                     0.1     2004/05/23 revised 0.09
+ t/Test/STDmaker/tgB1.pm                                      0.02    2004/05/23 unchanged
+ t/Test/STDmaker/tgB2.pm                                      0.04    2004/05/23 unchanged
+ t/Test/STDmaker/tgB2.txt                                     0.1     2004/05/23 unchanged
  t/Test/STDmaker/tgC0.pm                                      0.04    2004/05/18 unchanged
- t/Test/STDmaker/tgC1.pm                                      0.02    2004/05/23 revised 0.01
- t/Test/STDmaker/tgC2.pm                                      0.06    2004/05/23 revised 0.05
+ t/Test/STDmaker/tgC1.pm                                      0.02    2004/05/23 unchanged
+ t/Test/STDmaker/tgC2.pm                                      0.06    2004/05/23 unchanged
  t/Test/STDmaker/tgD0.pm                                      0.06    2004/05/22 unchanged
  t/Test/STDmaker/tmake.pl                                     1.06    2004/05/23 unchanged
- t/Test/STDmaker/Text/Scrub.pm                                1.15    2004/05/23 revised 1.14
+ t/Test/STDmaker/Text/Scrub.pm                                1.15    2004/05/23 unchanged
  t/Test/STDmaker/Test/Tech.pm                                 1.26    2004/05/23 unchanged
  t/Test/STDmaker/Data/Secs2.pm                                1.26    2004/05/23 unchanged
  t/Test/STDmaker/Data/Str2Num.pm                              0.08    2004/05/23 unchanged
@@ -512,7 +512,7 @@ Changed C<Test::STDmaker::Demo> and C<Test::STDmaker::Check> so they load
 C<Test::Tech> after setting up C<@INC>. Else missing finding some
 test library modules because they are not in the C<INC> path.
 
-=item Test-STDmaker-0.13
+=item Test-STDmaker-0.13 - Test-STDmaker-0.14
 
 Test Failure:
 
@@ -536,21 +536,6 @@ Corrective Action
 Introduced the C<perl_command> subroutine that uses C<$^X> to return the current executable Perl.
 Use the results of this subroutine instead of 'perl' in backticks.
 See how it goes.
-
-=item Test-STDmaker-0.14
-
-Test Failure:
-
-Subject: FAIL Test-STDmaker-0.13 ppc-linux 2.4.19-4a 
-From: alian@cpan.org (CPAN Tester + CPAN++ automate) 
-
-PERL_DL_NONLAZY=1 /usr/local/perl-5.8.4/bin/perl "-MExtUtils::Command::MM" "-e" "test_harness(0, 'blib/lib', 'blib/arch')" t/Test/STDmaker/STDmaker.t
-t/Test/STDmaker/STDmaker....Perl lib version (v5.8.4) doesn't match executable version (v5.6.0) at /usr/local/perl-5.8.4/lib/5.8.4/ppc-linux/Config.pm line 32.
-Compilation failed in require at /usr/local/perl-5.8.4/lib/5.8.4/FindBin.pm line 97.
-BEGIN failed--compilation aborted at /usr/local/perl-5.8.4/lib/5.8.4/FindBin.pm line 97.
-Compilation failed in require at tgB1.t line 43.
-
-Corrective Action:
 
 Opps. Have C<`perl $commands`> not only in the Unit Under Test (UUT) but also the test
 scripts. Looks like using `C<$^X> $command` fixed the UUT so change the ones in the
@@ -578,58 +563,23 @@ Corrective Action:
 
 Change the "Don't" to "Do not"
 
-=item Test-STDmaker-0.16
+=item Test-STDmaker-0.16 - Test-STDmaker-0.18
 
 Test Failure:
 
  Subject: FAIL Test-STDmaker-0.15 ppc-linux 2.4.19-4a 
  From: alian@cpan.org (CPAN Tester + CPAN++ automate) 
 
-t/Test/STDmaker/STDmaker....Missing right curly or square bracket at temp.pl line 331, at end of line
-syntax error at temp.pl line 331, at EOF
-
-Analysis:
-
-The generated Perl has semicolon after a right curly bracket, "};". Some Perl get upset and do not
-count the right curly bracket. 
+ t/Test/STDmaker/STDmaker....Missing right curly or square bracket at temp.pl line 331, at end of line
+ syntax error at temp.pl line 331, at EOF
 
 Corrective Action:
 
-Changed the C<Test::STDmaker::Clean>, C<Test::STDmaker::Demo> and
-C<Test::STDMaker::Verify> that automatically adds a semicolon to a C<C> test description if one
-does not exist, also not to add the semicolon if a right or left curly bracket exists at the
-end of the C<C> test description field. Add the option, C<nosemi>, to disable the automatic
-addition of a semicolon to the end of C <C> test description field.
-
-=item Test-STDmaker-0.17
-
-Test Failure:
-
-Same of Test-STDmaker-0.16
-
-Analysis:
-
-Opps. Did not change manual "};" to "}"
-
-Corrections:
-
-Change all "};" in all test case test scripts. Still do not know if this
-will cure the deficiency so added diagnostic steps that will provided
-added feedback.
-
-=item Test-STDmaker-0.18
-
-Test Failure:
-
-Same as Test-STDmaker-0.17. No output from added diagnostic messages.
-
-Debug Mode:
-
 Backed out test descriptions that producde curly brackets except for C<BEGIN> and C<END>
-blocks of generated scripts. Added a warn($diag) to see if get diagnostic messages.
+blocks of generated scripts. 
 The backed test descriptions can be added as another test once get some green PASSES.
 
-=item Test-STDmaker-0.19
+=item Test-STDmaker-0.19 - Test-STDmaker-0.21
 
 Test Failure:
 
@@ -645,52 +595,16 @@ Test Failure:
 
 Analysis:
 
-Test failure different. Got diagnostic warn that shows Check temp.pl looks ok.
-The above failures do not correspond to files generated for Microsoft. 
+Opening a new C<tmaker> for test 9, involked C<File::Maker> methods a second time for
+the same program module C<__DATA__> section. While these work under Windows, they
+are completely messed up under Unix. 
 
-Debug:
+Corrective Action:
 
-Put in warns to take look at generated files. So remotely debugging with print 
-statement.
-
-=item Test-STDmaker-0.20
-
-Test Failure:
-
- Subject: FAIL Test-STDmaker-0.19 ppc-linux 2.4.19-4a 
- From: alian@cpan.org (CPAN Tester + CPAN++ automate) 
-
- t/Test/STDmaker/STDmaker....######
- ok: 9
- ~~~~~~~
- tgA1.pm
- [snip]
-
- __DATA__
-
- [snip]
-
- T: 22 - 3,6,14,17^
-
- [snip]
-
-Analysis:
-
-Still in debug, investigate mode. 
-Second time access __DATA__ in tgA1.pm, the data gets doubled.
-This problem usually caused by lack of initialization. However, after steppng through
-a couple of times looked good. Suspect that reading database from the __DATA__ section
-twice may be the problem. 
-Need to add a test with File::Maker and run it on these sites that are failing
-to see if this is the problem.
-
-Also do not understand yet why test 10 that compares tgA1.pm against expected tgA2.pm
-does not fail. Simulation under Windows and stepping thru with debugger provides a 
-failure.
-
-Debug:
-
-Add internal variables to $diag and put them in the warn for ok 9.
+Changed the order of the test script C<tmaker> never created with the C<new> subroutine
+for the same file object. 
+Add making C<File::Maker> work with loading the C<__DATA__> twice after loading the program
+module on the todo list. 
 
 =back
 
@@ -730,13 +644,13 @@ Enter one of the following repositories in a web browser:
   http://www.softwarediamonds/packages/
   http://www.perl.com/CPAN/authors/id/S/SO/SOFTDIA/
 
-Right click on 'Test-STDmaker-0.20.tar.gz' and download to a temporary
+Right click on 'Test-STDmaker-0.21.tar.gz' and download to a temporary
 installation directory.
 Enter the following where $make is 'nmake' for microsoft
 windows; otherwise 'make'.
 
- gunzip Test-STDmaker-0.20.tar.gz
- tar -xf Test-STDmaker-0.20.tar
+ gunzip Test-STDmaker-0.21.tar.gz
+ tar -xf Test-STDmaker-0.21.tar
  perl Makefile.PL
  $make test
  $make install
@@ -878,9 +792,9 @@ __DATA__
 DISTNAME: Test-STDmaker^
 REPOSITORY_DIR: packages^
 
-VERSION : 0.20^
+VERSION : 0.21^
 FREEZE: 1^
-PREVIOUS_RELEASE: 0.19^
+PREVIOUS_RELEASE: 0.20^
 REVISION: R^
 
 PREVIOUS_DISTNAME:  ^
@@ -1200,7 +1114,7 @@ Changed C<Test::STDmaker::Demo> and C<Test::STDmaker::Check> so they load
 C<Test::Tech> after setting up C<@INC>. Else missing finding some
 test library modules because they are not in the C<INC> path.
 
-\=item Test-STDmaker-0.13
+\=item Test-STDmaker-0.13 - Test-STDmaker-0.14
 
 Test Failure:
 
@@ -1224,21 +1138,6 @@ Corrective Action
 Introduced the C<perl_command> subroutine that uses C<$^^X> to return the current executable Perl.
 Use the results of this subroutine instead of 'perl' in backticks.
 See how it goes.
-
-\=item Test-STDmaker-0.14
-
-Test Failure:
-
-Subject: FAIL Test-STDmaker-0.13 ppc-linux 2.4.19-4a 
-From: alian@cpan.org (CPAN Tester + CPAN++ automate) 
-
-PERL_DL_NONLAZY=1 /usr/local/perl-5.8.4/bin/perl "-MExtUtils::Command::MM" "-e" "test_harness(0, 'blib/lib', 'blib/arch')" t/Test/STDmaker/STDmaker.t
-t/Test/STDmaker/STDmaker....Perl lib version (v5.8.4) doesn't match executable version (v5.6.0) at /usr/local/perl-5.8.4/lib/5.8.4/ppc-linux/Config.pm line 32.
-Compilation failed in require at /usr/local/perl-5.8.4/lib/5.8.4/FindBin.pm line 97.
-BEGIN failed--compilation aborted at /usr/local/perl-5.8.4/lib/5.8.4/FindBin.pm line 97.
-Compilation failed in require at tgB1.t line 43.
-
-Corrective Action:
 
 Opps. Have C<`perl $commands`> not only in the Unit Under Test (UUT) but also the test
 scripts. Looks like using `C<$^^X> $command` fixed the UUT so change the ones in the
@@ -1266,58 +1165,23 @@ Corrective Action:
 
 Change the "Don't" to "Do not"
 
-\=item Test-STDmaker-0.16
+\=item Test-STDmaker-0.16 - Test-STDmaker-0.18
 
 Test Failure:
 
  Subject: FAIL Test-STDmaker-0.15 ppc-linux 2.4.19-4a 
  From: alian@cpan.org (CPAN Tester + CPAN++ automate) 
 
-t/Test/STDmaker/STDmaker....Missing right curly or square bracket at temp.pl line 331, at end of line
-syntax error at temp.pl line 331, at EOF
-
-Analysis:
-
-The generated Perl has semicolon after a right curly bracket, "};". Some Perl get upset and do not
-count the right curly bracket. 
+ t/Test/STDmaker/STDmaker....Missing right curly or square bracket at temp.pl line 331, at end of line
+ syntax error at temp.pl line 331, at EOF
 
 Corrective Action:
 
-Changed the C<Test::STDmaker::Clean>, C<Test::STDmaker::Demo> and
-C<Test::STDMaker::Verify> that automatically adds a semicolon to a C<C> test description if one
-does not exist, also not to add the semicolon if a right or left curly bracket exists at the
-end of the C<C> test description field. Add the option, C<nosemi>, to disable the automatic
-addition of a semicolon to the end of C <C> test description field.
-
-\=item Test-STDmaker-0.17
-
-Test Failure:
-
-Same of Test-STDmaker-0.16
-
-Analysis:
-
-Opps. Did not change manual "};" to "}"
-
-Corrections:
-
-Change all "};" in all test case test scripts. Still do not know if this
-will cure the deficiency so added diagnostic steps that will provided
-added feedback.
-
-\=item Test-STDmaker-0.18
-
-Test Failure:
-
-Same as Test-STDmaker-0.17. No output from added diagnostic messages.
-
-Debug Mode:
-
 Backed out test descriptions that producde curly brackets except for C<BEGIN> and C<END>
-blocks of generated scripts. Added a warn($diag) to see if get diagnostic messages.
+blocks of generated scripts. 
 The backed test descriptions can be added as another test once get some green PASSES.
 
-\=item Test-STDmaker-0.19
+\=item Test-STDmaker-0.19 - Test-STDmaker-0.21
 
 Test Failure:
 
@@ -1333,52 +1197,16 @@ Test Failure:
 
 Analysis:
 
-Test failure different. Got diagnostic warn that shows Check temp.pl looks ok.
-The above failures do not correspond to files generated for Microsoft. 
+Opening a new C<tmaker> for test 9, involked C<File::Maker> methods a second time for
+the same program module C<__DATA__> section. While these work under Windows, they
+are completely messed up under Unix. 
 
-Debug:
+Corrective Action:
 
-Put in warns to take look at generated files. So remotely debugging with print 
-statement.
-
-\=item Test-STDmaker-0.20
-
-Test Failure:
-
- Subject: FAIL Test-STDmaker-0.19 ppc-linux 2.4.19-4a 
- From: alian@cpan.org (CPAN Tester + CPAN++ automate) 
-
- t/Test/STDmaker/STDmaker....######
- ok: 9
- ~~~~~~~
- tgA1.pm
- [snip]
-
- __DATA__
-
- [snip]
-
- T: 22 - 3,6,14,17^^
-
- [snip]
-
-Analysis:
-
-Still in debug, investigate mode. 
-Second time access __DATA__ in tgA1.pm, the data gets doubled.
-This problem usually caused by lack of initialization. However, after steppng through
-a couple of times looked good. Suspect that reading database from the __DATA__ section
-twice may be the problem. 
-Need to add a test with File::Maker and run it on these sites that are failing
-to see if this is the problem.
-
-Also do not understand yet why test 10 that compares tgA1.pm against expected tgA2.pm
-does not fail. Simulation under Windows and stepping thru with debugger provides a 
-failure.
-
-Debug:
-
-Add internal variables to $diag and put them in the warn for ok 9.
+Changed the order of the test script C<tmaker> never created with the C<new> subroutine
+for the same file object. 
+Add making C<File::Maker> work with loading the C<__DATA__> twice after loading the program
+module on the todo list. 
 
 \=back
 
@@ -1577,6 +1405,8 @@ SEE_ALSO:
 
 HTML: ^
 ~-~
+
+
 
 
 

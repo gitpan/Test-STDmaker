@@ -15,8 +15,8 @@ use File::AnySpec;
 use File::Where;
 
 use vars qw($VERSION $DATE);
-$VERSION = '1.19';
-$DATE = '2004/05/22';
+$VERSION = '1.2';
+$DATE = '2004/05/23';
 
 use vars qw(@ISA @EXPORT_OK);
 @ISA = qw();
@@ -1695,6 +1695,8 @@ follow on the next lines as comments. For example,
      my $loaded = 0;
      my @outputs;
 
+     my ($success, $diag);
+
  ##################
  # Load UUT
  # 
@@ -1706,12 +1708,12 @@ follow on the next lines as comments. For example,
  #
 
  ##################
- # Test::STDmaker Version 1.12
+ # Test::STDmaker Version 1.19
  # 
 
  $Test::STDmaker::VERSION
 
- # '1.12'
+ # '1.19'
  #
  $snl->fin('tgA0.pm')
 
@@ -1727,12 +1729,13 @@ follow on the next lines as comments. For example,
  #use warnings::register;
 
  #use vars qw($VERSION $DATE $FILE );
- #$VERSION = '0.03';
- #$DATE = '2004/04/09';
+ #$VERSION = '0.08';
+ #$DATE = '2004/05/23';
  #$FILE = __FILE__;
 
  #__DATA__
 
+ #Name: t::Test::STDmaker::tgA1^
  #File_Spec: Unix^
  #UUT: Test::STDmaker::tg1^
  #Revision: -^
@@ -1761,17 +1764,6 @@ follow on the next lines as comments. For example,
  # A: 'hello world'^
  # E: $expected1^
 
- # N: ok subroutine^
- #TS: \&tolerance^
- # A: 99^
- # E: [100, 10]^
-
- # N: skip subroutine^
- # S: 0^
- #TS: \&tolerance^
- # A: 80 ^
- # E: [100, 10] ^
-
  # N: Pass test^
  # R: L<Test::STDmaker::tg1/capability-A [1]>^
  # C: my $x = 2^
@@ -1784,11 +1776,11 @@ follow on the next lines as comments. For example,
  # A: $y-$x^
  # E: 1^
 
+ # N: Test that fails^
  # R: 
  #    L<Test::STDmaker::tg1/capability-A [2]>
  #    L<Test::STDmaker::tg1/capability-B [1]>
  # ^
- # N: Test that fails^
  # A: $x+4^
  # E: 7^
 
@@ -1803,34 +1795,14 @@ follow on the next lines as comments. For example,
  # A: $x*$y*2^
  # E: 6^
 
- # N: demo only^
  #DO: ^
+ # N: demo only^
  # A: $x^
- # E: $y^
 
- # N: verify only^
  #VO: ^
+ # N: verify only^
  # A: $x^
  # E: $x^
-
- # N: Test loop^
- # C:
- #    my @expected = ('200','201','202');
- #    my $i;
- #    for( $i=0; $i < 3; $i++) {
- # ^
-
- # A: $i+200^
- # R: L<Test::STDmaker::tg1/capability-C [1]>^
- # E: $expected[$i]^
-
- # A: $i + ($x * 100)^
- # R: L<Test::STDmaker::tg1/capability-B [4]>^
- # E: $expected[$i]^
-
- #C:
- #    }; 
- #^
 
  # N: Failed test that skips the rest^
  # R: L<Test::STDmaker::tg1/capability-B [2]>^
@@ -1853,18 +1825,6 @@ follow on the next lines as comments. For example,
  # A: $x + $y + $x + $y + $x^
  # E: 10^
 
- #QC:
- #    sub tolerance
- #    {   
- #        my ($actual,$expected) = @_;
- #        my ($average, $tolerance) = @$expected;
- #        use integer;
- #        $actual = (($average - $actual) * 100) / $average;
- #        no integer;
- #        (-$tolerance < $actual) && ($actual < $tolerance) ? 1 : 0;
- #    }
- #^
-
  #See_Also: L<Test::STDmaker::tg1> ^
 
  #Copyright: This STD is public domain.^
@@ -1873,9 +1833,28 @@ follow on the next lines as comments. For example,
 
  #~-~'
  #
+
+ ##################
+ # tmake('STD', {pm => 't::Test::STDmaker::tgA1'})
+ # 
+
      copy 'tgA0.pm', 'tgA1.pm';
-     my $tmaker = new Test::STDmaker(pm =>'t::Test::STDmaker::tgA1');
-     $tmaker->tmake( 'STD' );
+     my $tmaker = new Test::STDmaker(pm =>'t::Test::STDmaker::tgA1', nounlink => 1);
+     my $perl_executable = $tmaker->perl_command();
+     $success = $tmaker->tmake( 'STD' );
+     $diag = "\n~~~~~~~\nFormDB\n\n" . join "\n", @{$tmaker->{FormDB}};
+     $diag .= "\n~~~~~~~\nstd_db\n\n" . join "\n", @{$tmaker->{std_db}};
+     $diag .= (-e 'temp.pl') ? "\n~~~~~~~\ntemp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
+     $diag .= (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
+ $success
+
+ # 1
+ #
+
+ ##################
+ # Clean STD pm with a todo list
+ # 
+
  $s->scrub_date_version($snl->fin('tgA1.pm'))
 
  # '#!perl
@@ -1898,7 +1877,7 @@ follow on the next lines as comments. For example,
  ## The Test::STDmaker module uses the data after the __DATA__ 
  ## token to automatically generate the this file.
  ##
- ## Don't edit anything before __DATA_. Edit instead
+ ## Do not edit anything before __DATA_. Edit instead
  ## the data after the __DATA__ token.
  ##
  ## ANY CHANGES MADE BEFORE the  __DATA__ token WILL BE LOST
@@ -1906,6 +1885,10 @@ follow on the next lines as comments. For example,
  ## the next time Test::STDmaker generates this file.
  ##
  ##
+
+ #=head1 NAME
+
+ #t::Test::STDmaker::tgA1 - Software Test Description for Test::STDmaker::tg1
 
  #=head1 TITLE PAGE
 
@@ -1927,39 +1910,43 @@ follow on the next lines as comments. For example,
 
  # Classification: None
 
+ ########
+ ##  
+ ##  1. SCOPE
+ ##
+ ##
  #=head1 SCOPE
 
  #This detail STD and the 
  #L<General Perl Program Module (PM) STD|Test::STD::PerlSTD>
  #establishes the tests to verify the
  #requirements of Perl Program Module (PM) L<Test::STDmaker::tg1|Test::STDmaker::tg1>
-
  #The format of this STD is a tailored L<2167A STD DID|Docs::US_DOD::STD>.
- #in accordance with 
- #L<Detail STD Format|Test::STDmaker/Detail STD Format>.
+
+ ########
+ ##  
+ ##  3. TEST PREPARATIONS
+ ##
+ ##
+ #=head1 TEST PREPARATIONS
+
+ #Test preparations are establishes by the L<General STD|Test::STD::PerlSTD>.
 
  ########
  ##  
  ##  4. TEST DESCRIPTIONS
  ##
- ##  4.1 Test 001
  ##
- ##  ..
- ##
- ##  4.x Test x
- ##
- ##
-
  #=head1 TEST DESCRIPTIONS
 
  #The test descriptions uses a legend to
  #identify different aspects of a test description
  #in accordance with
- #L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description Fields>.
+ #L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Database Test Description Fields>.
 
  #=head2 Test Plan
 
- # T: 19 - 5,8^
+ # T: 11 - 3,6^
 
  #=head2 ok: 1
 
@@ -1978,133 +1965,95 @@ follow on the next lines as comments. For example,
 
  #=head2 ok: 2
 
- #  N: ok subroutine^
- # TS: \&tolerance^
- #  A: 99^
- #  E: [100, 10]^
- # ok: 2^
-
- #=head2 ok: 3
-
- #  N: skip subroutine^
- #  S: 0^
- # TS: \&tolerance^
- #  A: 80^
- #  E: [100, 10]^
- # ok: 3^
-
- #=head2 ok: 4
-
  #  N: Pass test^
  #  R: L<Test::STDmaker::tg1/capability-A [1]>^
  #  C: my $x = 2^
  #  C: my $y = 3^
  #  A: $x + $y^
  # SE: 5^
- # ok: 4^
+ # ok: 2^
 
- #=head2 ok: 5
+ #=head2 ok: 3
 
  #  N: Todo test that passes^
  #  U: xy feature^
  #  A: $y-$x^
  #  E: 1^
- # ok: 5^
+ # ok: 3^
 
- #=head2 ok: 6
+ #=head2 ok: 4
+
+ #  N: Test that fails^
 
  #  R:
  #     L<Test::STDmaker::tg1/capability-A [2]>
  #     L<Test::STDmaker::tg1/capability-B [1]>
  # ^
- #  N: Test that fails^
  #  A: $x+4^
  #  E: 7^
- # ok: 6^
+ # ok: 4^
 
- #=head2 ok: 7
+ #=head2 ok: 5
 
  #  N: Skipped tests^
  #  S: 1^
  #  A: $x*$y*2^
  #  E: 6^
- # ok: 7^
+ # ok: 5^
 
- #=head2 ok: 8
+ #=head2 ok: 6
 
  #  N: Todo Test that Fails^
  #  U: zyw feature^
  #  S: 0^
  #  A: $x*$y*2^
  #  E: 6^
- # ok: 8^
+ # ok: 6^
 
- #=head2 ok: 9
+ #=head2 ok: 7
 
- #  N: demo only^
  # DO: ^
+ #  N: demo only^
  #  A: $x^
- #  E: $y^
+
+ #VO: ^
  #  N: verify only^
- # VO: ^
  #  A: $x^
  #  E: $x^
- # ok: 9^
+ # ok: 7^
 
- #=head2 ok: 10,12,14
+ #=head2 ok: 8
 
- #  N: Test loop^
-
- #  C:
- #     my @expected = ('200','201','202');
- #     my $i;
- #     for( $i=0; $i < 3; $i++) {
- # ^
- #  A: $i+200^
- #  R: L<Test::STDmaker::tg1/capability-C [1]>^
- #  E: $expected[$i]^
- # ok: 10,12,14^
-
- #=head2 ok: 11,13,15
-
- #  A: $i + ($x * 100)^
- #  R: L<Test::STDmaker::tg1/capability-B [4]>^
- #  E: $expected[$i]^
- # ok: 11,13,15^
-
- #=head2 ok: 16
-
- #  C:     };^
  #  N: Failed test that skips the rest^
  #  R: L<Test::STDmaker::tg1/capability-B [2]>^
  #  A: $x + $y^
  # SE: 6^
- # ok: 16^
+ # ok: 8^
 
- #=head2 ok: 17
+ #=head2 ok: 9
 
  #  N: A test to skip^
  #  A: $x + $y + $x^
  #  E: 9^
- # ok: 17^
+ # ok: 9^
 
- #=head2 ok: 18
+ #=head2 ok: 10
 
  #  N: A not skip to skip^
  #  S: 0^
  #  R: L<Test::STDmaker::tg1/capability-B [3]>^
  #  A: $x + $y + $x + $y^
  #  E: 10^
- # ok: 18^
+ # ok: 10^
 
- #=head2 ok: 19
+ #=head2 ok: 11
 
  #  N: A skip to skip^
  #  S: 1^
  #  R: L<Test::STDmaker::tg1/capability-B [3]>^
  #  A: $x + $y + $x + $y + $x^
  #  E: 10^
- # ok: 19^
+ # ok: 11^
 
  ########
  ##  
@@ -2116,25 +2065,21 @@ follow on the next lines as comments. For example,
 
  #  Requirement                                                      Test
  # ---------------------------------------------------------------- ----------------------------------------------------------------
- # L<Test::STDmaker::tg1/capability-A [1]>                          L<t::Test::STDmaker::tgA1/ok: 4>
- # L<Test::STDmaker::tg1/capability-A [2]>                          L<t::Test::STDmaker::tgA1/ok: 6>
- # L<Test::STDmaker::tg1/capability-B [1]>                          L<t::Test::STDmaker::tgA1/ok: 6>
- # L<Test::STDmaker::tg1/capability-B [2]>                          L<t::Test::STDmaker::tgA1/ok: 16>
- # L<Test::STDmaker::tg1/capability-B [3]>                          L<t::Test::STDmaker::tgA1/ok: 18>
- # L<Test::STDmaker::tg1/capability-B [3]>                          L<t::Test::STDmaker::tgA1/ok: 19>
- # L<Test::STDmaker::tg1/capability-B [4]>                          L<t::Test::STDmaker::tgA1/ok: 11,13,15>
- # L<Test::STDmaker::tg1/capability-C [1]>                          L<t::Test::STDmaker::tgA1/ok: 10,12,14>
+ # L<Test::STDmaker::tg1/capability-A [1]>                          L<t::Test::STDmaker::tgA1/ok: 2>
+ # L<Test::STDmaker::tg1/capability-A [2]>                          L<t::Test::STDmaker::tgA1/ok: 4>
+ # L<Test::STDmaker::tg1/capability-B [1]>                          L<t::Test::STDmaker::tgA1/ok: 4>
+ # L<Test::STDmaker::tg1/capability-B [2]>                          L<t::Test::STDmaker::tgA1/ok: 8>
+ # L<Test::STDmaker::tg1/capability-B [3]>                          L<t::Test::STDmaker::tgA1/ok: 10>
+ # L<Test::STDmaker::tg1/capability-B [3]>                          L<t::Test::STDmaker::tgA1/ok: 11>
 
  #  Test                                                             Requirement
  # ---------------------------------------------------------------- ----------------------------------------------------------------
- # L<t::Test::STDmaker::tgA1/ok: 10,12,14>                          L<Test::STDmaker::tg1/capability-C [1]>
- # L<t::Test::STDmaker::tgA1/ok: 11,13,15>                          L<Test::STDmaker::tg1/capability-B [4]>
- # L<t::Test::STDmaker::tgA1/ok: 16>                                L<Test::STDmaker::tg1/capability-B [2]>
- # L<t::Test::STDmaker::tgA1/ok: 18>                                L<Test::STDmaker::tg1/capability-B [3]>
- # L<t::Test::STDmaker::tgA1/ok: 19>                                L<Test::STDmaker::tg1/capability-B [3]>
- # L<t::Test::STDmaker::tgA1/ok: 4>                                 L<Test::STDmaker::tg1/capability-A [1]>
- # L<t::Test::STDmaker::tgA1/ok: 6>                                 L<Test::STDmaker::tg1/capability-A [2]>
- # L<t::Test::STDmaker::tgA1/ok: 6>                                 L<Test::STDmaker::tg1/capability-B [1]>
+ # L<t::Test::STDmaker::tgA1/ok: 10>                                L<Test::STDmaker::tg1/capability-B [3]>
+ # L<t::Test::STDmaker::tgA1/ok: 11>                                L<Test::STDmaker::tg1/capability-B [3]>
+ # L<t::Test::STDmaker::tgA1/ok: 2>                                 L<Test::STDmaker::tg1/capability-A [1]>
+ # L<t::Test::STDmaker::tgA1/ok: 4>                                 L<Test::STDmaker::tg1/capability-A [2]>
+ # L<t::Test::STDmaker::tgA1/ok: 4>                                 L<Test::STDmaker::tg1/capability-B [1]>
+ # L<t::Test::STDmaker::tgA1/ok: 8>                                 L<Test::STDmaker::tg1/capability-B [2]>
 
  #=cut
 
@@ -2167,20 +2112,21 @@ follow on the next lines as comments. For example,
 
  #__DATA__
 
+ #Name: t::Test::STDmaker::tgA1^
  #File_Spec: Unix^
  #UUT: Test::STDmaker::tg1^
  #Revision: -^
+ #Version: 0.01^
  #End_User: General Public^
  #Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
- #Detail_Template: ^
  #STD2167_Template: ^
- #Version: 0.01^
+ #Detail_Template: ^
  #Classification: None^
  #Temp: temp.pl^
  #Demo: tgA1.d^
  #Verify: tgA1.t^
 
- # T: 19 - 5,8^
+ # T: 11 - 3,6^
 
  # C:
  #    #########
@@ -2196,123 +2142,78 @@ follow on the next lines as comments. For example,
  # E: $expected1^
  #ok: 1^
 
- # N: ok subroutine^
- #TS: \&tolerance^
-
- # A: 99^
- # E: [100, 10]^
- #ok: 2^
-
- # N: skip subroutine^
- # S: 0^
- #TS: \&tolerance^
-
- # A: 80^
- # E: [100, 10]^
- #ok: 3^
-
  # N: Pass test^
  # R: L<Test::STDmaker::tg1/capability-A [1]>^
  # C: my $x = 2^
  # C: my $y = 3^
  # A: $x + $y^
  #SE: 5^
- #ok: 4^
+ #ok: 2^
 
  # N: Todo test that passes^
  # U: xy feature^
  # A: $y-$x^
  # E: 1^
- #ok: 5^
+ #ok: 3^
+
+ # N: Test that fails^
 
  # R:
  #    L<Test::STDmaker::tg1/capability-A [2]>
  #    L<Test::STDmaker::tg1/capability-B [1]>
  #^
 
- # N: Test that fails^
  # A: $x+4^
  # E: 7^
- #ok: 6^
+ #ok: 4^
 
  # N: Skipped tests^
  # S: 1^
  # A: $x*$y*2^
  # E: 6^
- #ok: 7^
+ #ok: 5^
 
  # N: Todo Test that Fails^
  # U: zyw feature^
  # S: 0^
  # A: $x*$y*2^
  # E: 6^
- #ok: 8^
+ #ok: 6^
 
- # N: demo only^
  #DO: ^
+ # N: demo only^
  # A: $x^
- # E: $y^
- # N: verify only^
+
  #VO: ^
+ # N: verify only^
  # A: $x^
  # E: $x^
- #ok: 9^
+ #ok: 7^
 
- # N: Test loop^
-
- # C:
- #    my @expected = ('200','201','202');
- #    my $i;
- #    for( $i=0; $i < 3; $i++) {
- #^
-
- # A: $i+200^
- # R: L<Test::STDmaker::tg1/capability-C [1]>^
- # E: $expected[$i]^
- #ok: 10,12,14^
-
- # A: $i + ($x * 100)^
- # R: L<Test::STDmaker::tg1/capability-B [4]>^
- # E: $expected[$i]^
- #ok: 11,13,15^
-
- # C:     };^
  # N: Failed test that skips the rest^
  # R: L<Test::STDmaker::tg1/capability-B [2]>^
  # A: $x + $y^
  #SE: 6^
- #ok: 16^
+ #ok: 8^
 
  # N: A test to skip^
  # A: $x + $y + $x^
  # E: 9^
- #ok: 17^
+ #ok: 9^
 
  # N: A not skip to skip^
  # S: 0^
  # R: L<Test::STDmaker::tg1/capability-B [3]>^
  # A: $x + $y + $x + $y^
  # E: 10^
- #ok: 18^
+ #ok: 10^
 
  # N: A skip to skip^
  # S: 1^
  # R: L<Test::STDmaker::tg1/capability-B [3]>^
  # A: $x + $y + $x + $y + $x^
  # E: 10^
- #ok: 19^
-
- #QC:
- #    sub tolerance
- #    {   
- #        my ($actual,$expected) = @_;
- #        my ($average, $tolerance) = @$expected;
- #        use integer;
- #        $actual = (($average - $actual) * 100) / $average;
- #        no integer;
- #        (-$tolerance < $actual) && ($actual < $tolerance) ? 1 : 0;
- #    }
- #^
+ #ok: 11^
 
  #See_Also: L<Test::STDmaker::tg1>^
  #Copyright: This STD is public domain.^
@@ -2323,107 +2224,17 @@ follow on the next lines as comments. For example,
  #
 
  ##################
- # Clean STD pm with a todo list
+ # Cleaned tgA1.pm
  # 
 
- $snl->fin('tgB0.pm')
+ $s->scrub_date_version($snl->fin('tgA1.pm'))
 
  # '#!perl
  ##
  ## The copyright notice and plain old documentation (POD)
  ## are at the end of this file.
  ##
- #package  t::Test::STDmaker::tgB1;
-
- #use strict;
- #use warnings;
- #use warnings::register;
-
- #use vars qw($VERSION $DATE $FILE );
- #$VERSION = '0.01';
- #$DATE = '2004/04/09';
- #$FILE = __FILE__;
-
- #########
- ## The Test::STDmaker module uses the data after the __DATA__ 
- ## token to automatically generate the this file.
- ##
- ## Don't edit anything before __DATA_. Edit instead
- ## the data after the __DATA__ token.
- ##
- ## ANY CHANGES MADE BEFORE the  __DATA__ token WILL BE LOST
- ##
- ## the next time Test::STDmaker generates this file.
- ##
- ##
-
- #__DATA__
-
- #File_Spec: Unix^
- #UUT: Test::STDmaker::tg1^
- #Revision: -^
- #End_User: General Public^
- #Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
- #Detail_Template: ^
- #STD2167_Template: ^
- #Version: 0.01^
- #Classification: None^
- #Temp: temp.pl^
- #Demo: tgB1.d^
- #Verify: tgB1.t^
-
- # T: 2^
-
- # C: 
- #    #########
- #    # For "TEST" 1.24 or greater that have separate std err output,
- #    # redirect the TESTERR to STDOUT
- #    #
- #    tech_config( 'Test.TESTERR', \*STDOUT );   
- #^  
-
- # R: L<Test::STDmaker::tg1/capability-A [1]>^
- # C: my $x = 2^
- # C: my $y = 3^
- # A: $x + $y^
- #SE: 5^
- #ok: 1^
-
- # A: [($x+$y,$y-$x)]^
- # E: [5,2]^
- #ok: 2^
-
- #See_Also: L<Test::STDmaker::tg1>^
- #Copyright: This STD is public domain^
-
- #HTML:
- #<hr>
- #<!-- /BLK -->
- #<p><br>
- #<!-- BLK ID="NOTICE" -->
- #<!-- /BLK -->
- #<p><br>
- #<!-- BLK ID="OPT-IN" -->
- #<!-- /BLK -->
- #<p><br>
- #<!-- BLK ID="LOG_CGI" -->
- #<!-- /BLK -->
- #<p><br>
- #^
-
- #~-~
- #'
- #
-     copy 'tgB0.pm', 'tgB1.pm';
-     $tmaker->tmake('STD', 'verify', {pm => 't::Test::STDmaker::tgB1'} );
- $s->scrub_date_version($snl->fin('tgB1.pm'))
-
- # '#!perl
- ##
- ## The copyright notice and plain old documentation (POD)
- ## are at the end of this file.
- ##
- #package  t::Test::STDmaker::tgB1;
+ #package  t::Test::STDmaker::tgA1;
 
  #use strict;
  #use warnings;
@@ -2438,7 +2249,7 @@ follow on the next lines as comments. For example,
  ## The Test::STDmaker module uses the data after the __DATA__ 
  ## token to automatically generate the this file.
  ##
- ## Don't edit anything before __DATA_. Edit instead
+ ## Do not edit anything before __DATA_. Edit instead
  ## the data after the __DATA__ token.
  ##
  ## ANY CHANGES MADE BEFORE the  __DATA__ token WILL BE LOST
@@ -2446,6 +2257,10 @@ follow on the next lines as comments. For example,
  ## the next time Test::STDmaker generates this file.
  ##
  ##
+
+ #=head1 NAME
+
+ #t::Test::STDmaker::tgA1 - Software Test Description for Test::STDmaker::tg1
 
  #=head1 TITLE PAGE
 
@@ -2467,39 +2282,43 @@ follow on the next lines as comments. For example,
 
  # Classification: None
 
+ ########
+ ##  
+ ##  1. SCOPE
+ ##
+ ##
  #=head1 SCOPE
 
  #This detail STD and the 
  #L<General Perl Program Module (PM) STD|Test::STD::PerlSTD>
  #establishes the tests to verify the
  #requirements of Perl Program Module (PM) L<Test::STDmaker::tg1|Test::STDmaker::tg1>
-
  #The format of this STD is a tailored L<2167A STD DID|Docs::US_DOD::STD>.
- #in accordance with 
- #L<Detail STD Format|Test::STDmaker/Detail STD Format>.
+
+ ########
+ ##  
+ ##  3. TEST PREPARATIONS
+ ##
+ ##
+ #=head1 TEST PREPARATIONS
+
+ #Test preparations are establishes by the L<General STD|Test::STD::PerlSTD>.
 
  ########
  ##  
  ##  4. TEST DESCRIPTIONS
  ##
- ##  4.1 Test 001
  ##
- ##  ..
- ##
- ##  4.x Test x
- ##
- ##
-
  #=head1 TEST DESCRIPTIONS
 
  #The test descriptions uses a legend to
  #identify different aspects of a test description
  #in accordance with
- #L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description Fields>.
+ #L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Database Test Description Fields>.
 
  #=head2 Test Plan
 
- # T: 2^
+ # T: 11 - 3,6^
 
  #=head2 ok: 1
 
@@ -2510,18 +2329,103 @@ follow on the next lines as comments. For example,
  #     #
  #     tech_config( 'Test.TESTERR', \*STDOUT );
  # ^
+ # QC: my $expected1 = 'hello world';^
+ #  N: Quiet Code^
+ #  A: 'hello world'^
+ #  E: $expected1^
+ # ok: 1^
+
+ #=head2 ok: 2
+
+ #  N: Pass test^
  #  R: L<Test::STDmaker::tg1/capability-A [1]>^
  #  C: my $x = 2^
  #  C: my $y = 3^
  #  A: $x + $y^
  # SE: 5^
- # ok: 1^
-
- #=head2 ok: 2
-
- #  A: [($x+$y,$y-$x)]^
- #  E: [5,2]^
  # ok: 2^
+
+ #=head2 ok: 3
+
+ #  N: Todo test that passes^
+ #  U: xy feature^
+ #  A: $y-$x^
+ #  E: 1^
+ # ok: 3^
+
+ #=head2 ok: 4
+
+ #  N: Test that fails^
+
+ #  R:
+ #     L<Test::STDmaker::tg1/capability-A [2]>
+ #     L<Test::STDmaker::tg1/capability-B [1]>
+ # ^
+ #  A: $x+4^
+ #  E: 7^
+ # ok: 4^
+
+ #=head2 ok: 5
+
+ #  N: Skipped tests^
+ #  S: 1^
+ #  A: $x*$y*2^
+ #  E: 6^
+ # ok: 5^
+
+ #=head2 ok: 6
+
+ #  N: Todo Test that Fails^
+ #  U: zyw feature^
+ #  S: 0^
+ #  A: $x*$y*2^
+ #  E: 6^
+ # ok: 6^
+
+ #=head2 ok: 7
+
+ # DO: ^
+ #  N: demo only^
+ #  A: $x^
+
+ #VO: ^
+ #  N: verify only^
+ #  A: $x^
+ #  E: $x^
+ # ok: 7^
+
+ #=head2 ok: 8
+
+ #  N: Failed test that skips the rest^
+ #  R: L<Test::STDmaker::tg1/capability-B [2]>^
+ #  A: $x + $y^
+ # SE: 6^
+ # ok: 8^
+
+ #=head2 ok: 9
+
+ #  N: A test to skip^
+ #  A: $x + $y + $x^
+ #  E: 9^
+ # ok: 9^
+
+ #=head2 ok: 10
+
+ #  N: A not skip to skip^
+ #  S: 0^
+ #  R: L<Test::STDmaker::tg1/capability-B [3]>^
+ #  A: $x + $y + $x + $y^
+ #  E: 10^
+ # ok: 10^
+
+ #=head2 ok: 11
+
+ #  N: A skip to skip^
+ #  S: 1^
+ #  R: L<Test::STDmaker::tg1/capability-B [3]>^
+ #  A: $x + $y + $x + $y + $x^
+ #  E: 10^
+ # ok: 11^
 
  ########
  ##  
@@ -2533,11 +2437,21 @@ follow on the next lines as comments. For example,
 
  #  Requirement                                                      Test
  # ---------------------------------------------------------------- ----------------------------------------------------------------
- # L<Test::STDmaker::tg1/capability-A [1]>                          L<t::Test::STDmaker::tgB1/ok: 1>
+ # L<Test::STDmaker::tg1/capability-A [1]>                          L<t::Test::STDmaker::tgA1/ok: 2>
+ # L<Test::STDmaker::tg1/capability-A [2]>                          L<t::Test::STDmaker::tgA1/ok: 4>
+ # L<Test::STDmaker::tg1/capability-B [1]>                          L<t::Test::STDmaker::tgA1/ok: 4>
+ # L<Test::STDmaker::tg1/capability-B [2]>                          L<t::Test::STDmaker::tgA1/ok: 8>
+ # L<Test::STDmaker::tg1/capability-B [3]>                          L<t::Test::STDmaker::tgA1/ok: 10>
+ # L<Test::STDmaker::tg1/capability-B [3]>                          L<t::Test::STDmaker::tgA1/ok: 11>
 
  #  Test                                                             Requirement
  # ---------------------------------------------------------------- ----------------------------------------------------------------
- # L<t::Test::STDmaker::tgB1/ok: 1>                                 L<Test::STDmaker::tg1/capability-A [1]>
+ # L<t::Test::STDmaker::tgA1/ok: 10>                                L<Test::STDmaker::tg1/capability-B [3]>
+ # L<t::Test::STDmaker::tgA1/ok: 11>                                L<Test::STDmaker::tg1/capability-B [3]>
+ # L<t::Test::STDmaker::tgA1/ok: 2>                                 L<Test::STDmaker::tg1/capability-A [1]>
+ # L<t::Test::STDmaker::tgA1/ok: 4>                                 L<Test::STDmaker::tg1/capability-A [2]>
+ # L<t::Test::STDmaker::tgA1/ok: 4>                                 L<Test::STDmaker::tg1/capability-B [1]>
+ # L<t::Test::STDmaker::tgA1/ok: 8>                                 L<Test::STDmaker::tg1/capability-B [2]>
 
  #=cut
 
@@ -2549,7 +2463,7 @@ follow on the next lines as comments. For example,
 
  #=head1 NOTES
 
- #This STD is public domain
+ #This STD is public domain.
 
  ########
  ##
@@ -2565,37 +2479,26 @@ follow on the next lines as comments. For example,
  #=back
 
  #=for html
- #<hr>
- #<!-- /BLK -->
- #<p><br>
- #<!-- BLK ID="NOTICE" -->
- #<!-- /BLK -->
- #<p><br>
- #<!-- BLK ID="OPT-IN" -->
- #<!-- /BLK -->
- #<p><br>
- #<!-- BLK ID="LOG_CGI" -->
- #<!-- /BLK -->
- #<p><br>
 
  #=cut
 
  #__DATA__
 
+ #Name: t::Test::STDmaker::tgA1^
  #File_Spec: Unix^
  #UUT: Test::STDmaker::tg1^
  #Revision: -^
+ #Version: 0.01^
  #End_User: General Public^
  #Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
- #Detail_Template: ^
  #STD2167_Template: ^
- #Version: 0.01^
+ #Detail_Template: ^
  #Classification: None^
  #Temp: temp.pl^
- #Demo: tgB1.d^
- #Verify: tgB1.t^
+ #Demo: tgA1.d^
+ #Verify: tgA1.t^
 
- # T: 2^
+ # T: 11 - 3,6^
 
  # C:
  #    #########
@@ -2605,68 +2508,92 @@ follow on the next lines as comments. For example,
  #    tech_config( 'Test.TESTERR', \*STDOUT );
  #^
 
+ #QC: my $expected1 = 'hello world';^
+ # N: Quiet Code^
+ # A: 'hello world'^
+ # E: $expected1^
+ #ok: 1^
+
+ # N: Pass test^
  # R: L<Test::STDmaker::tg1/capability-A [1]>^
  # C: my $x = 2^
  # C: my $y = 3^
  # A: $x + $y^
  #SE: 5^
- #ok: 1^
-
- # A: [($x+$y,$y-$x)]^
- # E: [5,2]^
  #ok: 2^
 
- #See_Also: L<Test::STDmaker::tg1>^
- #Copyright: This STD is public domain^
+ # N: Todo test that passes^
+ # U: xy feature^
+ # A: $y-$x^
+ # E: 1^
+ #ok: 3^
 
- #HTML:
- #<hr>
- #<!-- /BLK -->
- #<p><br>
- #<!-- BLK ID="NOTICE" -->
- #<!-- /BLK -->
- #<p><br>
- #<!-- BLK ID="OPT-IN" -->
- #<!-- /BLK -->
- #<p><br>
- #<!-- BLK ID="LOG_CGI" -->
- #<!-- /BLK -->
- #<p><br>
+ # N: Test that fails^
+
+ # R:
+ #    L<Test::STDmaker::tg1/capability-A [2]>
+ #    L<Test::STDmaker::tg1/capability-B [1]>
  #^
+
+ # A: $x+4^
+ # E: 7^
+ #ok: 4^
+
+ # N: Skipped tests^
+ # S: 1^
+ # A: $x*$y*2^
+ # E: 6^
+ #ok: 5^
+
+ # N: Todo Test that Fails^
+ # U: zyw feature^
+ # S: 0^
+ # A: $x*$y*2^
+ # E: 6^
+ #ok: 6^
+
+ #DO: ^
+ # N: demo only^
+ # A: $x^
+
+ #VO: ^
+ # N: verify only^
+ # A: $x^
+ # E: $x^
+ #ok: 7^
+
+ # N: Failed test that skips the rest^
+ # R: L<Test::STDmaker::tg1/capability-B [2]>^
+ # A: $x + $y^
+ #SE: 6^
+ #ok: 8^
+
+ # N: A test to skip^
+ # A: $x + $y + $x^
+ # E: 9^
+ #ok: 9^
+
+ # N: A not skip to skip^
+ # S: 0^
+ # R: L<Test::STDmaker::tg1/capability-B [3]>^
+ # A: $x + $y + $x + $y^
+ # E: 10^
+ #ok: 10^
+
+ # N: A skip to skip^
+ # S: 1^
+ # R: L<Test::STDmaker::tg1/capability-B [3]>^
+ # A: $x + $y + $x + $y + $x^
+ # E: 10^
+ #ok: 11^
+
+ #See_Also: L<Test::STDmaker::tg1>^
+ #Copyright: This STD is public domain.^
+ #HTML: ^
 
  #~-~
  #'
  #
-
- ##################
- # Clean STD pm without a todo list
- # 
-
-     $test_results = `perl tgB1.t`;
-     $snl->fout('tgB1.txt', $test_results);
- $s->scrub_probe($s->scrub_file_line($test_results))
-
- # '1..2
- #ok 1
- #not ok 2
- ## Test 2 got: 'U1[1] 80
- #N[2] 5 1
- #' (xxxx.t at line 000)
- ##   Expected: 'U1[1] 80
- #N[2] 5 2
- #'
- ## Failed : 2
- ## Passed : 1/2 50%
- #'
- #
-
- ##################
- # Generated and execute the test script
- # 
-
- ##################
- # Cleaned tgA1.pm
- # 
 
  ##################
  # Internal Storage
@@ -2690,7 +2617,7 @@ follow on the next lines as comments. For example,
  #
 
  ##################
- # Generated and execute the test script
+ # tmake('demo', {pm => 't::Test::STDmaker::tgA1', demo => 1})
  # 
 
  $snl->fin( 'tg0.pm'  )
@@ -2758,11 +2685,19 @@ follow on the next lines as comments. For example,
 
  #'
  #
+
+ ##################
+ # tmake('demo', {pm => 't::Test::STDmaker::tgA1', demo => 1})
+ # 
+
      #########
      #
      # Individual generate outputs using options
      #
      ########
+
+     skip_tests(0);
+
      #####
      # Make sure there is no residue outputs hanging
      # around from the last test series.
@@ -2775,7 +2710,7 @@ follow on the next lines as comments. For example,
      pop @cwd;
      pop @cwd;
      unshift @INC, File::Spec->catdir( @cwd );  # put UUT in lib path
-     $tmaker->tmake('demo', { pm => 't::Test::STDmaker::tgA1', demo => 1});
+     $success = $tmaker->tmake('demo', { pm => 't::Test::STDmaker::tgA1', demo => 1});
      shift @INC;
 
      #######
@@ -2787,6 +2722,19 @@ follow on the next lines as comments. For example,
      else {
          $expected_results = 'tg2A.pm';
      }
+     $diag = "\n~~~~~~~\nFormDB\n\n" . join "\n", @{$tmaker->{FormDB}};
+     $diag .= "\n~~~~~~~\nstd_db\n\n" . join "\n", @{$tmaker->{std_db}};
+     $diag .= (-e 'tgA1.pm') ? "\n~~~~~~~\ntgA1.pm\n\n" . $snl->fin('tgA1.pm') : 'No tgA1.pm';
+     $diag .= (-e 'tgA1.d') ? "\n~~~~~~~\ntgA1.d\n\n" . $snl->fin('tgA1.d') : 'No tgA1.d';
+ $success
+
+ # 1
+ #
+
+ ##################
+ # Generate and replace a demonstration
+ # 
+
  $s->scrub_date_version($snl->fin('tg1.pm'))
 
  # '#!perl
@@ -2876,24 +2824,6 @@ follow on the next lines as comments. For example,
  # #
 
  # ##################
- # # ok subroutine
- # # 
-
- # 99
-
- # # 99
- # #
-
- # ##################
- # # skip subroutine
- # # 
-
- # 80
-
- # # 80
- # #
-
- # ##################
  # # Pass test
  # # 
 
@@ -2945,45 +2875,6 @@ follow on the next lines as comments. For example,
  # #
 
  # ##################
- # # verify only
- # # 
-
- # ##################
- # # Test loop
- # # 
-
- #     my @expected = ('200','201','202');
- #     my $i;
- #     for( $i=0; $i < 3; $i++) {
- # $i+200
-
- # # '200'
- # #
- # $i + ($x * 100)
-
- # # '200'
- # #
- #     };
- # $i+200
-
- # # '201'
- # #
- # $i + ($x * 100)
-
- # # '201'
- # #
- #     };
- # $i+200
-
- # # '202'
- # #
- # $i + ($x * 100)
-
- # # '202'
- # #
- #     };
-
- # ##################
  # # Failed test that skips the rest
  # # 
 
@@ -3022,14 +2913,16 @@ follow on the next lines as comments. For example,
  #
 
  ##################
- # Generate and replace a demonstration
+ # tmake('verify', {pm => 't::Test::STDmaker::tgA1', run => 1, test_verbose => 1})
  # 
+
+     skip_tests(0);
 
      no warnings;
      open SAVEOUT, ">&STDOUT";
      use warnings;
      open STDOUT, ">tgA1.txt";
-     $tmaker->tmake('verify', { pm => 't::Test::STDmaker::tgA1', run => 1, test_verbose => 1});
+     $success = $tmaker->tmake('verify', { pm => 't::Test::STDmaker::tgA1', run => 1, test_verbose => 1});
      close STDOUT;
      open STDOUT, ">&SAVEOUT";
 
@@ -3043,50 +2936,44 @@ follow on the next lines as comments. For example,
      $test_results =~ s/.*?1..9/1..9/; 
      $test_results =~ s/------.*?\n(\s*\()/\n $1/s;
      $snl->fout('tgA1.txt',$test_results);
+ $success
+
+ # 1
+ #
+
+ ##################
+ # Generate and verbose test harness run test script
+ # 
+
  $s->scrub_probe($s->scrub_test_file($s->scrub_file_line($test_results)))
 
  # '~~~~
  #ok 1 - Quiet Code 
- #ok 2 - ok subroutine 
- #not ok 3 - skip subroutine 
- ## Test 3 got: '0' (xxxx.t at line 000)
- ##   Expected: '1' (
- ## got: 80
- ## expected: U1[1] 80
- ## N[2] 100 10
- ## 
- ##)
- #ok 4 - Pass test 
- #ok 5 - Todo test that passes  # (xxxx.t at line 000 TODO?!)
- #not ok 6 - Test that fails 
- ## Test 6 got: '6' (xxxx.t at line 000)
+ #ok 2 - Pass test 
+ #ok 3 - Todo test that passes  # (xxxx.t at line 000 TODO?!)
+ #not ok 4 - Test that fails 
+ ## Test 4 got: '6' (xxxx.t at line 000)
  ##   Expected: '7'
- #ok 7 - Skipped tests  # skip
- #not ok 8 - Todo Test that Fails 
- ## Test 8 got: '12' (xxxx.t at line 000 *TODO*)
+ #ok 5 - Skipped tests  # skip
+ #not ok 6 - Todo Test that Fails 
+ ## Test 6 got: '12' (xxxx.t at line 000 *TODO*)
  ##   Expected: '6'
- #ok 9 - verify only 
- #ok 10 - Test loop 
- #ok 11
- #ok 12 - Test loop 
- #ok 13
- #ok 14 - Test loop 
- #ok 15
- #not ok 16 - Failed test that skips the rest 
- ## Test 16 got: '5' (xxxx.t at line 000)
- ##    Expected: '6'
- #ok 17 - A test to skip  # skip - Test not performed because of previous failure.
- #ok 18 - A not skip to skip  # skip - Test not performed because of previous failure.
- #ok 19 - A skip to skip  # skip - Test not performed because of previous failure.
- ## Skipped: 7 17 18 19
- ## Failed : 3 6 8 16
- ## Passed : 11/15 73%
- #FAILED tests 3, 6, 16
- #	Failed 3/19 tests, 84.21% okay (less 4 skipped tests: 12 okay, 63.16%)
+ #ok 7 - verify only 
+ #not ok 8 - Failed test that skips the rest 
+ ## Test 8 got: '5' (xxxx.t at line 000)
+ ##   Expected: '6'
+ #ok 9 - A test to skip  # skip - Test not performed because of previous failure.
+ #ok 10 - A not skip to skip  # skip - Test not performed because of previous failure.
+ #ok 11 - A skip to skip  # skip - Test not performed because of previous failure.
+ ## Skipped: 5 9 10 11
+ ## Failed : 4 6 8
+ ## Passed : 4/7 57%
+ #FAILED tests 4, 8
+ #	Failed 2/11 tests, 81.82% okay (less 4 skipped tests: 5 okay, 45.45%)
  #Failed Test                       Stat Wstat Total Fail  Failed  List of Failed
 
  #  (1 subtest UNEXPECTEDLY SUCCEEDED), 4 subtests skipped.
- #Failed 1/1 test scripts, 0.00% okay. 3/19 subtests failed, 84.21% okay.
+ #Failed 1/1 test scripts, 0.00% okay. 2/11 subtests failed, 81.82% okay.
  #~~~~
  #Finished running Tests
 
@@ -3094,25 +2981,73 @@ follow on the next lines as comments. For example,
  #
 
  ##################
- # Generate and verbose test harness run test script
+ # Generate and test harness run test script
  # 
 
- $snl->fin('tgC0.pm')
+ $test_results
+
+ # '~~~~
+ #Running Tests
+
+ #E:\User\SoftwareDiamonds\installation\t\Test\STDmaker\tgA1....1..11 todo 3 6;
+ ## Running under perl version 5.006001 for MSWin32
+ ## Win32::BuildNumber 635
+ ## Current time local: Sun May 23 20:28:47 2004
+ ## Current time GMT:   Mon May 24 00:28:47 2004
+ ## Using Test.pm version 1.24
+ ## Test::Tech     : 1.26
+ ## Data::Secs2    : 1.26
+ ## Data::Startup  : 0.07
+ ## Data::Str2Num  : 0.08
+ ## Number of tests: 11
+ ## =cut 
+ #ok 1 - Quiet Code 
+ #ok 2 - Pass test 
+ #ok 3 - Todo test that passes  # (E:\User\SoftwareDiamonds\installation\t\Test\STDmaker\tgA1.t at line 149 TODO?!)
+ #not ok 4 - Test that fails 
+ ## Test 4 got: '6' (E:\User\SoftwareDiamonds\installation\t\Test\STDmaker\tgA1.t at line 164)
+ ##   Expected: '7'
+ #ok 5 - Skipped tests  # skip
+ #not ok 6 - Todo Test that Fails 
+ ## Test 6 got: '12' (E:\User\SoftwareDiamonds\installation\t\Test\STDmaker\tgA1.t at line 182 *TODO*)
+ ##   Expected: '6'
+ #ok 7 - verify only 
+ #not ok 8 - Failed test that skips the rest 
+ ## Test 8 got: '5' (E:\User\SoftwareDiamonds\installation\t\Test\STDmaker\tgA1.t at line 203)
+ ##   Expected: '6'
+ #ok 9 - A test to skip  # skip - Test not performed because of previous failure.
+ #ok 10 - A not skip to skip  # skip - Test not performed because of previous failure.
+ #ok 11 - A skip to skip  # skip - Test not performed because of previous failure.
+ ## Skipped: 5 9 10 11
+ ## Failed : 4 6 8
+ ## Passed : 4/7 57%
+ #FAILED tests 4, 8
+ #	Failed 2/11 tests, 81.82% okay (less 4 skipped tests: 5 okay, 45.45%)
+ #Failed Test                       Stat Wstat Total Fail  Failed  List of Failed
+
+ #  (1 subtest UNEXPECTEDLY SUCCEEDED), 4 subtests skipped.
+ #Failed 1/1 test scripts, 0.00% okay. 2/11 subtests failed, 81.82% okay.
+ #~~~~
+ #Finished running Tests
+
+ #'
+ #
+ $snl->fin('tgB0.pm')
 
  # '#!perl
  ##
  ## The copyright notice and plain old documentation (POD)
  ## are at the end of this file.
  ##
- #package  t::Test::STDmaker::tgC1;
+ #package  t::Test::STDmaker::tgB1;
 
  #use strict;
  #use warnings;
  #use warnings::register;
 
  #use vars qw($VERSION $DATE $FILE );
- #$VERSION = '0.03';
- #$DATE = '2004/04/09';
+ #$VERSION = '0.02';
+ #$DATE = '2004/05/18';
  #$FILE = __FILE__;
 
  #########
@@ -3130,6 +3065,375 @@ follow on the next lines as comments. For example,
 
  #__DATA__
 
+ #Name: t::Test::STDmaker::tgB1^
+ #File_Spec: Unix^
+ #UUT: Test::STDmaker::tg1^
+ #Revision: -^
+ #End_User: General Public^
+ #Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
+ #Detail_Template: ^
+ #STD2167_Template: ^
+ #Version: 0.01^
+ #Classification: None^
+ #Temp: temp.pl^
+ #Demo: tgB1.d^
+ #Verify: tgB1.t^
+
+ # T: 2^
+
+ # C: 
+ #    #########
+ #    # For "TEST" 1.24 or greater that have separate std err output,
+ #    # redirect the TESTERR to STDOUT
+ #    #
+ #    tech_config( 'Test.TESTERR', \*STDOUT );   
+ #^  
+
+ # R: L<Test::STDmaker::tg1/capability-A [1]>^
+ # C: my $x = 2^
+ # C: my $y = 3^
+ # A: $x + $y^
+ #SE: 5^
+ #ok: 1^
+
+ # A: [($x+$y,$y-$x)]^
+ # E: [5,2]^
+ #ok: 2^
+
+ #See_Also: L<Test::STDmaker::tg1>^
+ #Copyright: This STD is public domain^
+
+ #HTML:
+ #<hr>
+ #<!-- /BLK -->
+ #<p><br>
+ #<!-- BLK ID="NOTICE" -->
+ #<!-- /BLK -->
+ #<p><br>
+ #<!-- BLK ID="OPT-IN" -->
+ #<!-- /BLK -->
+ #<p><br>
+ #<!-- BLK ID="LOG_CGI" -->
+ #<!-- /BLK -->
+ #<p><br>
+ #^
+
+ #~-~
+ #'
+ #
+     skip_tests(0);
+     copy 'tgB0.pm', 'tgB1.pm';
+     $success = $tmaker->tmake('STD', 'verify', {pm => 't::Test::STDmaker::tgB1', nounlink => 1} );
+     $diag = "\n~~~~~~~\nFormDB\n\n" . join "\n", @{$tmaker->{FormDB}};
+     $diag .= "\n~~~~~~~\nstd_db\n\n" . join "\n", @{$tmaker->{std_db}};
+     $diag .= (-e 'temp.pl') ? "\n~~~~~~~\ntemp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
+     $diag .= (-e 'tgB1.pm') ? "\n~~~~~~~\ntgB1.pm\n\n" . $snl->fin('tgB1.pm') : 'No tgB1.pm';
+     $diag .= (-e 'tgB1.t') ? "\n~~~~~~~\ntgB1.t\n\n" . $snl->fin('tgB1.t') : 'No tgB1.t';
+
+ ##################
+ # tmake('STD', 'verify', {pm => 't::Test::STDmaker::tgB1'})
+ # 
+
+ $success
+
+ # 1
+ #
+
+ ##################
+ # Clean STD pm without a todo list
+ # 
+
+ $s->scrub_date_version($snl->fin('tgB1.pm'))
+
+ # '#!perl
+ ##
+ ## The copyright notice and plain old documentation (POD)
+ ## are at the end of this file.
+ ##
+ #package  t::Test::STDmaker::tgB1;
+
+ #use strict;
+ #use warnings;
+ #use warnings::register;
+
+ #use vars qw($VERSION $DATE $FILE );
+ #$VERSION = '0.00';
+ #$DATE = 'Feb 6, 1969';
+ #$FILE = __FILE__;
+
+ #########
+ ## The Test::STDmaker module uses the data after the __DATA__ 
+ ## token to automatically generate the this file.
+ ##
+ ## Do not edit anything before __DATA_. Edit instead
+ ## the data after the __DATA__ token.
+ ##
+ ## ANY CHANGES MADE BEFORE the  __DATA__ token WILL BE LOST
+ ##
+ ## the next time Test::STDmaker generates this file.
+ ##
+ ##
+
+ #=head1 NAME
+
+ #t::Test::STDmaker::tgB1 - Software Test Description for Test::STDmaker::tg1
+
+ #=head1 TITLE PAGE
+
+ # Detailed Software Test Description (STD)
+
+ # for
+
+ # Perl Test::STDmaker::tg1 Program Module
+
+ # Revision: -
+
+ # Version: 0.01
+
+ # $DATE: Feb 6, 1969
+
+ # Prepared for: General Public 
+
+ # Prepared by:  http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com
+
+ # Classification: None
+
+ ########
+ ##  
+ ##  1. SCOPE
+ ##
+ ##
+ #=head1 SCOPE
+
+ #This detail STD and the 
+ #L<General Perl Program Module (PM) STD|Test::STD::PerlSTD>
+ #establishes the tests to verify the
+ #requirements of Perl Program Module (PM) L<Test::STDmaker::tg1|Test::STDmaker::tg1>
+ #The format of this STD is a tailored L<2167A STD DID|Docs::US_DOD::STD>.
+
+ ########
+ ##  
+ ##  3. TEST PREPARATIONS
+ ##
+ ##
+ #=head1 TEST PREPARATIONS
+
+ #Test preparations are establishes by the L<General STD|Test::STD::PerlSTD>.
+
+ ########
+ ##  
+ ##  4. TEST DESCRIPTIONS
+ ##
+ ##
+ #=head1 TEST DESCRIPTIONS
+
+ #The test descriptions uses a legend to
+ #identify different aspects of a test description
+ #in accordance with
+ #L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Database Test Description Fields>.
+
+ #=head2 Test Plan
+
+ # T: 2^
+
+ #=head2 ok: 1
+
+ #  C:
+ #     #########
+ #     # For "TEST" 1.24 or greater that have separate std err output,
+ #     # redirect the TESTERR to STDOUT
+ #     #
+ #     tech_config( 'Test.TESTERR', \*STDOUT );
+ # ^
+ #  R: L<Test::STDmaker::tg1/capability-A [1]>^
+ #  C: my $x = 2^
+ #  C: my $y = 3^
+ #  A: $x + $y^
+ # SE: 5^
+ # ok: 1^
+
+ #=head2 ok: 2
+
+ #  A: [($x+$y,$y-$x)]^
+ #  E: [5,2]^
+ # ok: 2^
+
+ ########
+ ##  
+ ##  5. REQUIREMENTS TRACEABILITY
+ ##
+ ##
+
+ #=head1 REQUIREMENTS TRACEABILITY
+
+ #  Requirement                                                      Test
+ # ---------------------------------------------------------------- ----------------------------------------------------------------
+ # L<Test::STDmaker::tg1/capability-A [1]>                          L<t::Test::STDmaker::tgB1/ok: 1>
+
+ #  Test                                                             Requirement
+ # ---------------------------------------------------------------- ----------------------------------------------------------------
+ # L<t::Test::STDmaker::tgB1/ok: 1>                                 L<Test::STDmaker::tg1/capability-A [1]>
+
+ #=cut
+
+ ########
+ ##  
+ ##  6. NOTES
+ ##
+ ##
+
+ #=head1 NOTES
+
+ #This STD is public domain
+
+ ########
+ ##
+ ##  2. REFERENCED DOCUMENTS
+ ##
+ ##
+ ##
+
+ #=head1 SEE ALSO
+
+ #L<Test::STDmaker::tg1>
+
+ #=back
+
+ #=for html
+ #<hr>
+ #<!-- /BLK -->
+ #<p><br>
+ #<!-- BLK ID="NOTICE" -->
+ #<!-- /BLK -->
+ #<p><br>
+ #<!-- BLK ID="OPT-IN" -->
+ #<!-- /BLK -->
+ #<p><br>
+ #<!-- BLK ID="LOG_CGI" -->
+ #<!-- /BLK -->
+ #<p><br>
+
+ #=cut
+
+ #__DATA__
+
+ #Name: t::Test::STDmaker::tgB1^
+ #File_Spec: Unix^
+ #UUT: Test::STDmaker::tg1^
+ #Revision: -^
+ #Version: 0.01^
+ #End_User: General Public^
+ #Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
+ #STD2167_Template: ^
+ #Detail_Template: ^
+ #Classification: None^
+ #Temp: temp.pl^
+ #Demo: tgB1.d^
+ #Verify: tgB1.t^
+
+ # T: 2^
+
+ # C:
+ #    #########
+ #    # For "TEST" 1.24 or greater that have separate std err output,
+ #    # redirect the TESTERR to STDOUT
+ #    #
+ #    tech_config( 'Test.TESTERR', \*STDOUT );
+ #^
+
+ # R: L<Test::STDmaker::tg1/capability-A [1]>^
+ # C: my $x = 2^
+ # C: my $y = 3^
+ # A: $x + $y^
+ #SE: 5^
+ #ok: 1^
+
+ # A: [($x+$y,$y-$x)]^
+ # E: [5,2]^
+ #ok: 2^
+
+ #See_Also: L<Test::STDmaker::tg1>^
+ #Copyright: This STD is public domain^
+
+ #HTML:
+ #<hr>
+ #<!-- /BLK -->
+ #<p><br>
+ #<!-- BLK ID="NOTICE" -->
+ #<!-- /BLK -->
+ #<p><br>
+ #<!-- BLK ID="OPT-IN" -->
+ #<!-- /BLK -->
+ #<p><br>
+ #<!-- BLK ID="LOG_CGI" -->
+ #<!-- /BLK -->
+ #<p><br>
+ #^
+
+ #~-~
+ #'
+ #
+
+ ##################
+ # Generated and execute the test script
+ # 
+
+     $test_results = `$perl_executable tgB1.t`;
+     $snl->fout('tgB1.txt', $test_results);
+ $s->scrub_probe($s->scrub_file_line($test_results))
+
+ # '1..2
+ #ok 1
+ #not ok 2
+ ## Test 2 got: 'U1[1] 80
+ #N[2] 5 1
+ #' (xxxx.t at line 000)
+ ##   Expected: 'U1[1] 80
+ #N[2] 5 2
+ #'
+ ## Failed : 2
+ ## Passed : 1/2 50%
+ #'
+ #
+
+ ##################
+ # tmake('STD', {pm => 't::Test::STDmaker::tgC1', fspec_out=>'os2'})
+ # 
+
+ $snl->fin('tgC0.pm')
+
+ # '#!perl
+ ##
+ ## The copyright notice and plain old documentation (POD)
+ ## are at the end of this file.
+ ##
+ #package  t::Test::STDmaker::tgC1;
+
+ #use strict;
+ #use warnings;
+ #use warnings::register;
+
+ #use vars qw($VERSION $DATE $FILE );
+ #$VERSION = '0.04';
+ #$DATE = '2004/05/18';
+ #$FILE = __FILE__;
+
+ #########
+ ## The Test::STDmaker module uses the data after the __DATA__ 
+ ## token to automatically generate the this file.
+ ##
+ ## Don't edit anything before __DATA_. Edit instead
+ ## the data after the __DATA__ token.
+ ##
+ ## ANY CHANGES MADE BEFORE the  __DATA__ token WILL BE LOST
+ ##
+ ## the next time Test::STDmaker generates this file.
+ ##
+ ##
+
+ #__DATA__
+
+ #Name: t::Test::STDmaker::tgC1^
  #File_Spec: Unix^
  #UUT: Test::STDmaker::tg1^
  #Revision: -^
@@ -3177,8 +3481,23 @@ follow on the next lines as comments. For example,
  #~-~
  #'
  #
+
+ ##################
+ # tmake('STD', {pm => 't::Test::STDmaker::tgC1', fspec_out=>'os2'})
+ # 
+
+     skip_tests(0);
      copy 'tgC0.pm', 'tgC1.pm';
-     $tmaker->tmake('STD', { pm => 't::Test::STDmaker::tgC1', fspec_out=>'os2'});
+     $success = $tmaker->tmake('STD', { pm => 't::Test::STDmaker::tgC1', fspec_out=>'os2'});
+ $success
+
+ # 1
+ #
+
+ ##################
+ # Change File Spec
+ # 
+
  $s->scrub_date_version($snl->fin('tgC1.pm'))
 
  # '#!perl
@@ -3201,7 +3520,7 @@ follow on the next lines as comments. For example,
  ## The Test::STDmaker module uses the data after the __DATA__ 
  ## token to automatically generate the this file.
  ##
- ## Don't edit anything before __DATA_. Edit instead
+ ## Do not edit anything before __DATA_. Edit instead
  ## the data after the __DATA__ token.
  ##
  ## ANY CHANGES MADE BEFORE the  __DATA__ token WILL BE LOST
@@ -3209,6 +3528,10 @@ follow on the next lines as comments. For example,
  ## the next time Test::STDmaker generates this file.
  ##
  ##
+
+ #=head1 NAME
+
+ #t::Test::STDmaker::tgC1 - Software Test Description for Test::STDmaker::tg1
 
  #=head1 TITLE PAGE
 
@@ -3230,35 +3553,39 @@ follow on the next lines as comments. For example,
 
  # Classification: None
 
+ ########
+ ##  
+ ##  1. SCOPE
+ ##
+ ##
  #=head1 SCOPE
 
  #This detail STD and the 
  #L<General Perl Program Module (PM) STD|Test::STD::PerlSTD>
  #establishes the tests to verify the
  #requirements of Perl Program Module (PM) L<Test::STDmaker::tg1|Test::STDmaker::tg1>
-
  #The format of this STD is a tailored L<2167A STD DID|Docs::US_DOD::STD>.
- #in accordance with 
- #L<Detail STD Format|Test::STDmaker/Detail STD Format>.
+
+ ########
+ ##  
+ ##  3. TEST PREPARATIONS
+ ##
+ ##
+ #=head1 TEST PREPARATIONS
+
+ #Test preparations are establishes by the L<General STD|Test::STD::PerlSTD>.
 
  ########
  ##  
  ##  4. TEST DESCRIPTIONS
  ##
- ##  4.1 Test 001
  ##
- ##  ..
- ##
- ##  4.x Test x
- ##
- ##
-
  #=head1 TEST DESCRIPTIONS
 
  #The test descriptions uses a legend to
  #identify different aspects of a test description
  #in accordance with
- #L<STD FormDB Test Description Fields|Test::STDmaker/STD FormDB Test Description Fields>.
+ #L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Database Test Description Fields>.
 
  #=head2 Test Plan
 
@@ -3338,14 +3665,15 @@ follow on the next lines as comments. For example,
 
  #__DATA__
 
+ #Name: t::Test::STDmaker::tgC1^
  #File_Spec: os2^
  #UUT: Test::STDmaker::tg1^
  #Revision: -^
+ #Version: 0.01^
  #End_User: General Public^
  #Author: http://www.SoftwareDiamonds.com support@SoftwareDiamonds.com^
- #Detail_Template: ^
  #STD2167_Template: ^
- #Version: 0.01^
+ #Detail_Template: ^
  #Classification: None^
  #Temp: xx\temp.pl^
  #Demo: yy\zz\tg1B.d^
@@ -3387,10 +3715,6 @@ follow on the next lines as comments. For example,
  #
 
  ##################
- # Change File Spec
- # 
-
- ##################
  # find_t_roots
  # 
 
@@ -3399,16 +3723,16 @@ follow on the next lines as comments. For example,
       require Config;
       $OS = $Config::Config{'osname'};
     } 
-    my $dir = File::Spec->catdir(cwd(),'lib');
-    $dir =~ s=/=\\=g if $OS eq 'MSWin32';
-    unshift @INC,$dir;
-    my @t_path = $tmaker->find_t_roots( );
-    $t_path[0] = $t_path[0]; # stop temp.pl warning
-    $dir = cwd();
-    $dir =~ s=/=\\=g if $OS eq 'MSWin32';
+    my($vol, $dir) = File::Spec->splitpath(cwd(),'nofile');
+    my @dirs = File::Spec->splitdir($dir);
+    pop @dirs; # pop STDmaker
+    pop @dirs; # pop Test
+    pop @dirs; # pop t
+    $dir = File::Spec->catdir($vol,@dirs);
+    my @t_path = $tmaker->find_t_roots();
  $t_path[0]
 
- # 'E:\User\SoftwareDiamonds\installation\t\Test\STDmaker'
+ # 'E:\User\SoftwareDiamonds\installation'
  #
      #####
      # Make sure there is no residue outputs hanging

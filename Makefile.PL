@@ -23,7 +23,7 @@ my $tests = join ' ',unix2os('t/Test/STDmaker/STDmaker.t');
 WriteMakefile(
     NAME => 'Test::STDmaker',
     DISTNAME => 'Test-STDmaker',
-    VERSION  => '0.20',
+    VERSION  => '0.21',
     dist     => {COMPRESS => 'gzip',
                 'gz' => 'gz'},
     test     => {TESTS => $tests},

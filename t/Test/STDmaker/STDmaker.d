@@ -7,7 +7,7 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE);
-$VERSION = '0.17';   # automatically generated file
+$VERSION = '0.18';   # automatically generated file
 $DATE = '2004/05/23';
 
 
@@ -195,6 +195,7 @@ EOF
 
 demo( "\ \ \ \ copy\ \'tgA0\.pm\'\,\ \'tgA1\.pm\'\;\
 \ \ \ \ my\ \$tmaker\ \=\ new\ Test\:\:STDmaker\(pm\ \=\>\'t\:\:Test\:\:STDmaker\:\:tgA1\'\,\ nounlink\ \=\>\ 1\)\;\
+\ \ \ \ my\ \$perl_executable\ \=\ \$tmaker\-\>perl_command\(\)\;\
 \ \ \ \ \$success\ \=\ \$tmaker\-\>tmake\(\ \'STD\'\ \)\;\
 \ \ \ \ \$diag\ \=\ \"\\n\~\~\~\~\~\~\~\\nFormDB\\n\\n\"\ \.\ join\ \"\\n\"\,\ \@\{\$tmaker\-\>\{FormDB\}\}\;\
 \ \ \ \ \$diag\ \.\=\ \"\\n\~\~\~\~\~\~\~\\nstd_db\\n\\n\"\ \.\ join\ \"\\n\"\,\ \@\{\$tmaker\-\>\{std_db\}\}\;\
@@ -202,6 +203,7 @@ demo( "\ \ \ \ copy\ \'tgA0\.pm\'\,\ \'tgA1\.pm\'\;\
 \ \ \ \ \$diag\ \.\=\ \(\-e\ \'tgA1\.pm\'\)\ \?\ \"\\n\~\~\~\~\~\~\~\\ntgA1\.pm\\n\\n\"\ \.\ \$snl\-\>fin\(\'tgA1\.pm\'\)\ \:\ \'No\ tgA1\.pm\'\;"); # typed in command           
           copy 'tgA0.pm', 'tgA1.pm';
     my $tmaker = new Test::STDmaker(pm =>'t::Test::STDmaker::tgA1', nounlink => 1);
+    my $perl_executable = $tmaker->perl_command();
     $success = $tmaker->tmake( 'STD' );
     $diag = "\n~~~~~~~\nFormDB\n\n" . join "\n", @{$tmaker->{FormDB}};
     $diag .= "\n~~~~~~~\nstd_db\n\n" . join "\n", @{$tmaker->{std_db}};
@@ -224,74 +226,6 @@ EOF
 
 demo( "\$s\-\>scrub_date_version\(\$snl\-\>fin\(\'tgA1\.pm\'\)\)", # typed in command           
       $s->scrub_date_version($snl->fin('tgA1.pm'))); # execution
-
-
-demo( "\$snl\-\>fin\(\'tgB0\.pm\'\)", # typed in command           
-      $snl->fin('tgB0.pm')); # execution
-
-
-demo( "\ \ \ \ skip_tests\(0\)\;\
-\ \ \ \ copy\ \'tgB0\.pm\'\,\ \'tgB1\.pm\'\;\
-\ \ \ \ \$success\ \=\ \$tmaker\-\>tmake\(\'STD\'\,\ \'verify\'\,\ \{pm\ \=\>\ \'t\:\:Test\:\:STDmaker\:\:tgB1\'\,\ nounlink\ \=\>\ 1\}\ \)\;\
-\ \ \ \ \$diag\ \=\ \"\\n\~\~\~\~\~\~\~\\nFormDB\\n\\n\"\ \.\ join\ \"\\n\"\,\ \@\{\$tmaker\-\>\{FormDB\}\}\;\
-\ \ \ \ \$diag\ \.\=\ \"\\n\~\~\~\~\~\~\~\\nstd_db\\n\\n\"\ \.\ join\ \"\\n\"\,\ \@\{\$tmaker\-\>\{std_db\}\}\;\
-\ \ \ \ \$diag\ \.\=\ \(\-e\ \'temp\.pl\'\)\ \?\ \"\\n\~\~\~\~\~\~\~\\ntemp\.pl\\n\\n\"\ \.\ \$snl\-\>fin\(\'temp\.pl\'\)\ \:\ \'No\ temp\.pl\'\;\
-\ \ \ \ \$diag\ \.\=\ \(\-e\ \'tgB1\.pm\'\)\ \?\ \"\\n\~\~\~\~\~\~\~\\ntgB1\.pm\\n\\n\"\ \.\ \$snl\-\>fin\(\'tgB1\.pm\'\)\ \:\ \'No\ tgB1\.pm\'\;\
-\ \ \ \ \$diag\ \.\=\ \(\-e\ \'tgB1\.t\'\)\ \?\ \"\\n\~\~\~\~\~\~\~\\ntgB1\.t\\n\\n\"\ \.\ \$snl\-\>fin\(\'tgB1\.t\'\)\ \:\ \'No\ tgB1\.t\'\;"); # typed in command           
-          skip_tests(0);
-    copy 'tgB0.pm', 'tgB1.pm';
-    $success = $tmaker->tmake('STD', 'verify', {pm => 't::Test::STDmaker::tgB1', nounlink => 1} );
-    $diag = "\n~~~~~~~\nFormDB\n\n" . join "\n", @{$tmaker->{FormDB}};
-    $diag .= "\n~~~~~~~\nstd_db\n\n" . join "\n", @{$tmaker->{std_db}};
-    $diag .= (-e 'temp.pl') ? "\n~~~~~~~\ntemp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
-    $diag .= (-e 'tgB1.pm') ? "\n~~~~~~~\ntgB1.pm\n\n" . $snl->fin('tgB1.pm') : 'No tgB1.pm';
-    $diag .= (-e 'tgB1.t') ? "\n~~~~~~~\ntgB1.t\n\n" . $snl->fin('tgB1.t') : 'No tgB1.t'; # execution
-
-
-
-print << "EOF";
-
- ##################
- # tmake('STD', 'verify', {pm => 't::Test::STDmaker::tgB1'})
- # 
- 
-EOF
-
-demo( "\$success", # typed in command           
-      $success); # execution
-
-
-print << "EOF";
-
- ##################
- # Clean STD pm without a todo list
- # 
- 
-EOF
-
-demo( "\$s\-\>scrub_date_version\(\$snl\-\>fin\(\'tgB1\.pm\'\)\)", # typed in command           
-      $s->scrub_date_version($snl->fin('tgB1.pm'))); # execution
-
-
-print << "EOF";
-
- ##################
- # Generated and execute the test script
- # 
- 
-EOF
-
-demo( "\ \ \ \ my\ \$perl_execuable\ \=\ \$tmaker\-\>perl_command\(\)\;\
-\ \ \ \ \$test_results\ \=\ \`\$perl_execuable\ tgB1\.t\`\;\
-\ \ \ \ \$snl\-\>fout\(\'tgB1\.txt\'\,\ \$test_results\)\;"); # typed in command           
-          my $perl_execuable = $tmaker->perl_command();
-    $test_results = `$perl_execuable tgB1.t`;
-    $snl->fout('tgB1.txt', $test_results); # execution
-
-
-
-demo( "\$s\-\>scrub_probe\(\$s\-\>scrub_file_line\(\$test_results\)\)", # typed in command           
-      $s->scrub_probe($s->scrub_file_line($test_results))); # execution
 
 
 print << "EOF";
@@ -538,6 +472,72 @@ EOF
 
 demo( "\$test_results", # typed in command           
       $test_results); # execution
+
+
+demo( "\$snl\-\>fin\(\'tgB0\.pm\'\)", # typed in command           
+      $snl->fin('tgB0.pm')); # execution
+
+
+demo( "\ \ \ \ skip_tests\(0\)\;\
+\ \ \ \ copy\ \'tgB0\.pm\'\,\ \'tgB1\.pm\'\;\
+\ \ \ \ \$success\ \=\ \$tmaker\-\>tmake\(\'STD\'\,\ \'verify\'\,\ \{pm\ \=\>\ \'t\:\:Test\:\:STDmaker\:\:tgB1\'\,\ nounlink\ \=\>\ 1\}\ \)\;\
+\ \ \ \ \$diag\ \=\ \"\\n\~\~\~\~\~\~\~\\nFormDB\\n\\n\"\ \.\ join\ \"\\n\"\,\ \@\{\$tmaker\-\>\{FormDB\}\}\;\
+\ \ \ \ \$diag\ \.\=\ \"\\n\~\~\~\~\~\~\~\\nstd_db\\n\\n\"\ \.\ join\ \"\\n\"\,\ \@\{\$tmaker\-\>\{std_db\}\}\;\
+\ \ \ \ \$diag\ \.\=\ \(\-e\ \'temp\.pl\'\)\ \?\ \"\\n\~\~\~\~\~\~\~\\ntemp\.pl\\n\\n\"\ \.\ \$snl\-\>fin\(\'temp\.pl\'\)\ \:\ \'No\ temp\.pl\'\;\
+\ \ \ \ \$diag\ \.\=\ \(\-e\ \'tgB1\.pm\'\)\ \?\ \"\\n\~\~\~\~\~\~\~\\ntgB1\.pm\\n\\n\"\ \.\ \$snl\-\>fin\(\'tgB1\.pm\'\)\ \:\ \'No\ tgB1\.pm\'\;\
+\ \ \ \ \$diag\ \.\=\ \(\-e\ \'tgB1\.t\'\)\ \?\ \"\\n\~\~\~\~\~\~\~\\ntgB1\.t\\n\\n\"\ \.\ \$snl\-\>fin\(\'tgB1\.t\'\)\ \:\ \'No\ tgB1\.t\'\;"); # typed in command           
+          skip_tests(0);
+    copy 'tgB0.pm', 'tgB1.pm';
+    $success = $tmaker->tmake('STD', 'verify', {pm => 't::Test::STDmaker::tgB1', nounlink => 1} );
+    $diag = "\n~~~~~~~\nFormDB\n\n" . join "\n", @{$tmaker->{FormDB}};
+    $diag .= "\n~~~~~~~\nstd_db\n\n" . join "\n", @{$tmaker->{std_db}};
+    $diag .= (-e 'temp.pl') ? "\n~~~~~~~\ntemp.pl\n\n" . $snl->fin('temp.pl') : 'No temp.pl';
+    $diag .= (-e 'tgB1.pm') ? "\n~~~~~~~\ntgB1.pm\n\n" . $snl->fin('tgB1.pm') : 'No tgB1.pm';
+    $diag .= (-e 'tgB1.t') ? "\n~~~~~~~\ntgB1.t\n\n" . $snl->fin('tgB1.t') : 'No tgB1.t'; # execution
+
+
+
+print << "EOF";
+
+ ##################
+ # tmake('STD', 'verify', {pm => 't::Test::STDmaker::tgB1'})
+ # 
+ 
+EOF
+
+demo( "\$success", # typed in command           
+      $success); # execution
+
+
+print << "EOF";
+
+ ##################
+ # Clean STD pm without a todo list
+ # 
+ 
+EOF
+
+demo( "\$s\-\>scrub_date_version\(\$snl\-\>fin\(\'tgB1\.pm\'\)\)", # typed in command           
+      $s->scrub_date_version($snl->fin('tgB1.pm'))); # execution
+
+
+print << "EOF";
+
+ ##################
+ # Generated and execute the test script
+ # 
+ 
+EOF
+
+demo( "\ \ \ \ \$test_results\ \=\ \`\$perl_executable\ tgB1\.t\`\;\
+\ \ \ \ \$snl\-\>fout\(\'tgB1\.txt\'\,\ \$test_results\)\;"); # typed in command           
+          $test_results = `$perl_executable tgB1.t`;
+    $snl->fout('tgB1.txt', $test_results); # execution
+
+
+
+demo( "\$s\-\>scrub_probe\(\$s\-\>scrub_file_line\(\$test_results\)\)", # typed in command           
+      $s->scrub_probe($s->scrub_file_line($test_results))); # execution
 
 
 print << "EOF";
