@@ -10,25 +10,25 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE );
-$VERSION = '0.13';
+$VERSION = '0.14';
 $DATE = '2004/05/20';
 $FILE = __FILE__;
 
 use vars qw(%INVENTORY);
 %INVENTORY = (
-    'lib/Docs/Site_SVD/Test_STDmaker.pm' => [qw(0.13 2004/05/20), 'revised 0.12'],
-    'MANIFEST' => [qw(0.13 2004/05/20), 'generated, replaces 0.12'],
-    'Makefile.PL' => [qw(0.13 2004/05/20), 'generated, replaces 0.12'],
-    'README' => [qw(0.13 2004/05/20), 'generated, replaces 0.12'],
-    'lib/Test/STDmaker.pm' => [qw(1.16 2004/05/20), 'revised 1.15'],
-    'lib/Test/STDmaker/Check.pm' => [qw(1.12 2004/05/20), 'revised 1.11'],
-    'lib/Test/STDmaker/Demo.pm' => [qw(1.13 2004/05/20), 'revised 1.12'],
+    'lib/Docs/Site_SVD/Test_STDmaker.pm' => [qw(0.14 2004/05/20), 'revised 0.13'],
+    'MANIFEST' => [qw(0.14 2004/05/20), 'generated, replaces 0.13'],
+    'Makefile.PL' => [qw(0.14 2004/05/20), 'generated, replaces 0.13'],
+    'README' => [qw(0.14 2004/05/20), 'generated, replaces 0.13'],
+    'lib/Test/STDmaker.pm' => [qw(1.16 2004/05/20), 'unchanged'],
+    'lib/Test/STDmaker/Check.pm' => [qw(1.12 2004/05/20), 'unchanged'],
+    'lib/Test/STDmaker/Demo.pm' => [qw(1.13 2004/05/20), 'unchanged'],
     'lib/Test/STDmaker/STD.pm' => [qw(1.1 2004/05/19), 'unchanged'],
-    'lib/Test/STDmaker/Verify.pm' => [qw(1.13 2004/05/20), 'revised 1.12'],
+    'lib/Test/STDmaker/Verify.pm' => [qw(1.13 2004/05/20), 'unchanged'],
     'lib/Test/STD/PerlSTD.pm' => [qw(1.08 2004/05/19), 'unchanged'],
-    't/Test/STDmaker/STDmaker.d' => [qw(0.12 2004/05/18), 'unchanged'],
-    't/Test/STDmaker/STDmaker.pm' => [qw(0.1 2004/05/18), 'unchanged'],
-    't/Test/STDmaker/STDmaker.t' => [qw(0.12 2004/05/18), 'unchanged'],
+    't/Test/STDmaker/STDmaker.d' => [qw(0.13 2004/05/20), 'revised 0.12'],
+    't/Test/STDmaker/STDmaker.pm' => [qw(0.11 2004/05/20), 'revised 0.1'],
+    't/Test/STDmaker/STDmaker.t' => [qw(0.13 2004/05/20), 'revised 0.12'],
     't/Test/STDmaker/tg0.pm' => [qw(0.03 2004/04/09), 'unchanged'],
     't/Test/STDmaker/tg2A.pm' => [qw(0.03 2004/05/14), 'unchanged'],
     't/Test/STDmaker/tg2B.pm' => [qw(0.04 2004/05/14), 'unchanged'],
@@ -47,11 +47,11 @@ use vars qw(%INVENTORY);
     't/Test/STDmaker/tgC1.pm' => [qw(0.01 2004/05/19), 'unchanged'],
     't/Test/STDmaker/tgC2.pm' => [qw(0.04 2004/05/18), 'unchanged'],
     't/Test/STDmaker/tmake.pl' => [qw(1.06 2004/05/20), 'unchanged'],
-    't/Test/STDmaker/Text/Scrub.pm' => [qw(1.14 2004/05/20), 'revised 1.13'],
+    't/Test/STDmaker/Text/Scrub.pm' => [qw(1.14 2004/05/20), 'unchanged'],
     't/Test/STDmaker/Test/Tech.pm' => [qw(1.26 2004/05/20), 'unchanged'],
-    't/Test/STDmaker/Data/Secs2.pm' => [qw(1.25 2004/05/20), 'revised 1.24'],
-    't/Test/STDmaker/Data/Str2Num.pm' => [qw(0.06 2004/05/20), 'revised 0.05'],
-    't/Test/STDmaker/Data/Startup.pm' => [qw(0.06 2004/05/20), 'unchanged'],
+    't/Test/STDmaker/Data/Secs2.pm' => [qw(1.26 2004/05/20), 'revised 1.25'],
+    't/Test/STDmaker/Data/Str2Num.pm' => [qw(0.07 2004/05/20), 'revised 0.06'],
+    't/Test/STDmaker/Data/Startup.pm' => [qw(0.07 2004/05/20), 'revised 0.06'],
 
 );
 
@@ -82,9 +82,9 @@ Docs::Site_SVD::Test_STDmaker - generate test scripts, demo scripts from a test 
 
  Docs::Site_SVD::Test_STDmaker - generate test scripts, demo scripts from a test description short hand
 
- Revision: M
+ Revision: N
 
- Version: 0.13
+ Version: 0.14
 
  Date: 2004/05/20
 
@@ -175,7 +175,7 @@ further detail on the text database fields and the processing.
 
 =head2 1.3 Document overview.
 
-This document releases Test::STDmaker version 0.13
+This document releases Test::STDmaker version 0.14
 providing description of the inventory, installation
 instructions and other information necessary to
 utilize and track this release.
@@ -190,7 +190,7 @@ system file specification.
 
 This document releases the file 
 
- Test-STDmaker-0.13.tar.gz
+ Test-STDmaker-0.14.tar.gz
 
 found at the following repository(s):
 
@@ -277,19 +277,19 @@ consists of the following files:
 
  file                                                         version date       comment
  ------------------------------------------------------------ ------- ---------- ------------------------
- lib/Docs/Site_SVD/Test_STDmaker.pm                           0.13    2004/05/20 revised 0.12
- MANIFEST                                                     0.13    2004/05/20 generated, replaces 0.12
- Makefile.PL                                                  0.13    2004/05/20 generated, replaces 0.12
- README                                                       0.13    2004/05/20 generated, replaces 0.12
- lib/Test/STDmaker.pm                                         1.16    2004/05/20 revised 1.15
- lib/Test/STDmaker/Check.pm                                   1.12    2004/05/20 revised 1.11
- lib/Test/STDmaker/Demo.pm                                    1.13    2004/05/20 revised 1.12
+ lib/Docs/Site_SVD/Test_STDmaker.pm                           0.14    2004/05/20 revised 0.13
+ MANIFEST                                                     0.14    2004/05/20 generated, replaces 0.13
+ Makefile.PL                                                  0.14    2004/05/20 generated, replaces 0.13
+ README                                                       0.14    2004/05/20 generated, replaces 0.13
+ lib/Test/STDmaker.pm                                         1.16    2004/05/20 unchanged
+ lib/Test/STDmaker/Check.pm                                   1.12    2004/05/20 unchanged
+ lib/Test/STDmaker/Demo.pm                                    1.13    2004/05/20 unchanged
  lib/Test/STDmaker/STD.pm                                     1.1     2004/05/19 unchanged
- lib/Test/STDmaker/Verify.pm                                  1.13    2004/05/20 revised 1.12
+ lib/Test/STDmaker/Verify.pm                                  1.13    2004/05/20 unchanged
  lib/Test/STD/PerlSTD.pm                                      1.08    2004/05/19 unchanged
- t/Test/STDmaker/STDmaker.d                                   0.12    2004/05/18 unchanged
- t/Test/STDmaker/STDmaker.pm                                  0.1     2004/05/18 unchanged
- t/Test/STDmaker/STDmaker.t                                   0.12    2004/05/18 unchanged
+ t/Test/STDmaker/STDmaker.d                                   0.13    2004/05/20 revised 0.12
+ t/Test/STDmaker/STDmaker.pm                                  0.11    2004/05/20 revised 0.1
+ t/Test/STDmaker/STDmaker.t                                   0.13    2004/05/20 revised 0.12
  t/Test/STDmaker/tg0.pm                                       0.03    2004/04/09 unchanged
  t/Test/STDmaker/tg2A.pm                                      0.03    2004/05/14 unchanged
  t/Test/STDmaker/tg2B.pm                                      0.04    2004/05/14 unchanged
@@ -308,11 +308,11 @@ consists of the following files:
  t/Test/STDmaker/tgC1.pm                                      0.01    2004/05/19 unchanged
  t/Test/STDmaker/tgC2.pm                                      0.04    2004/05/18 unchanged
  t/Test/STDmaker/tmake.pl                                     1.06    2004/05/20 unchanged
- t/Test/STDmaker/Text/Scrub.pm                                1.14    2004/05/20 revised 1.13
+ t/Test/STDmaker/Text/Scrub.pm                                1.14    2004/05/20 unchanged
  t/Test/STDmaker/Test/Tech.pm                                 1.26    2004/05/20 unchanged
- t/Test/STDmaker/Data/Secs2.pm                                1.25    2004/05/20 revised 1.24
- t/Test/STDmaker/Data/Str2Num.pm                              0.06    2004/05/20 revised 0.05
- t/Test/STDmaker/Data/Startup.pm                              0.06    2004/05/20 unchanged
+ t/Test/STDmaker/Data/Secs2.pm                                1.26    2004/05/20 revised 1.25
+ t/Test/STDmaker/Data/Str2Num.pm                              0.07    2004/05/20 revised 0.06
+ t/Test/STDmaker/Data/Startup.pm                              0.07    2004/05/20 revised 0.06
 
 
 =head2 3.3 Changes
@@ -535,6 +535,25 @@ Introduced the C<perl_command> subroutine that uses C<$^X> to return the current
 Use the results of this subroutine instead of 'perl' in backticks.
 See how it goes.
 
+=item Test-STDmaker-0.14
+
+Test Failure:
+
+Subject: FAIL Test-STDmaker-0.13 ppc-linux 2.4.19-4a 
+From: alian@cpan.org (CPAN Tester + CPAN++ automate) 
+
+PERL_DL_NONLAZY=1 /usr/local/perl-5.8.4/bin/perl "-MExtUtils::Command::MM" "-e" "test_harness(0, 'blib/lib', 'blib/arch')" t/Test/STDmaker/STDmaker.t
+t/Test/STDmaker/STDmaker....Perl lib version (v5.8.4) doesn't match executable version (v5.6.0) at /usr/local/perl-5.8.4/lib/5.8.4/ppc-linux/Config.pm line 32.
+Compilation failed in require at /usr/local/perl-5.8.4/lib/5.8.4/FindBin.pm line 97.
+BEGIN failed--compilation aborted at /usr/local/perl-5.8.4/lib/5.8.4/FindBin.pm line 97.
+Compilation failed in require at tgB1.t line 43.
+
+Corrective Action:
+
+Opps. Have C<`perl $commands`> not only in the Unit Under Test (UUT) but also the test
+scripts. Looks like using `C<$^X> $command` got pass the UUT so change the ones in the
+test script also.
+
 =back
 
 =head2 3.4 Adaptation data.
@@ -573,13 +592,13 @@ Enter one of the following repositories in a web browser:
   http://www.softwarediamonds/packages/
   http://www.perl.com/CPAN/authors/id/S/SO/SOFTDIA/
 
-Right click on 'Test-STDmaker-0.13.tar.gz' and download to a temporary
+Right click on 'Test-STDmaker-0.14.tar.gz' and download to a temporary
 installation directory.
 Enter the following where $make is 'nmake' for microsoft
 windows; otherwise 'make'.
 
- gunzip Test-STDmaker-0.13.tar.gz
- tar -xf Test-STDmaker-0.13.tar
+ gunzip Test-STDmaker-0.14.tar.gz
+ tar -xf Test-STDmaker-0.14.tar
  perl Makefile.PL
  $make test
  $make install
@@ -730,10 +749,10 @@ __DATA__
 DISTNAME: Test-STDmaker^
 REPOSITORY_DIR: packages^
 
-VERSION : 0.13^
+VERSION : 0.14^
 FREEZE: 1^
-PREVIOUS_RELEASE: 0.12^
-REVISION: M^
+PREVIOUS_RELEASE: 0.13^
+REVISION: N^
 
 PREVIOUS_DISTNAME:  ^
 AUTHOR  : SoftwareDiamonds.com E<lt>support@SoftwareDiamonds.comE<gt>^
@@ -1077,6 +1096,25 @@ Introduced the C<perl_command> subroutine that uses C<$^^X> to return the curren
 Use the results of this subroutine instead of 'perl' in backticks.
 See how it goes.
 
+\=item Test-STDmaker-0.14
+
+Test Failure:
+
+Subject: FAIL Test-STDmaker-0.13 ppc-linux 2.4.19-4a 
+From: alian@cpan.org (CPAN Tester + CPAN++ automate) 
+
+PERL_DL_NONLAZY=1 /usr/local/perl-5.8.4/bin/perl "-MExtUtils::Command::MM" "-e" "test_harness(0, 'blib/lib', 'blib/arch')" t/Test/STDmaker/STDmaker.t
+t/Test/STDmaker/STDmaker....Perl lib version (v5.8.4) doesn't match executable version (v5.6.0) at /usr/local/perl-5.8.4/lib/5.8.4/ppc-linux/Config.pm line 32.
+Compilation failed in require at /usr/local/perl-5.8.4/lib/5.8.4/FindBin.pm line 97.
+BEGIN failed--compilation aborted at /usr/local/perl-5.8.4/lib/5.8.4/FindBin.pm line 97.
+Compilation failed in require at tgB1.t line 43.
+
+Corrective Action:
+
+Opps. Have C<`perl $commands`> not only in the Unit Under Test (UUT) but also the test
+scripts. Looks like using `C<$^^X> $command` got pass the UUT so change the ones in the
+test script also.
+
 \=back
 
 ^
@@ -1285,6 +1323,8 @@ HTML:
 <p><br>
 ^
 ~-~
+
+
 
 
 

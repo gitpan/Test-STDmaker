@@ -7,8 +7,8 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE);
-$VERSION = '0.12';   # automatically generated file
-$DATE = '2004/05/18';
+$VERSION = '0.13';   # automatically generated file
+$DATE = '2004/05/20';
 $FILE = __FILE__;
 
 
@@ -227,7 +227,8 @@ ok(  $s->scrub_date_version($snl->fin('tgB1.pm')), # actual results
 #  ok:  5
 
    # Perl code from C:
-    $test_results = `perl tgB1.t`;
+    my $perl_execuable = $tmaker->perl_command();
+    $test_results = `$perl_execuable tgB1.t`;
     $snl->fout('tgB1.txt', $test_results);
 
 ok(  $s->scrub_probe($s->scrub_file_line($test_results)), # actual results
@@ -267,7 +268,7 @@ ok(  $s->scrub_date_version($snl->fin('tgA1.pm')), # actual results
 #  ok:  7
 
    # Perl code from C:
-    $test_results = `perl tgA1.d`;
+    $test_results = `$perl_execuable tgA1.d`;
     $snl->fout('tgA1.txt', $test_results);
 
     use Data::Dumper;
@@ -310,7 +311,7 @@ ok(  $test_results, # actual results
 #  ok:  8
 
    # Perl code from C:
-    $test_results = `perl tgA1.t`;
+    $test_results = `$perl_execuable tgA1.t`;
     $snl->fout('tgA1.txt', $test_results);
 
 

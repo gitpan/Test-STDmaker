@@ -7,8 +7,8 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE);
-$VERSION = '0.12';   # automatically generated file
-$DATE = '2004/05/18';
+$VERSION = '0.13';   # automatically generated file
+$DATE = '2004/05/20';
 
 
 ##### Demonstration Script ####
@@ -41,7 +41,6 @@ BEGIN {
     use Cwd;
     use File::Spec;
     use FindBin;
-    use Test::Tech qw(demo is_skip plan skip_tests tech_config );
 
     ########
     # The working directory for this script file is the directory where
@@ -65,7 +64,20 @@ BEGIN {
     #
     use lib $FindBin::Bin;
 
-    unshift @INC, File::Spec->catdir( cwd(), 'lib' ); 
+    ########
+    # Using Test::Tech, a very light layer over the module "Test" to
+    # conduct the tests.  The big feature of the "Test::Tech: module
+    # is that it takes expected and actual references and stringify
+    # them by using "Data::Secs2" before passing them to the "&Test::ok"
+    # Thus, almost any time of Perl data structures may be
+    # compared by passing a reference to them to Test::Tech::ok
+    #
+    # Create the test plan by supplying the number of tests
+    # and the todo tests
+    #
+    require Test::Tech;
+    Test::Tech->import( qw(demo finish is_skip ok ok_sub plan skip 
+                          skip_sub skip_tests tech_config) );
 
 }
 
@@ -205,9 +217,11 @@ print << "EOF";
  
 EOF
 
-demo( "\ \ \ \ \$test_results\ \=\ \`perl\ tgB1\.t\`\;\
+demo( "\ \ \ \ my\ \$perl_execuable\ \=\ \$tmaker\-\>perl_command\(\)\;\
+\ \ \ \ \$test_results\ \=\ \`\$perl_execuable\ tgB1\.t\`\;\
 \ \ \ \ \$snl\-\>fout\(\'tgB1\.txt\'\,\ \$test_results\)\;"); # typed in command           
-          $test_results = `perl tgB1.t`;
+          my $perl_execuable = $tmaker->perl_command();
+    $test_results = `$perl_execuable tgB1.t`;
     $snl->fout('tgB1.txt', $test_results);; # execution
 
 demo( "\$s\-\>scrub_probe\(\$s\-\>scrub_file_line\(\$test_results\)\)", # typed in command           

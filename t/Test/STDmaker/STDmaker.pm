@@ -10,8 +10,8 @@ use warnings;
 use warnings::register;
 
 use vars qw($VERSION $DATE $FILE );
-$VERSION = '0.1';
-$DATE = '2004/05/18';
+$VERSION = '0.11';
+$DATE = '2004/05/20';
 $FILE = __FILE__;
 
 ########
@@ -44,7 +44,7 @@ t::Test::STDmaker::STDmaker - Software Test Description for Test::STDmaker
 
  Version: 
 
- Date: 2004/05/17
+ Date: 2004/05/20
 
  Prepared for: General Public 
 
@@ -216,7 +216,8 @@ L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Databa
 
 
   C:
-     $test_results = `perl tgB1.t`;
+     my $perl_execuable = $tmaker->perl_command();
+     $test_results = `$perl_execuable tgB1.t`;
      $snl->fout('tgB1.txt', $test_results);
  ^
   A: $s->scrub_probe($s->scrub_file_line($test_results))^
@@ -281,7 +282,7 @@ L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Databa
   N: Demonstration script^
 
   C:
-     $test_results = `perl tgA1.d`;
+     $test_results = `$perl_execuable tgA1.d`;
      $snl->fout('tgA1.txt', $test_results);
      use Data::Dumper;
      my $probe = 3;
@@ -321,7 +322,7 @@ L<STD PM Form Database Test Description Fields|Test::STDmaker/STD PM Form Databa
  ^
 
   C:
-     $test_results = `perl tgA1.t`;
+     $test_results = `$perl_execuable tgA1.t`;
      $snl->fout('tgA1.txt', $test_results);
  ^
   A: $s->scrub_probe($s->scrub_file_line($test_results))^
@@ -817,7 +818,8 @@ ok: 5^
 
 
  C:
-    $test_results = `perl tgB1.t`;
+    my $perl_execuable = $tmaker->perl_command();
+    $test_results = `$perl_execuable tgB1.t`;
     $snl->fout('tgB1.txt', $test_results);
 ^
 
@@ -884,7 +886,7 @@ VO: ^
  N: Demonstration script^
 
  C:
-    $test_results = `perl tgA1.d`;
+    $test_results = `$perl_execuable tgA1.d`;
     $snl->fout('tgA1.txt', $test_results);
 
     use Data::Dumper;
@@ -926,7 +928,7 @@ VO: ^
 
 
  C:
-    $test_results = `perl tgA1.t`;
+    $test_results = `$perl_execuable tgA1.t`;
     $snl->fout('tgA1.txt', $test_results);
 ^
 

@@ -14,7 +14,7 @@ use warnings::register;
 # Connect up with the event log.
 #
 use vars qw( $VERSION $DATE $FILE);
-$VERSION = '0.06';
+$VERSION = '0.07';
 $DATE = '2004/05/20';
 $FILE = __FILE__;
 
@@ -55,7 +55,6 @@ sub new
 }
 
 
-
 ######
 # Covert a string to floats.
 #
@@ -80,6 +79,7 @@ sub str2float
      my $early_exit unless wantarray;
      my ($sign,$integer,$fraction,$exponent);
      foreach (@strs) {
+         next unless defined $_;
          while ( length($_) ) {
 
              ($sign, $integer,$fraction,$exponent) = ('',undef,undef,undef);
@@ -209,6 +209,7 @@ sub str2integer
      my ($int,$num);
      my @integers = ();
      foreach $_ (@strs) {
+         next unless defined $_;
          while ( length($_) ) {
              if($_  =~ s/^\s*(-?)\s*(0[0-7]+|0?b[0-1]+|0x[0-9A-Fa-f]+)\s*[,;\n]?//) {
                  $int = $1 . $2;
@@ -252,7 +253,7 @@ LAST:
      #########
      # Drop leading empty strings
      #
-     while (@strs && $strs[0] !~ /^\s*\S/) {
+     while (@strs && !defined($strs[0]) && $strs[0] !~ /^\s*\S/) {
           shift @strs;
      }
      @strs = ('') unless(@strs); # do not shift @strs out of existance
